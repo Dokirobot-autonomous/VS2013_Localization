@@ -1,0 +1,154 @@
+﻿2018/04/06 17:35:35 にビルドを開始しました。
+     1>ノード 2 上のプロジェクト "C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\Localization2\Localization2.vcxproj" (Build ターゲット)。
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I"C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\packages\OpenCV.2.4.11\build\native\../../build/native/include/" /I"C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\\" /Zi /nologo /W3 /WX- /sdl /O2 /Oi /Oy- /GL /D HAS_OPENCV /D WIN32 /D NDEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Release\Localization2.pch" /Fo"Release\\" /Fd"Release\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt Localization2.cpp
+         Localization2.cpp
+     1>C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\include\math.h(1298): warning C4005: 'M_PI' : マクロが再定義されました。
+                 c:\users\robot\documents\visual studio 2013\projects\localization.ver2\include\GoogleEarth.hpp(7) : 'M_PI' の前の定義を確認してください
+     1>c:\users\robot\documents\visual studio 2013\projects\localization.ver2\include\svd.h(155): warning C4244: '=' : 'double' から 'int' への変換です。データが失われる可能性があります。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include\myfun.h(483): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>c:\users\robot\documents\visual studio 2013\projects\localization.ver2\include\leica.h(14): warning C4005: 'M_PI' : マクロが再定義されました。
+                 C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\include\math.h(1298) : 'M_PI' の前の定義を確認してください
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/Lidar2d.h(177): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/OmniCamera.h(197): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/OmniCamera.h(221): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/OmniCamera.h(231): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/OmniCamera.h(252): warning C4018: '>=' : signed と unsigned の数値を比較しようとしました。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/OmniCamera.h(281): warning C4018: '>=' : signed と unsigned の数値を比較しようとしました。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/OmniCamera.h(396): warning C4244: '引数' : 'double' から 'int' への変換です。データが失われる可能性があります。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/OmniCamera.h(403): warning C4244: '引数' : 'double' から 'int' への変換です。データが失われる可能性があります。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/OmniCamera.h(422): warning C4244: '引数' : 'double' から 'int' への変換です。データが失われる可能性があります。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/OmniCamera.h(432): warning C4244: '引数' : 'double' から 'int' への変換です。データが失われる可能性があります。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(390): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(392): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(395): warning C4018: '>=' : signed と unsigned の数値を比較しようとしました。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(399): warning C4018: '>=' : signed と unsigned の数値を比較しようとしました。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(1192): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(1247): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(1583): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(1783): warning C4244: '引数' : 'double' から 'int' への変換です。データが失われる可能性があります。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(1791): warning C4244: '引数' : 'double' から 'int' への変換です。データが失われる可能性があります。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(1876): warning C4244: '引数' : 'double' から 'int' への変換です。データが失われる可能性があります。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(1884): warning C4244: '引数' : 'double' から 'int' への変換です。データが失われる可能性があります。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(1954): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(2023): warning C4244: '引数' : 'double' から 'int' への変換です。データが失われる可能性があります。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(2032): warning C4244: '引数' : 'double' から 'int' への変換です。データが失われる可能性があります。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(2069): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(2232): warning C4244: '*=' : 'double' から 'int' への変換です。データが失われる可能性があります。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(2233): warning C4244: '*=' : 'double' から 'int' への変換です。データが失われる可能性があります。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(2234): warning C4244: '初期化中' : 'double' から 'int' への変換です。データが失われる可能性があります。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(2235): warning C4244: '初期化中' : 'double' から 'int' への変換です。データが失われる可能性があります。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(2239): warning C4244: '初期化中' : 'double' から 'int' への変換です。データが失われる可能性があります。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(2283): warning C4244: '引数' : 'double' から 'int' への変換です。データが失われる可能性があります。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(2414): warning C4244: '引数' : 'double' から 'int' への変換です。データが失われる可能性があります。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(2586): warning C4244: '引数' : 'double' から 'int' への変換です。データが失われる可能性があります。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(2757): warning C4244: '引数' : 'double' から 'int' への変換です。データが失われる可能性があります。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(3018): warning C4018: '>=' : signed と unsigned の数値を比較しようとしました。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(3026): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(3042): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(3132): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(3315): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(3339): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(3353): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(3416): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(3481): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(3482): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(3531): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(3532): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(3577): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(3578): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(3589): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(3590): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(3614): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(3615): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(3656): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(3657): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(3668): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(3669): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(3698): warning C4018: '>=' : signed と unsigned の数値を比較しようとしました。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(3719): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(3745): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(3756): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(3779): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>Localization2.cpp(305): warning C4305: '引数' : 'double' から 'float' へ切り詰めます。
+     1>Localization2.cpp(307): warning C4305: '引数' : 'double' から 'float' へ切り詰めます。
+     1>Localization2.cpp(413): warning C4305: '引数' : 'double' から 'float' へ切り詰めます。
+     1>Localization2.cpp(577): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>Localization2.cpp(591): warning C4305: '引数' : 'double' から 'float' へ切り詰めます。
+     1>Localization2.cpp(592): warning C4305: '引数' : 'double' から 'float' へ切り詰めます。
+     1>Localization2.cpp(661): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>Localization2.cpp(674): warning C4305: '引数' : 'double' から 'float' へ切り詰めます。
+     1>Localization2.cpp(770): warning C4244: '=' : 'double' から 'float' への変換です。データが失われる可能性があります。
+     1>Localization2.cpp(800): warning C4244: '=' : 'double' から 'float' への変換です。データが失われる可能性があります。
+     1>Localization2.cpp(922): warning C4244: '=' : 'double' から 'float' への変換です。データが失われる可能性があります。
+     1>Localization2.cpp(950): warning C4244: '=' : 'double' から 'float' への変換です。データが失われる可能性があります。
+     1>Localization2.cpp(1089): warning C4305: '引数' : 'double' から 'float' へ切り詰めます。
+     1>Localization2.cpp(1091): warning C4305: '引数' : 'double' から 'float' へ切り詰めます。
+     1>Localization2.cpp(1123): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>Localization2.cpp(1131): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>Localization2.cpp(1136): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>Localization2.cpp(1190): warning C4305: '引数' : 'double' から 'float' へ切り詰めます。
+     1>Localization2.cpp(1218): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>Localization2.cpp(1223): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>Localization2.cpp(309): warning C4101: 'omni_w_rotate' : ローカル変数は 1 度も使われていません。
+     1>c:\users\robot\documents\visual studio 2013\projects\localization.ver2\include\ParticleFilter.h(284): warning C4244: '初期化中' : 'double' から 'int' への変換です。データが失われる可能性があります。
+                 c:\users\robot\documents\visual studio 2013\projects\localization.ver2\include\ParticleFilter.h(277): クラス テンプレート のメンバー関数 'void ParticleFilter<Position<double>>::Resample(void)' のコンパイル中
+                 Localization2.cpp(2414) : コンパイルされたクラスの テンプレート のインスタンス化 'void ParticleFilter<Position<double>>::Resample(void)' の参照を確認してください
+                 C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(26) : コンパイルされたクラスの テンプレート のインスタンス化 'ParticleFilter<Position<double>>' の参照を確認してください
+     1>c:\users\robot\documents\visual studio 2013\projects\localization.ver2\include\mycv.h(173): warning C4244: '=' : 'double' から 'int' への変換です。データが失われる可能性があります。
+                 C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/Lidar2d.h(199) : コンパイルされたクラスの テンプレート のインスタンス化 'cv::Point ToPixel<Coor<double>,int,double>(const C &,const cv::Mat &,T,S,S)' の参照を確認してください
+                 with
+                 [
+                     C=Coor<double>
+         ,            T=int
+         ,            S=double
+                 ]
+     1>c:\users\robot\documents\visual studio 2013\projects\localization.ver2\include\mycv.h(174): warning C4244: '=' : 'double' から 'int' への変換です。データが失われる可能性があります。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include\myfun.h(501): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+                 C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(1752) : コンパイルされたクラスの テンプレート のインスタンス化 'std::vector<int,std::allocator<_Ty>> sortUpIdx<double>(std::vector<double,std::allocator<double>>)' の参照を確認してください
+                 with
+                 [
+                     _Ty=int
+                 ]
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include\myfun.h(503): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include\myfun.h(505): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>c:\users\robot\documents\visual studio 2013\projects\localization.ver2\include\mycv.h(183): warning C4244: '=' : 'double' から 'int' への変換です。データが失われる可能性があります。
+                 C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(2015) : コンパイルされたクラスの テンプレート のインスタンス化 'cv::Point ToPixel<Position<double>,double,double>(const C &,int,int,T,S,S)' の参照を確認してください
+                 with
+                 [
+                     C=Position<double>
+         ,            T=double
+         ,            S=double
+                 ]
+     1>c:\users\robot\documents\visual studio 2013\projects\localization.ver2\include\mycv.h(184): warning C4244: '=' : 'double' から 'int' への変換です。データが失われる可能性があります。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include\myfun.h(160): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+                 C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/LocalizationPF.h(3327) : コンパイルされたクラスの テンプレート のインスタンス化 'std::ostream &operator <<<bool>(std::ostream &,const std::vector<bool,std::allocator<_Ty>> &)' の参照を確認してください
+                 with
+                 [
+                     _Ty=bool
+                 ]
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/OmniCamera.h(846): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+                 Localization2.cpp(203) : コンパイルされたクラスの テンプレート のインスタンス化 'void OmniCamera::calcSimilarityBetweenImages<double>(const Position<double> &,OMNI_FEATURE_TYPE)' の参照を確認してください
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/OmniCamera.h(873): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/OmniCamera.h(888): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/OmniCamera.h(542): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+                 Localization2.cpp(204) : コンパイルされたクラスの テンプレート のインスタンス化 'void OmniCamera::setMeasBofSift<double>(Position<double>)' の参照を確認してください
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/OmniCamera.h(1041): warning C4244: '引数' : 'double' から 'int' への変換です。データが失われる可能性があります。
+                 Localization2.cpp(311) : コンパイルされたクラスの テンプレート のインスタンス化 'double OmniCamera::getLikelihoodBofSift<double>(const Position<double>)' の参照を確認してください
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/OmniCamera.h(1255): warning C4244: '引数' : 'double' から 'int' への変換です。データが失われる可能性があります。
+                 Localization2.cpp(315) : コンパイルされたクラスの テンプレート のインスタンス化 'double OmniCamera::getLikelihood<double>(const Position<double>,OMNI_FEATURE_TYPE)' の参照を確認してください
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/OmniCamera.h(1258): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/OmniCamera.h(1327): warning C4244: '引数' : 'double' から 'int' への変換です。データが失われる可能性があります。
+     1>C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\include/OmniCamera.h(1330): warning C4018: '<' : signed と unsigned の数値を比較しようとしました。
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\Release\Localization2.exe" /INCREMENTAL:NO /NOLOGO "C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\packages\OpenCV.2.4.11\build\native\../../build/native/lib/Win32/v120/Release/opencv_videostab2411.lib" "C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\packages\OpenCV.2.4.11\build\native\../../build/native/lib/Win32/v120/Release/opencv_video2411.lib" "C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\packages\OpenCV.2.4.11\build\native\../../build/native/lib/Win32/v120/Release/opencv_ts2411.lib" "C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\packages\OpenCV.2.4.11\build\native\../../build/native/lib/Win32/v120/Release/opencv_superres2411.lib" "C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\packages\OpenCV.2.4.11\build\native\../../build/native/lib/Win32/v120/Release/opencv_stitching2411.lib" "C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\packages\OpenCV.2.4.11\build\native\../../build/native/lib/Win32/v120/Release/opencv_photo2411.lib" "C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\packages\OpenCV.2.4.11\build\native\../../build/native/lib/Win32/v120/Release/opencv_ocl2411.lib" "C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\packages\OpenCV.2.4.11\build\native\../../build/native/lib/Win32/v120/Release/opencv_objdetect2411.lib" "C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\packages\OpenCV.2.4.11\build\native\../../build/native/lib/Win32/v120/Release/opencv_nonfree2411.lib" "C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\packages\OpenCV.2.4.11\build\native\../../build/native/lib/Win32/v120/Release/opencv_ml2411.lib" "C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\packages\OpenCV.2.4.11\build\native\../../build/native/lib/Win32/v120/Release/opencv_legacy2411.lib" "C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\packages\OpenCV.2.4.11\build\native\../../build/native/lib/Win32/v120/Release/opencv_imgproc2411.lib" "C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\packages\OpenCV.2.4.11\build\native\../../build/native/lib/Win32/v120/Release/opencv_highgui2411.lib" "C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\packages\OpenCV.2.4.11\build\native\../../build/native/lib/Win32/v120/Release/opencv_gpu2411.lib" "C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\packages\OpenCV.2.4.11\build\native\../../build/native/lib/Win32/v120/Release/opencv_flann2411.lib" "C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\packages\OpenCV.2.4.11\build\native\../../build/native/lib/Win32/v120/Release/opencv_features2d2411.lib" "C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\packages\OpenCV.2.4.11\build\native\../../build/native/lib/Win32/v120/Release/opencv_core2411.lib" "C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\packages\OpenCV.2.4.11\build\native\../../build/native/lib/Win32/v120/Release/opencv_contrib2411.lib" "C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\packages\OpenCV.2.4.11\build\native\../../build/native/lib/Win32/v120/Release/opencv_calib3d2411.lib" kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\Release\Localization2.pdb" /SUBSYSTEM:CONSOLE /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\Release\Localization2.lib" /MACHINE:X86 /SAFESEH Release\Localization2.obj
+         Release\stdafx.obj
+         コード生成しています。
+     1>c:\users\robot\documents\visual studio 2013\projects\localization.ver2\include\omnicamera.h(1397): warning C4715: 'OmniCamera::getLikelihood<double>' : 値を返さないコントロール パスがあります。
+         コード生成が終了しました。
+         Localization2.vcxproj -> C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\Release\Localization2.exe
+     1>プロジェクト "C:\Users\Robot\Documents\Visual Studio 2013\Projects\Localization.ver2\Localization2\Localization2.vcxproj" (Build ターゲット) のビルドが完了しました。
+
+ビルドに成功しました。
+
+経過時間 00:00:07.49
