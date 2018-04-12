@@ -166,7 +166,7 @@ public:
 			//}
 		}
 		if (env_keypoints.empty()) {
-			readError(filepath + "keypoints");
+			readError(filepath + "keypoint");
 		}
 	}
 

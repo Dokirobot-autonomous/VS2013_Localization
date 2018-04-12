@@ -96,6 +96,7 @@
     <ClInclude Include="..\include\leica.h" />
     <ClInclude Include="..\include\Lidar2d.h" />
     <ClInclude Include="..\include\LocalizationPF.h" />
+    <ClInclude Include="..\include\mouse_event_image.h" />
     <ClInclude Include="..\include\mycv.h" />
     <ClInclude Include="..\include\myfun.h" />
     <ClInclude Include="..\include\mytime.h" />

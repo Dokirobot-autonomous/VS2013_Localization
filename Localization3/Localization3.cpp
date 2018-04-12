@@ -98,9 +98,11 @@ public:
 		case TRIAL_3SENSORS_PEARSON_NONSTAT:
 		case TRIAL_3SENSORS_SUYAMA_NONSTAT:
 		case TRIAL_3SENSORS_LRF_GPS:
-			thread_meas = std::thread(&LocalizationPF::addMeasurementVideo2, this);
-			thread_par = std::thread(&LocalizationPF::addFlameParticleVideo2, this);
-			thread_par_large = std::thread(&LocalizationPF::addFlameParticleLargeVideo2, this);
+			thread_meas = std::thread(&LocalizationPF::addMeasurementVideo, this);
+			thread_par = std::thread([&]{
+				addFlameWeightedParImg(false);
+			});
+			thread_par_large = std::thread(&LocalizationPF::addFlameParticleLargeVideo, this);
 			thread_meas.join();
 			thread_par.join();
 			thread_par_large.join();
@@ -108,10 +110,14 @@ public:
 		case TRIAL_PEARSON:
 		case TRIAL_SUYAMA_STAT:
 		case TRIAL_3SENSORS_PEARSON:
-			thread_meas = std::thread(&LocalizationPF::addMeasurementVideo2, this);
-			thread_par = std::thread(&LocalizationPF::addFlameParticleVideo2, this);
-			thread_par_large = std::thread(&LocalizationPF::addFlameParticleLargeVideo2, this);
-			thread_stat_par = std::thread(&LocalizationPF::addFlameWeightedStatParImg2, this);
+			thread_meas = std::thread(&LocalizationPF::addMeasurementVideo, this);
+			thread_par = std::thread([&]{
+				addFlameWeightedParImg(false);
+			});
+			thread_par_large = std::thread(&LocalizationPF::addFlameParticleLargeVideo, this);
+			thread_stat_par = std::thread([&]{
+				addFlameWeightedParImg(true);
+			});
 			thread_meas.join();
 			thread_par.join();
 			thread_stat_par.join();
@@ -2396,7 +2402,9 @@ int _tmain(int argc, _TCHAR* argv[])
 			clock_t lap1 = clock();
 			loca.calcEPos();
 			clock_t lap2 = clock();
-			loca.calcError();
+			if (loca.exist_true_position){
+				loca.calcError();
+			}
 			clock_t lap3 = clock();
 
 			loca.setOutputValue(ofpath_i);

@@ -1649,117 +1649,117 @@
 //}
 
 /* 計測画像から特徴量とkeypointを保存(SIFT) */
-//#include "include\parameter.h"
-//int _tmain(int argc, _TCHAR* argv[])
-//{
-//	int no = 1;
-//
-//	int thread_num =4;
-//	//int thread_num = std::thread::hardware_concurrency() / 2;
-//
-//	std::vector<std::thread> thread;
-//	for (int th = 0; th < thread_num; th++)
-//	{
-//		/*  threadの生成  */
-//		thread.push_back(std::thread([&] {
-//			int step = th + 1;
-//			bool init_ = false;
-//			//int step = th * 5 + 2;
-//			while (1)
-//			{
-//				cv::Mat img;	//	全方位カメラ画像
-//
-//				/*  ファイルの読み込み  */
-//				//std::string filename = "\\\\Desktop-mt35ltg/f/Data/Localization/Measurement/" + MEASUREMENT_DATE + "/" + MEASUREMENT_TIME + "/img/img_no" + std::to_string(no) + "_" + std::to_string(step) + "th.bmp";
-//				std::string filename = "E://Data/Localization/Measurement/" + MEASUREMENT_DATE + "/" + MEASUREMENT_TIME + "/img/img_no" + std::to_string(no) + "_" + std::to_string(step) + "th.bmp";
-//				img = cv::imread(filename, CV_LOAD_IMAGE_COLOR);
-//				//if (img.empty()) break;	//	終了条件
-//				if (img.empty()) readError(filename);	//	終了条件
-//
-//				cv::Point center(img.cols / 1.9, img.rows / 2);
-//
-//				///*  Operatorの塗りつぶし  */
-//				//cv::Size radius(img.rows / 3, img.rows / 3);
-//				//double start_angle = -105;	//	扇系の中心角度
-//				//double angle = 35;	//	角度
-//				//cv::ellipse(img, center, radius, start_angle, 0, angle, cv::Scalar(0, 0, 0), -1, CV_AA);
-//
-//				/* 外枠の塗りつぶし */
-//				cv::circle(img, center, 510, cv::Scalar(0, 0, 0), 150);
-//
-//				//　等間隔の画像に切り出し
-//				cv::Rect roi_rect(ROI_ORG_X, ROI_ORG_Y, ROI_SIZE_X, ROI_SIZE_Y); // x,y,w,h
-//				img = img(roi_rect);
-//
-//				cv::SiftFeatureDetector detector(1000);
-//				cv::SiftDescriptorExtractor extractor;
-//
-//				//clock_t lap1 = clock();
-//
-//				//画像から特徴点を検出
-//				std::vector<cv::KeyPoint> keypoints;
-//				detector.detect(img, keypoints);
-//
-//				//clock_t lap2 = clock();
-//
-//				// Operatorとロボット前方の棒部分の特徴点を排除
-//				int x_interval = img.cols / 10.0;
-//				std::vector<cv::KeyPoint> keypoints_tmp;
-//				for (const auto& key : keypoints){
-//					if (key.pt.x < img.cols / 2.0 - x_interval || key.pt.x > img.cols / 2.0 + x_interval){
-//						keypoints_tmp.push_back(key);
-//					}
-//				}
-//				keypoints = keypoints_tmp;
-//
-//
-//				//画像の特徴点における特徴量を抽出
-//				cv::Mat descriptors;
-//				extractor.compute(img, keypoints, descriptors);
-//
-//				/* keypointの描画 */
-//				if (init_){
-//					cv::drawKeypoints(img, keypoints_tmp, img);
-//					cv::imshow("hoge" + std::to_string(th), img);
-//					cv::waitKey();
-//					init_ = false;
-//				}
-//
-//
-//				//clock_t lap3 = clock();
-//
-//				/* keypointの保存 */
-//				filename = IFPATH_MEAS + "sift/keypoint/keypoint_no" + std::to_string(no) + "_" + std::to_string(step) + "th.yml";
-//				cv::FileStorage fs(filename, cv::FileStorage::WRITE);
-//				if (!fs.isOpened()) {
-//					writeError(filename);
-//				}
-//				cv::write(fs, "keypoints", keypoints);
-//
-//				/*  descriptorの書き出し  */
-//				filename = IFPATH_MEAS + "sift/descriptor/desc_no" + std::to_string(no) + "_" + std::to_string(step) + "th.csv";
-//				std::ofstream ofs(filename);
-//				if (ofs.fail())	readError(filename);
-//				ofs << cv::format(descriptors, "csv");
-//
-//
-//				std::cout << "Finish Step: " << step << std::endl;
-//				//if (step > 2260)	break;
-//
-//
-//				step += thread_num;
-//			}
-//		}));	//	threadの定義ここまで
-//	}
-//
-//	for (auto& th : thread)
-//	{
-//		th.join();
-//	}
-//
-//	return 0;
-//
-//}
+#include "include\parameter.h"
+int _tmain(int argc, _TCHAR* argv[])
+{
+	int no = 1;
+
+	int thread_num =4;
+	//int thread_num = std::thread::hardware_concurrency() / 2;
+
+	std::vector<std::thread> thread;
+	for (int th = 0; th < thread_num; th++)
+	{
+		/*  threadの生成  */
+		thread.push_back(std::thread([&] {
+			int step = th + 1;
+			bool init_ = false;
+			//int step = th * 5 + 2;
+			while (1)
+			{
+				cv::Mat img;	//	全方位カメラ画像
+
+				/*  ファイルの読み込み  */
+				//std::string filename = "\\\\Desktop-mt35ltg/f/Data/Localization/Measurement/" + MEASUREMENT_DATE + "/" + MEASUREMENT_TIME + "/img/img_no" + std::to_string(no) + "_" + std::to_string(step) + "th.bmp";
+				std::string filename = "F://Data/Localization/Measurement/" + MEASUREMENT_DATE + "/" + MEASUREMENT_TIME + "/img/img_no" + std::to_string(no) + "_" + std::to_string(step) + "th.bmp";
+				img = cv::imread(filename, CV_LOAD_IMAGE_COLOR);
+				//if (img.empty()) break;	//	終了条件
+				if (img.empty()) readError(filename);	//	終了条件
+
+				cv::Point center(img.cols / 1.9, img.rows / 2);
+
+				///*  Operatorの塗りつぶし  */
+				//cv::Size radius(img.rows / 3, img.rows / 3);
+				//double start_angle = -105;	//	扇系の中心角度
+				//double angle = 35;	//	角度
+				//cv::ellipse(img, center, radius, start_angle, 0, angle, cv::Scalar(0, 0, 0), -1, CV_AA);
+
+				/* 外枠の塗りつぶし */
+				cv::circle(img, center, 510, cv::Scalar(0, 0, 0), 150);
+
+				//　等間隔の画像に切り出し
+				cv::Rect roi_rect(ROI_ORG_X, ROI_ORG_Y, ROI_SIZE_X, ROI_SIZE_Y); // x,y,w,h
+				img = img(roi_rect);
+
+				cv::SiftFeatureDetector detector(1000);
+				cv::SiftDescriptorExtractor extractor;
+
+				//clock_t lap1 = clock();
+
+				//画像から特徴点を検出
+				std::vector<cv::KeyPoint> keypoints;
+				detector.detect(img, keypoints);
+
+				//clock_t lap2 = clock();
+
+				// Operatorとロボット前方の棒部分の特徴点を排除
+				int x_interval = img.cols / 10.0;
+				std::vector<cv::KeyPoint> keypoints_tmp;
+				for (const auto& key : keypoints){
+					if (key.pt.x < img.cols / 2.0 - x_interval || key.pt.x > img.cols / 2.0 + x_interval){
+						keypoints_tmp.push_back(key);
+					}
+				}
+				keypoints = keypoints_tmp;
+
+
+				//画像の特徴点における特徴量を抽出
+				cv::Mat descriptors;
+				extractor.compute(img, keypoints, descriptors);
+
+				/* keypointの描画 */
+				if (init_){
+					cv::drawKeypoints(img, keypoints_tmp, img);
+					cv::imshow("hoge" + std::to_string(th), img);
+					cv::waitKey();
+					init_ = false;
+				}
+
+
+				//clock_t lap3 = clock();
+
+				/* keypointの保存 */
+				filename = IFPATH_MEAS + "sift/keypoint/keypoint_no" + std::to_string(no) + "_" + std::to_string(step) + "th.yml";
+				cv::FileStorage fs(filename, cv::FileStorage::WRITE);
+				if (!fs.isOpened()) {
+					writeError(filename);
+				}
+				cv::write(fs, "keypoints", keypoints);
+
+				/*  descriptorの書き出し  */
+				filename = IFPATH_MEAS + "sift/descriptor/desc_no" + std::to_string(no) + "_" + std::to_string(step) + "th.csv";
+				std::ofstream ofs(filename);
+				if (ofs.fail())	readError(filename);
+				ofs << cv::format(descriptors, "csv");
+
+
+				std::cout << "Finish Step: " << step << std::endl;
+				//if (step > 2260)	break;
+
+
+				step += thread_num;
+			}
+		}));	//	threadの定義ここまで
+	}
+
+	for (auto& th : thread)
+	{
+		th.join();
+	}
+
+	return 0;
+
+}
 
 /* keypointとdescriptorの読み込み */
 //const std::string matching_type = "BruteForce-SL2";

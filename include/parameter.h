@@ -21,6 +21,12 @@
 /* Test */
 #define TEST 0
 
+/* True position */
+#define EXIST_TRUE_POSITION 0
+
+/* Visualize Map Scale */
+#define VISUALIZE_MAP_SCALE 0.5
+
 /* INTEGRATE TIME */
 enum IntegrateType
 {
@@ -57,7 +63,7 @@ enum TrialType
 	TRIAL_3SENSORS_SUYAMA_NONSTAT = 10,
 	TRIAL_3SENSORS_LRF_GPS=11,
 };
-#define TRIAL_TYPE TRIAL_3SENSORS_PEARSON
+#define TRIAL_TYPE TRIAL_SIMULTANEOUS
 
 /* カメラ特徴量 */
 enum OMNI_FEATURE_TYPE
@@ -71,13 +77,13 @@ enum OMNI_FEATURE_TYPE
 #define W_BIAS 1E-10
 
 /* 試行回数 */
-#define FIRST_OUTPUT 10
+#define FIRST_OUTPUT 1
 #define LAST_OUTPUT FIRST_OUTPUT
 
 /*  開始ステップと終了ステップ  */
 #define FIRST_STEP 1
 #define FIRST_NO 1
-#define LAST_STEP 10// 最後まで実行したい場合は10000にする
+#define LAST_STEP 10000// 最後まで実行したい場合は10000にする
 //#define LAST_STEP 1 // 最後まで実行したい場合は10000にする
 #define LAST_NO 1
 #define TRUE_IDX_INI 1
@@ -254,13 +260,13 @@ const std::string MEASUREMENT_TIME = "1237";
 //#define LEICA_HORIZONTAL_ERROR 288.439 - 323 // LEICAが0°を指すときの北からの角度
 #endif
 #if LOCALIZATION_AREA==LOCALIZATION_SQUARE
-/* square */
-const std::string MEASUREMENT_DATE = "171031"; // 入力ファイルのディレクトリ
-const std::string MEASUREMENT_TIME = "1200";
-#define LEICA_ORG_LAT 35110360 // 地図の原点の緯度
-#define LEICA_ORG_LON 137064845// 地図の原点の経度
-#define LEICA_ORG_ELE 170 // 地図の原点の高度（環境内ではこの値で一定と見なす）
-#define LEICA_HORIZONTAL_ERROR 68 // LEICAが0°を指すときの北からの角度
+///* square */
+//const std::string MEASUREMENT_DATE = "171031"; // 入力ファイルのディレクトリ
+//const std::string MEASUREMENT_TIME = "1200";
+//#define LEICA_ORG_LAT 35110360 // 地図の原点の緯度
+//#define LEICA_ORG_LON 137064845// 地図の原点の経度
+//#define LEICA_ORG_ELE 170 // 地図の原点の高度（環境内ではこの値で一定と見なす）
+//#define LEICA_HORIZONTAL_ERROR 68 // LEICAが0°を指すときの北からの角度
 ///* square */
 //const std::string MEASUREMENT_DATE = "171209"; // 入力ファイルのディレクトリ
 //const std::string MEASUREMENT_TIME = "1145";
@@ -282,6 +288,13 @@ const std::string MEASUREMENT_TIME = "1200";
 //#define LEICA_ORG_LON 137064840 // 地図の原点の経度（地図生成時のLeica位置）
 //#define LEICA_ORG_ELE 170 // 地図の原点の高度（環境内ではこの値で一定と見なす）
 //#define LEICA_HORIZONTAL_ERROR 211.688-178 // LEICAが0°を指すときの北からの角度
+/* square */
+const std::string MEASUREMENT_DATE = "180410"; // 入力ファイルのディレクトリ
+const std::string MEASUREMENT_TIME = "1544";
+#define LEICA_ORG_LAT 35110390 // 地図の原点の緯度（地図生成時のLeica位置）
+#define LEICA_ORG_LON 137064840 // 地図の原点の経度（地図生成時のLeica位置）
+#define LEICA_ORG_ELE 170 // 地図の原点の高度（環境内ではこの値で一定と見なす）
+#define LEICA_HORIZONTAL_ERROR 211.688-178 // LEICAが0°を指すときの北からの角度
 #endif
 #if LOCALIZATION_AREA==LOCALIZATION_B2
 /* b2f */
@@ -332,6 +345,14 @@ const std::string MEASUREMENT_TIME = "1724";
 #define MEASUREMENT_DATA_VIDEO_IMG_SIM_TEXT_THIN 2
 #define MEASUREMENT_DATA_VIDEO_GPS_RADIUS 5
 #define MEASUREMENT_DATA_VIDEO_GPS_COLOR cv::Scalar(255,0,0)
+
+/* 位置描画 */
+enum PositionType
+{
+	PARTICLE=0,
+	ESTIMATED_POSITION=1,
+	TRUE_POSITION = 2,
+};
 // 推定位置
 #define VISUALIZE_ESTI 1
 #define IMAGE_ESTIPOSITION_RADIUS 5

@@ -13,6 +13,7 @@
 #include "Position.hpp"
 #include "GlobalToLocal.h"
 #include "TransMatrix.hpp"
+#include "mouse_event_image.h"
 #include <opencv2\opencv.hpp>
 #include <opencv\highgui.h>
 
@@ -192,5 +193,12 @@ cv::Size ToPixelSize(const C &obj, const cv::Mat &map, T resolution)
 	cv::Size out;
 	out.width = (int)(obj.x + resolution*0.5) / resolution;
 	out.height = (int)(obj.y + resolution*0.5) / resolution;
+	return out;
+}
+
+Coor<> ToPosition(const cv::Point& obj, int cols, int rows, int resolution, double original_x, double original_y){
+	Coor<> out;
+	out.x = (obj.x - cols*original_x)*resolution;
+	out.y = (obj.y - rows*original_y)*resolution;
 	return out;
 }

@@ -45,7 +45,7 @@ public:
 	}
 
 	/*  コンストラクタ  */
-	LocalizationPF()
+	LocalizationPF() :exist_true_position(EXIST_TRUE_POSITION)
 	{
 		trial_type = TRIAL_TYPE;
 		switch (trial_type)
@@ -71,6 +71,7 @@ public:
 			exit(0);
 			break;
 		}
+
 
 		lid2_l.resize(LIKELIHOOD_THREAD);
 		lid2_u.resize(LIKELIHOOD_THREAD);
@@ -106,7 +107,7 @@ public:
 
 
 
-		
+
 
 	};
 
@@ -445,7 +446,21 @@ public:
 		std::cout << "Initial position: " << ini_position << std::endl;
 	}
 
-
+	Coor<> getMapClickedCoor(std::string window_name, const cv::Mat& map){
+		float scale = VISUALIZE_MAP_SCALE;
+		cv::Mat mat;
+		cv::resize(map, mat, cv::Size(), scale, scale);
+		cv::flip(mat, mat, 0);
+		cv::imshow(window_name, mat);
+		int map_res = MAP_RES / scale;
+		MouseEventImage mei;
+		mei.setMouseEvent(window_name);
+		mei.waitLeftButton();
+		cv::Point p(mei.getX(), mei.getY());
+		p.y = mat.rows - p.y;
+		Coor<> pos = ToPosition(p, mat.cols, mat.rows, map_res, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
+		return pos;
+	}
 
 	void readEnvironment() {
 
@@ -479,9 +494,45 @@ public:
 
 			LocalizationPF::readGridMapEach(IFPATH_ENV);
 
-
 			/*  真の位置情報の読み込み  */
-			LocalizationPF::readTruePosition(no);
+			if (exist_true_position){
+				LocalizationPF::readTruePosition(no);
+			}
+			else{
+				while (true){
+					// 真の位置がない場合、初期位置を指定
+					std::string window_name = "map";
+					cv::namedWindow(window_name);
+					cv::Mat mat = map_img_color.clone();
+					std::cout << "clic left button for initial: ";
+					Coor<> coor1 = getMapClickedCoor(window_name, mat);
+					std::cout << coor1 << std::endl;
+					// クリックポイントの描画
+					cv::Point p1_check = ToPixel(coor1, mat, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
+					cv::circle(mat, p1_check, IMAGE_TRUEPOSITION_RADIUS, IMAGE_TRUEPOSITION_COLOR, IMAGE_TPOS_ARROW_THICKNESS, 8, 0);
+					std::cout << "clic left button for second point: ";
+					Coor<> coor2 = getMapClickedCoor(window_name, mat);
+					std::cout << coor2 << std::endl;
+
+					/* 初期姿勢の計算・出力 */
+					mat = map_img_color.clone();
+					ini_position = Position<>(coor1.x, coor1.y, std::atan2(coor2.y - coor1.y, coor2.x - coor1.x));
+					cv::Point ini_p = ToPixel(ini_position, mat, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
+					drawPosition(ini_position, mat, cv::Scalar(0, 255, 0), mat.cols, mat.rows, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y, cv::Point(0, 0), TRUE_POSITION);
+					cv::resize(mat, mat, cv::Size(0, 0), VISUALIZE_MAP_SCALE, VISUALIZE_MAP_SCALE);
+					cv::flip(mat, mat, 0);
+					cv::imshow(window_name, mat);
+					cv::waitKey(20);
+					std::cout << "Are you sure(y/n)?: ";
+					char c;
+					std::cin >> c;
+					if (c == 'y')
+						break;
+				}
+
+				//ini_position = pos1;
+			}
+
 
 			/*  センサデータの読み込み  */
 
@@ -538,7 +589,44 @@ public:
 			LocalizationPF::readGridMapEach(IFPATH_ENV);
 
 			/*  真の位置情報の読み込み  */
-			LocalizationPF::readTruePosition(no);
+			if (exist_true_position){
+				LocalizationPF::readTruePosition(no);
+			}
+			else{
+				while (true){
+					// 真の位置がない場合、初期位置を指定
+					std::string window_name = "map";
+					cv::Mat mat = map_img_color.clone();
+					std::cout << "clic left button for initial: ";
+					Coor<> coor1 = getMapClickedCoor(window_name, mat);
+					std::cout << coor1 << std::endl;
+					// クリックポイントの描画
+					cv::Point p1_check = ToPixel(coor1, mat, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
+					cv::circle(mat, p1_check, IMAGE_TRUEPOSITION_RADIUS, IMAGE_TRUEPOSITION_COLOR, IMAGE_TPOS_ARROW_THICKNESS, 8, 0);
+					std::cout << "clic left button for second point: ";
+					Coor<> coor2 = getMapClickedCoor(window_name, mat);
+					std::cout << coor2 << std::endl;
+
+					/* 初期姿勢の計算・出力 */
+					mat = map_img_color.clone();
+					ini_position = Position<>(coor1.x, coor1.y, std::atan2(coor2.y - coor1.y, coor2.x - coor1.x));
+					cv::Point ini_p = ToPixel(ini_position, mat, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
+					drawPosition(ini_position, mat, cv::Scalar(0, 255, 0), mat.cols, mat.rows, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y, cv::Point(0, 0), TRUE_POSITION);
+					cv::resize(mat, mat, cv::Size(0, 0), VISUALIZE_MAP_SCALE, VISUALIZE_MAP_SCALE);
+					cv::flip(mat, mat, 0);
+					cv::imshow(window_name, mat);
+					cv::waitKey(20);
+					std::cout << "Are you sure(y/n)?: ";
+					char c;
+					std::cin >> c;
+					if (c == 'y')
+						break;
+				}
+
+				//ini_position = pos1;
+			}
+
+
 
 			/*  センサデータの読み込み  */
 
@@ -563,7 +651,7 @@ public:
 				if (USE_BOF){
 					omni[0].readEnvCentroid(IFPATH_ENV_OMNI + "omni/sift/centroid.csv");
 					omni[0].readEnvHistgram(IFPATH_ENV_OMNI + "omni/sift/histogram.csv");
-			omni[0].readEnvImgPosition(IFPATH_ENV_OMNI + "omni/sift/img_pos.csv");
+					omni[0].readEnvImgPosition(IFPATH_ENV_OMNI + "omni/sift/img_pos.csv");
 				}
 				break;
 			case OMNI_FEATURE_SURF:
@@ -896,7 +984,7 @@ public:
 
 		std::string filename = ofpath + "Movie/weighted_stat_particle.avi";
 		//std::string filename = "./output/Movie/weighted_stat_particle.avi";
-		Coor<> rect(CUT_MAP_RADIUS_X*4.0, CUT_MAP_RADIUS_Y*4.0);
+		Coor<> rect(CUT_MAP_RADIUS_X*6.0, CUT_MAP_RADIUS_Y*4.0);
 		cv::Size rect_pix = ToPixelSize(rect, map_img_clone, MAP_RES);
 		rect_pix.width *= MOVIE_SCALE_W;
 		rect_pix.height *= MOVIE_SCALE_H;
@@ -1366,11 +1454,95 @@ public:
 
 	/* Movie Creater*/
 
+	// 位置を描画
+	void drawPosition(const Position<>& pos, cv::Mat& map, cv::Scalar color, int map_cols, int map_rows, int map_res, double map_img_org_x, double map_img_org_y, cv::Point upleft_pix, PositionType position_type){
+
+		// 描画パラメータ
+		int radius, thickness, arrow_length;
+		switch (position_type)
+		{
+		case PARTICLE:
+			radius = IMAGE_PARTICLE_RADIUS;
+			thickness = IMAGE_PARTICLE_ARROW_THICKNESS;
+			arrow_length = IMAGE_PARTICLE_ARROW_LENGTH;
+			break;
+		case ESTIMATED_POSITION:
+			radius = IMAGE_ESTIPOSITION_RADIUS;
+			thickness = IMAGE_ESTI_ARROW_THICKNESS;
+			arrow_length = IMAGE_ESTI_ARROW_LENGTH;
+			break;
+		case TRUE_POSITION:
+			radius = IMAGE_TRUEPOSITION_RADIUS;
+			thickness = IMAGE_TPOS_ARROW_THICKNESS;
+			arrow_length = IMAGE_TPOS_ARROW_LENGTH;
+			break;
+		default:
+			break;
+		}
+
+		// 描画
+		cv::Point pos_pix = ToPixel(pos, map_cols, map_rows, map_res, map_img_org_x, map_img_org_y);
+		pos_pix -= upleft_pix;
+		if (pos_pix.x > 0 && pos_pix.x < map_cols &&
+			pos_pix.y>0 && pos_pix.y < map_rows){
+			cv::circle(map, pos_pix, radius, color, thickness, 8, 0);
+			// 矢印描画
+			double l = arrow_length*map_res;
+			Coor<> coor2;
+			coor2.x = l*std::cos(pos.r) + pos.x;
+			coor2.y = l*std::sin(pos.r) + pos.y;
+			cv::Point p2 = ToPixel(coor2, map_cols, map_rows, map_res, map_img_org_x, map_img_org_y);	//	パーティクルピクセル
+			p2 -= upleft_pix;
+			cv::line(map, pos_pix, p2, color, thickness);
+		}
+
+	}
+
+	/*  画像の切り出し  */
+	// 切り出しの左上を返還
+	cv::Point rectMap(const cv::Mat& map_in, cv::Mat& map_out, const Position<>& center, int cut_map_radius_x, int cut_map_radius_y, int map_res, float map_img_org_x, float map_img_org_y){
+		Coor<> upleft(center.x - cut_map_radius_x, center.y - cut_map_radius_y);
+		//Coor<> upleft(estimated_position.back().x - CUT_MAP_RADIUS_X, estimated_position.back().y - CUT_MAP_RADIUS_Y);
+		Coor<> rect(cut_map_radius_x*2.0, cut_map_radius_y*2.0);
+		cv::Point upleft_pix = ToPixel(upleft, map_in.cols, map_in.rows, map_res, map_img_org_x, map_img_org_y);	//
+		cv::Size rect_pix = ToPixelSize(rect, map_in, map_res);
+
+
+		if (upleft_pix.x < 0)	upleft_pix.x = 0;
+		if (upleft_pix.y < 0)	upleft_pix.y = 0;
+
+		if (upleft_pix.x >= map_in.cols - rect_pix.width)	upleft_pix.x = map_in.cols - rect_pix.width;
+		if (upleft_pix.y >= map_in.rows - rect_pix.height)	upleft_pix.y = map_in.rows - rect_pix.height;
+
+		cv::Mat mat = cv::Mat(map_in, cv::Rect(upleft_pix, rect_pix));
+
+		map_out = mat;
+
+		return upleft_pix;
+	}
+
+	// 真の位置を補完するかどうか
+	Position<> getTruePosition(int step){
+		Position<> now_tpos;
+		if (true_time[all_stock_tidx[step]] == esti_time || all_stock_tidx[step] - 1 < 0) {
+			now_tpos = true_position->at(all_stock_tidx[step]);
+		}
+		else {
+#if MODE_LINIER_INTERPOLATION
+			//std::cout << true_time[all_stock_tidx[step]] << "," << esti_time << std::endl;
+			Position<> diff_tpos = true_position->at(all_stock_tidx[step]) - true_position->at(all_stock_tidx[step] - 1);
+			double diff_ttime = MyTime::diff(true_time[all_stock_tidx[step] - 1], true_time[all_stock_tidx[step]]);
+			double diff_etime = MyTime::diff(true_time[all_stock_tidx[step] - 1], esti_time);
+			now_tpos = true_position->at(all_stock_tidx[step] - 1) + diff_tpos / diff_ttime*diff_etime;
+			now_tpos.r = true_position->at(all_stock_tidx[step] - 1).r;
+#endif
+		}
+		return now_tpos;
+	}
+
 
 	//
-	void visualizeScanL(const std::vector<Polar<>>& scan, const Position<> esti_pos, cv::Mat& out, int step) {
-
-		map_img_clone2 = map_img_lower.clone();
+	void visualizeScan(const std::vector<Polar<>>& scan, cv::Mat& map, const Position<> esti_pos, int step) {
 
 		std::vector<Polar<>> scan_role;
 		for (const auto& s : scan) {
@@ -1392,677 +1564,80 @@ public:
 
 
 		for (const auto&s : scan_from_robot) {
-			cv::Point pixel = ToPixel(s, map_img_clone2, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//
-			cv::circle(map_img_clone2, pixel, MEASUREMENT_DATA_VIDEO_SCAN_RADIUS, MEASUREMENT_DATA_VIDEO_SCAN_COLOR, -1);
+			cv::Point pixel = ToPixel(s, map.cols, map.rows, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//
+			cv::circle(map, pixel, MEASUREMENT_DATA_VIDEO_SCAN_RADIUS, MEASUREMENT_DATA_VIDEO_SCAN_COLOR, -1);
 		}
 
 		/* 推定位置の出力*/
-		cv::Point esti_pixel = ToPixel(esti_pos, map_img_clone2, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
-		cv::circle(map_img_clone2, esti_pixel, IMAGE_ESTIPOSITION_RADIUS, IMAGE_ESTIPOSITION_COLOR, IMAGE_ESTI_ARROW_THICKNESS, 8, 0);
-		// 矢印描画
-		double l_e = IMAGE_ESTI_ARROW_LENGTH*MAP_RES;
-		Coor<> coor2_e;
-		coor2_e.x = l_e*std::cos(esti_pos.r) + esti_pos.x;
-		coor2_e.y = l_e*std::sin(esti_pos.r) + esti_pos.y;
-		cv::Point p2_e = ToPixel(coor2_e, map_img_clone2, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//	パーティクルピクセル
-		cv::line(map_img_clone2, esti_pixel, p2_e, IMAGE_ESTIPOSITION_COLOR, IMAGE_ESTI_ARROW_THICKNESS);
+		drawPosition(esti_pos, map, IMAGE_ESTIPOSITION_COLOR, map.cols, map.rows, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y, cv::Point(0, 0), ESTIMATED_POSITION);
 
 		/* 真の位置のみ描画 */
-		if (true_time[all_stock_tidx[step]] == esti_time || all_stock_tidx[step] - 1 < 0) {
-			cv::Point true_pixel = ToPixel(true_position->at(all_stock_tidx[step]), map_img_clone2, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
-			cv::circle(map_img_clone2, true_pixel, IMAGE_TRUEPOSITION_RADIUS, IMAGE_TRUEPOSITION_COLOR, IMAGE_TPOS_ARROW_THICKNESS, 8, 0);
-			// 矢印描画
-			double l = IMAGE_TPOS_ARROW_LENGTH*MAP_RES;
-			Coor<> coor2;
-			coor2.x = l*std::cos(true_position->at(all_stock_tidx[step]).r) + true_position->at(all_stock_tidx[step]).x;
-			coor2.y = l*std::sin(true_position->at(all_stock_tidx[step]).r) + true_position->at(all_stock_tidx[step]).y;
-			cv::Point p2 = ToPixel(coor2, map_img_clone2, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//	パーティクルピクセル
-			cv::line(map_img_clone2, true_pixel, p2, IMAGE_TRUEPOSITION_COLOR, IMAGE_TPOS_ARROW_THICKNESS);
+		if (exist_true_position){
+			Position<> now_tpos = getTruePosition(step);
+			drawPosition(now_tpos, map, IMAGE_TRUEPOSITION_COLOR, map.cols, map.rows, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y, cv::Point(0, 0), TRUE_POSITION);
 		}
-		else {
-#if MODE_LINIER_INTERPOLATION
-			//std::cout << true_time[all_stock_tidx[step]] << "," << esti_time << std::endl;
-			Position<> diff_tpos = true_position->at(all_stock_tidx[step]) - true_position->at(all_stock_tidx[step] - 1);
-			double diff_ttime = MyTime::diff(true_time[all_stock_tidx[step] - 1], true_time[all_stock_tidx[step]]);
-			double diff_etime = MyTime::diff(true_time[all_stock_tidx[step] - 1], esti_time);
-			Position<> tpos_tmp = true_position->at(all_stock_tidx[step] - 1) + diff_tpos / diff_ttime*diff_etime;
-			tpos_tmp.r = true_position->at(all_stock_tidx[step] - 1).r;
-			cv::Point true_pixel = ToPixel(tpos_tmp, map_img_clone2, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
-			cv::circle(map_img_clone2, true_pixel, IMAGE_TRUEPOSITION_RADIUS, IMAGE_TRUEPOSITION_COLOR, IMAGE_TPOS_ARROW_THICKNESS, 8, 0);
-			// 矢印描画
-			double l = IMAGE_TPOS_ARROW_LENGTH*MAP_RES;
-			Coor<> coor2;
-			coor2.x = l*std::cos(tpos_tmp.r) + tpos_tmp.x;
-			coor2.y = l*std::sin(tpos_tmp.r) + tpos_tmp.y;
-			cv::Point p2 = ToPixel(coor2, map_img_clone2, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//	パーティクルピクセル
-			cv::line(map_img_clone2, true_pixel, p2, IMAGE_TRUEPOSITION_COLOR, IMAGE_TPOS_ARROW_THICKNESS);
-#endif
-		}
-
-
-		//cv::Point true_pixel = ToPixel(true_position->at(all_stock_tidx[step]), map_img_clone2, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
-		//cv::circle(map_img_clone2, true_pixel, IMAGE_TRUEPOSITION_RADIUS, IMAGE_TRUEPOSITION_COLOR, IMAGE_TPOS_ARROW_THICKNESS, 8, 0);
-		//// 矢印描画
-		//double l = IMAGE_TPOS_ARROW_LENGTH*MAP_RES;
-		//Coor<> coor2;
-		//coor2.x = l*std::cos(true_position->at(all_stock_tidx[step]).r) + true_position->at(all_stock_tidx[step]).x;
-		//coor2.y = l*std::sin(true_position->at(all_stock_tidx[step]).r) + true_position->at(all_stock_tidx[step]).y;
-		//cv::Point p2 = ToPixel(coor2, map_img_clone2, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//	パーティクルピクセル
-		//cv::line(map_img_clone2, true_pixel, p2, IMAGE_TRUEPOSITION_COLOR, IMAGE_TPOS_ARROW_THICKNESS);
-
-		/*  画像の切り出し  */
-		Coor<> upleft(true_position->at(all_stock_tidx[step]).x - CUT_MAP_RADIUS_X, true_position->at(all_stock_tidx[step]).y - CUT_MAP_RADIUS_Y);
-		//Coor<> upleft(estimated_position.back().x - CUT_MAP_RADIUS_X, estimated_position.back().y - CUT_MAP_RADIUS_Y);
-		Coor<> rect(CUT_MAP_RADIUS_X*2.0, CUT_MAP_RADIUS_Y*2.0);
-
-		cv::Point upleft_pix = ToPixel(upleft, map_img_clone2, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//
-		cv::Size rect_pix = ToPixelSize(rect, map_img_clone2, MAP_RES);
-
-		if (upleft_pix.x < 0)	upleft_pix.x = 0;
-		if (upleft_pix.y < 0)	upleft_pix.y = 0;
-
-		if (upleft_pix.x >= map_img_clone2.cols - rect_pix.width)	upleft_pix.x = map_img_clone2.cols - rect_pix.width;
-		if (upleft_pix.y >= map_img_clone2.rows - rect_pix.height)	upleft_pix.y = map_img_clone2.rows - rect_pix.height;
-
-		map_img_clone2 = cv::Mat(map_img_clone2, cv::Rect(upleft_pix, rect_pix));
-
-		cv::flip(map_img_clone2, map_img_clone2, 0);
-
-		out = map_img_clone2.clone();
-
-
 
 	}
 
 	//
-	void visualizeScanU(const std::vector<Polar<>>& scan, const Position<> esti_pos, cv::Mat& out, int step) {
-
-		map_img_clone2 = map_img_upper.clone();
-
-		std::vector<Polar<>> scan_role;
-		for (const auto& s : scan) {
-			if (s.r == 1)	continue;
-			Polar<> p = s;
-			p.theta += esti_pos.r;
-			scan_role.push_back(p);
-		}
-
-		std::vector<Coor<>> scan_xy = polToCoor(scan_role);
-
-		std::vector<Coor<>> scan_from_robot;
-		for (const auto& s : scan_xy) {
-			Coor<> coor;
-			coor.x = s.x + esti_pos.x;
-			coor.y = s.y + esti_pos.y;
-			scan_from_robot.push_back(coor);
-		}
-
-
-		for (const auto&s : scan_from_robot) {
-			cv::Point pixel = ToPixel(s, map_img_clone2, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//
-			cv::circle(map_img_clone2, pixel, MEASUREMENT_DATA_VIDEO_SCAN_RADIUS, MEASUREMENT_DATA_VIDEO_SCAN_COLOR, -1);
-		}
-
-		cv::Point esti_pixel = ToPixel(esti_pos, map_img_clone2, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
-		cv::circle(map_img_clone2, esti_pixel, IMAGE_ESTIPOSITION_RADIUS, IMAGE_ESTIPOSITION_COLOR, IMAGE_ESTI_ARROW_THICKNESS, 8, 0);
-		// 矢印描画
-		double l_e = IMAGE_ESTI_ARROW_LENGTH*MAP_RES;
-		Coor<> coor2_e;
-		coor2_e.x = l_e*std::cos(esti_pos.r) + esti_pos.x;
-		coor2_e.y = l_e*std::sin(esti_pos.r) + esti_pos.y;
-		cv::Point p2_e = ToPixel(coor2_e, map_img_clone2, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//	パーティクルピクセル
-		cv::line(map_img_clone2, esti_pixel, p2_e, IMAGE_ESTIPOSITION_COLOR, IMAGE_ESTI_ARROW_THICKNESS);
-
-		/* 真の位置のみ描画 */
-		if (true_time[all_stock_tidx[step]] == esti_time || all_stock_tidx[step] - 1 < 0) {
-			cv::Point true_pixel = ToPixel(true_position->at(all_stock_tidx[step]), map_img_clone2, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
-			cv::circle(map_img_clone2, true_pixel, IMAGE_TRUEPOSITION_RADIUS, IMAGE_TRUEPOSITION_COLOR, IMAGE_TPOS_ARROW_THICKNESS, 8, 0);
-			// 矢印描画
-			double l = IMAGE_TPOS_ARROW_LENGTH*MAP_RES;
-			Coor<> coor2;
-			coor2.x = l*std::cos(true_position->at(all_stock_tidx[step]).r) + true_position->at(all_stock_tidx[step]).x;
-			coor2.y = l*std::sin(true_position->at(all_stock_tidx[step]).r) + true_position->at(all_stock_tidx[step]).y;
-			cv::Point p2 = ToPixel(coor2, map_img_clone2, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//	パーティクルピクセル
-			cv::line(map_img_clone2, true_pixel, p2, IMAGE_TRUEPOSITION_COLOR, IMAGE_TPOS_ARROW_THICKNESS);
-		}
-		else {
-#if MODE_LINIER_INTERPOLATION
-			//std::cout << true_time[all_stock_tidx[step]] << "," << esti_time << std::endl;
-			Position<> diff_tpos = true_position->at(all_stock_tidx[step]) - true_position->at(all_stock_tidx[step] - 1);
-			double diff_ttime = MyTime::diff(true_time[all_stock_tidx[step] - 1], true_time[all_stock_tidx[step]]);
-			double diff_etime = MyTime::diff(true_time[all_stock_tidx[step] - 1], esti_time);
-			Position<> tpos_tmp = true_position->at(all_stock_tidx[step] - 1) + diff_tpos / diff_ttime*diff_etime;
-			tpos_tmp.r = true_position->at(all_stock_tidx[step] - 1).r;
-			cv::Point true_pixel = ToPixel(tpos_tmp, map_img_clone2, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
-			cv::circle(map_img_clone2, true_pixel, IMAGE_TRUEPOSITION_RADIUS, IMAGE_TRUEPOSITION_COLOR, IMAGE_TPOS_ARROW_THICKNESS, 8, 0);
-			// 矢印描画
-			double l = IMAGE_TPOS_ARROW_LENGTH*MAP_RES;
-			Coor<> coor2;
-			coor2.x = l*std::cos(tpos_tmp.r) + tpos_tmp.x;
-			coor2.y = l*std::sin(tpos_tmp.r) + tpos_tmp.y;
-			cv::Point p2 = ToPixel(coor2, map_img_clone2, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//	パーティクルピクセル
-			cv::line(map_img_clone2, true_pixel, p2, IMAGE_TRUEPOSITION_COLOR, IMAGE_TPOS_ARROW_THICKNESS);
-#endif
-		}
-
-		//cv::Point true_pixel = ToPixel(true_position->at(all_stock_tidx[step]), map_img_clone2, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
-		//cv::circle(map_img_clone2, true_pixel, IMAGE_TRUEPOSITION_RADIUS, IMAGE_TRUEPOSITION_COLOR, IMAGE_TPOS_ARROW_THICKNESS, 8, 0);
-		//// 矢印描画
-		//double l = IMAGE_TPOS_ARROW_LENGTH*MAP_RES;
-		//Coor<> coor2;
-		//coor2.x = l*std::cos(true_position->at(all_stock_tidx[step]).r) + true_position->at(all_stock_tidx[step]).x;
-		//coor2.y = l*std::sin(true_position->at(all_stock_tidx[step]).r) + true_position->at(all_stock_tidx[step]).y;
-		//cv::Point p2 = ToPixel(coor2, map_img_clone2, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//	パーティクルピクセル
-		//cv::line(map_img_clone2, true_pixel, p2, IMAGE_TRUEPOSITION_COLOR, IMAGE_TPOS_ARROW_THICKNESS);
-
-		/*  画像の切り出し  */
-		Coor<> upleft(true_position->at(all_stock_tidx[step]).x - CUT_MAP_RADIUS_X, true_position->at(all_stock_tidx[step]).y - CUT_MAP_RADIUS_Y);
-		//Coor<> upleft(estimated_position.back().x - CUT_MAP_RADIUS_X, estimated_position.back().y - CUT_MAP_RADIUS_Y);
-		Coor<> rect(CUT_MAP_RADIUS_X*2.0, CUT_MAP_RADIUS_Y*2.0);
-
-		cv::Point upleft_pix = ToPixel(upleft, map_img_clone2, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//
-		cv::Size rect_pix = ToPixelSize(rect, map_img_clone2, MAP_RES);
-
-		if (upleft_pix.x < 0)	upleft_pix.x = 0;
-		if (upleft_pix.y < 0)	upleft_pix.y = 0;
-
-		if (upleft_pix.x >= map_img_clone2.cols - rect_pix.width)	upleft_pix.x = map_img_clone2.cols - rect_pix.width;
-		if (upleft_pix.y >= map_img_clone2.rows - rect_pix.height)	upleft_pix.y = map_img_clone2.rows - rect_pix.height;
-
-		map_img_clone2 = cv::Mat(map_img_clone2, cv::Rect(upleft_pix, rect_pix));
-
-		cv::flip(map_img_clone2, map_img_clone2, 0);
-
-		out = map_img_clone2.clone();
-
-	}
-
-	//
-	void visualizeOmniImg(const std::vector<Position<>>& img_pos, const std::vector<double> img_sim, const Position<> esti_pos, cv::Mat& out, int step) {
-
-		map_img_clone2 = map_img_color.clone();
+	void visualizeOmniImg(const std::vector<Position<>>& img_pos, cv::Mat& map, const std::vector<double> img_sim, const Position<> esti_pos, int step) {
 
 		for (int i = 0; i < img_pos.size(); i++) {
-			cv::Point pixel = ToPixel(img_pos[i], map_img_clone2, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//
-			cv::circle(map_img_clone2, pixel, MEASUREMENT_DATA_VIDEO_IMG_POS_RADIUS, MEASUREMENT_DATA_VIDEO_IMG_POS_COLOR, -1);
-			cv::putText(map_img_clone2, std::to_string(img_sim[i]), MEASUREMENT_DATA_VIDEO_IMG_SIM_TEXT_POINT, MEASUREMENT_DATA_VIDEO_IMG_SIM_TEXT_FONT, MEASUREMENT_DATA_VIDEO_IMG_SIM_TEXT_SCALE, MEASUREMENT_DATA_VIDEO_IMG_SIM_TEXT_COLOR, MEASUREMENT_DATA_VIDEO_IMG_SIM_TEXT_THIN, CV_AA);
+			cv::Point pixel = ToPixel(img_pos[i], map.cols, map.rows, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//
+			cv::circle(map, pixel, MEASUREMENT_DATA_VIDEO_IMG_POS_RADIUS, MEASUREMENT_DATA_VIDEO_IMG_POS_COLOR, -1);
+			cv::putText(map, std::to_string(img_sim[i]), MEASUREMENT_DATA_VIDEO_IMG_SIM_TEXT_POINT, MEASUREMENT_DATA_VIDEO_IMG_SIM_TEXT_FONT, MEASUREMENT_DATA_VIDEO_IMG_SIM_TEXT_SCALE, MEASUREMENT_DATA_VIDEO_IMG_SIM_TEXT_COLOR, MEASUREMENT_DATA_VIDEO_IMG_SIM_TEXT_THIN, CV_AA);
 		}
 
-		cv::Point esti_pixel = ToPixel(esti_pos, map_img_clone2, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
-		cv::circle(map_img_clone2, esti_pixel, IMAGE_ESTIPOSITION_RADIUS, IMAGE_ESTIPOSITION_COLOR, IMAGE_ESTI_ARROW_THICKNESS, 8, 0);
-		// 矢印描画
-		double l_e = IMAGE_ESTI_ARROW_LENGTH*MAP_RES;
-		Coor<> coor2_e;
-		coor2_e.x = l_e*std::cos(esti_pos.r) + esti_pos.x;
-		coor2_e.y = l_e*std::sin(esti_pos.r) + esti_pos.y;
-		cv::Point p2_e = ToPixel(coor2_e, map_img_clone2, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//	パーティクルピクセル
-		cv::line(map_img_clone2, esti_pixel, p2_e, IMAGE_ESTIPOSITION_COLOR, IMAGE_ESTI_ARROW_THICKNESS);
+		cv::Point esti_pixel = ToPixel(esti_pos, map.cols, map.rows, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
+		cv::circle(map, esti_pixel, IMAGE_ESTIPOSITION_RADIUS, IMAGE_ESTIPOSITION_COLOR, IMAGE_ESTI_ARROW_THICKNESS, 8, 0);
+
+		/* 推定位置の出力*/
+		drawPosition(esti_pos, map, IMAGE_ESTIPOSITION_COLOR, map.cols, map.rows, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y, cv::Point(0, 0), ESTIMATED_POSITION);
 
 		/* 真の位置のみ描画 */
-		if (true_time[all_stock_tidx[step]] == esti_time || all_stock_tidx[step] - 1 < 0) {
-			cv::Point true_pixel = ToPixel(true_position->at(all_stock_tidx[step]), map_img_clone2, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
-			cv::circle(map_img_clone2, true_pixel, IMAGE_TRUEPOSITION_RADIUS, IMAGE_TRUEPOSITION_COLOR, IMAGE_TPOS_ARROW_THICKNESS, 8, 0);
-			// 矢印描画
-			double l = IMAGE_TPOS_ARROW_LENGTH*MAP_RES;
-			Coor<> coor2;
-			coor2.x = l*std::cos(true_position->at(all_stock_tidx[step]).r) + true_position->at(all_stock_tidx[step]).x;
-			coor2.y = l*std::sin(true_position->at(all_stock_tidx[step]).r) + true_position->at(all_stock_tidx[step]).y;
-			cv::Point p2 = ToPixel(coor2, map_img_clone2, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//	パーティクルピクセル
-			cv::line(map_img_clone2, true_pixel, p2, IMAGE_TRUEPOSITION_COLOR, IMAGE_TPOS_ARROW_THICKNESS);
+		if (exist_true_position){
+			Position<> now_tpos = getTruePosition(step);
+			drawPosition(now_tpos, map, IMAGE_TRUEPOSITION_COLOR, map.cols, map.rows, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y, cv::Point(0, 0), TRUE_POSITION);
 		}
-		else {
-#if MODE_LINIER_INTERPOLATION
-			//std::cout << true_time[all_stock_tidx[step]] << "," << esti_time << std::endl;
-			Position<> diff_tpos = true_position->at(all_stock_tidx[step]) - true_position->at(all_stock_tidx[step] - 1);
-			double diff_ttime = MyTime::diff(true_time[all_stock_tidx[step] - 1], true_time[all_stock_tidx[step]]);
-			double diff_etime = MyTime::diff(true_time[all_stock_tidx[step] - 1], esti_time);
-			Position<> tpos_tmp = true_position->at(all_stock_tidx[step] - 1) + diff_tpos / diff_ttime*diff_etime;
-			tpos_tmp.r = true_position->at(all_stock_tidx[step] - 1).r;
-			cv::Point true_pixel = ToPixel(tpos_tmp, map_img_clone2, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
-			cv::circle(map_img_clone2, true_pixel, IMAGE_TRUEPOSITION_RADIUS, IMAGE_TRUEPOSITION_COLOR, IMAGE_TPOS_ARROW_THICKNESS, 8, 0);
-			// 矢印描画
-			double l = IMAGE_TPOS_ARROW_LENGTH*MAP_RES;
-			Coor<> coor2;
-			coor2.x = l*std::cos(tpos_tmp.r) + tpos_tmp.x;
-			coor2.y = l*std::sin(tpos_tmp.r) + tpos_tmp.y;
-			cv::Point p2 = ToPixel(coor2, map_img_clone2, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//	パーティクルピクセル
-			cv::line(map_img_clone2, true_pixel, p2, IMAGE_TRUEPOSITION_COLOR, IMAGE_TPOS_ARROW_THICKNESS);
-#endif
-		}
-
-		//cv::Point true_pixel = ToPixel(true_position->at(all_stock_tidx[step]), map_img_clone2, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
-		//cv::circle(map_img_clone2, true_pixel, IMAGE_TRUEPOSITION_RADIUS, IMAGE_TRUEPOSITION_COLOR, IMAGE_TPOS_ARROW_THICKNESS, 8, 0);
-		//// 矢印描画
-		//double l = IMAGE_TPOS_ARROW_LENGTH*MAP_RES;
-		//Coor<> coor2;
-		//coor2.x = l*std::cos(true_position->at(all_stock_tidx[step]).r) + true_position->at(all_stock_tidx[step]).x;
-		//coor2.y = l*std::sin(true_position->at(all_stock_tidx[step]).r) + true_position->at(all_stock_tidx[step]).y;
-		//cv::Point p2 = ToPixel(coor2, map_img_clone2, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//	パーティクルピクセル
-		//cv::line(map_img_clone2, true_pixel, p2, IMAGE_TRUEPOSITION_COLOR, IMAGE_TPOS_ARROW_THICKNESS);
-
-		/*  画像の切り出し  */
-		Coor<> upleft(true_position->at(all_stock_tidx[step]).x - CUT_MAP_RADIUS_X, true_position->at(all_stock_tidx[step]).y - CUT_MAP_RADIUS_Y);
-		//Coor<> upleft(estimated_position.back().x - CUT_MAP_RADIUS_X, estimated_position.back().y - CUT_MAP_RADIUS_Y);
-		Coor<> rect(CUT_MAP_RADIUS_X*2.0, CUT_MAP_RADIUS_Y*2.0);
-
-		cv::Point upleft_pix = ToPixel(upleft, map_img_clone2, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//
-		cv::Size rect_pix = ToPixelSize(rect, map_img_clone2, MAP_RES);
-
-		if (upleft_pix.x < 0)	upleft_pix.x = 0;
-		if (upleft_pix.y < 0)	upleft_pix.y = 0;
-
-		if (upleft_pix.x >= map_img_clone2.cols - rect_pix.width)	upleft_pix.x = map_img_clone2.cols - rect_pix.width;
-		if (upleft_pix.y >= map_img_clone2.rows - rect_pix.height)	upleft_pix.y = map_img_clone2.rows - rect_pix.height;
-
-		map_img_clone2 = cv::Mat(map_img_clone2, cv::Rect(upleft_pix, rect_pix));
-
-		cv::flip(map_img_clone2, map_img_clone2, 0);
-
-		out = map_img_clone2.clone();
-
 	}
 
 	//
-	void visualizeGPS(const Position<> gps, const Position<> esti_pos, cv::Mat& out, int step) {
-		map_img_clone2 = map_img_color.clone();
-		cv::Point pix_gps = ToPixel(gps, map_img_clone2, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//
-		cv::circle(map_img_clone2, pix_gps, MEASUREMENT_DATA_VIDEO_GPS_RADIUS, MEASUREMENT_DATA_VIDEO_GPS_COLOR, -1);
+	void visualizeGPS(const Position<> gps, cv::Mat& map, const Position<> esti_pos, int step) {
+		cv::Point pix_gps = ToPixel(gps, map, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//
+		cv::circle(map, pix_gps, MEASUREMENT_DATA_VIDEO_GPS_RADIUS, MEASUREMENT_DATA_VIDEO_GPS_COLOR, -1);
 
-		cv::Point esti_pixel = ToPixel(esti_pos, map_img_clone2, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
-		cv::circle(map_img_clone2, esti_pixel, IMAGE_ESTIPOSITION_RADIUS, IMAGE_ESTIPOSITION_COLOR, IMAGE_ESTI_ARROW_THICKNESS, 8, 0);
-		// 矢印描画
-		double l_e = IMAGE_ESTI_ARROW_LENGTH*MAP_RES;
-		Coor<> coor2_e;
-		coor2_e.x = l_e*std::cos(esti_pos.r) + esti_pos.x;
-		coor2_e.y = l_e*std::sin(esti_pos.r) + esti_pos.y;
-		cv::Point p2_e = ToPixel(coor2_e, map_img_clone2, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//	パーティクルピクセル
-		cv::line(map_img_clone2, esti_pixel, p2_e, IMAGE_ESTIPOSITION_COLOR, IMAGE_ESTI_ARROW_THICKNESS);
+		/* 推定位置の出力*/
+		drawPosition(esti_pos, map, IMAGE_ESTIPOSITION_COLOR, map.cols, map.rows, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y, cv::Point(0, 0), ESTIMATED_POSITION);
 
 		/* 真の位置のみ描画 */
-		if (true_time[all_stock_tidx[step]] == esti_time || all_stock_tidx[step] - 1 < 0) {
-			cv::Point true_pixel = ToPixel(true_position->at(all_stock_tidx[step]), map_img_clone2, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
-			cv::circle(map_img_clone2, true_pixel, IMAGE_TRUEPOSITION_RADIUS, IMAGE_TRUEPOSITION_COLOR, IMAGE_TPOS_ARROW_THICKNESS, 8, 0);
-			// 矢印描画
-			double l = IMAGE_TPOS_ARROW_LENGTH*MAP_RES;
-			Coor<> coor2;
-			coor2.x = l*std::cos(true_position->at(all_stock_tidx[step]).r) + true_position->at(all_stock_tidx[step]).x;
-			coor2.y = l*std::sin(true_position->at(all_stock_tidx[step]).r) + true_position->at(all_stock_tidx[step]).y;
-			cv::Point p2 = ToPixel(coor2, map_img_clone2, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//	パーティクルピクセル
-			cv::line(map_img_clone2, true_pixel, p2, IMAGE_TRUEPOSITION_COLOR, IMAGE_TPOS_ARROW_THICKNESS);
-		}
-		else {
-#if MODE_LINIER_INTERPOLATION
-			//std::cout << true_time[all_stock_tidx[step]] << "," << esti_time << std::endl;
-			Position<> diff_tpos = true_position->at(all_stock_tidx[step]) - true_position->at(all_stock_tidx[step] - 1);
-			double diff_ttime = MyTime::diff(true_time[all_stock_tidx[step] - 1], true_time[all_stock_tidx[step]]);
-			double diff_etime = MyTime::diff(true_time[all_stock_tidx[step] - 1], esti_time);
-			Position<> tpos_tmp = true_position->at(all_stock_tidx[step] - 1) + diff_tpos / diff_ttime*diff_etime;
-			tpos_tmp.r = true_position->at(all_stock_tidx[step] - 1).r;
-			cv::Point true_pixel = ToPixel(tpos_tmp, map_img_clone2, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
-			cv::circle(map_img_clone2, true_pixel, IMAGE_TRUEPOSITION_RADIUS, IMAGE_TRUEPOSITION_COLOR, IMAGE_TPOS_ARROW_THICKNESS, 8, 0);
-			// 矢印描画
-			double l = IMAGE_TPOS_ARROW_LENGTH*MAP_RES;
-			Coor<> coor2;
-			coor2.x = l*std::cos(tpos_tmp.r) + tpos_tmp.x;
-			coor2.y = l*std::sin(tpos_tmp.r) + tpos_tmp.y;
-			cv::Point p2 = ToPixel(coor2, map_img_clone2, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//	パーティクルピクセル
-			cv::line(map_img_clone2, true_pixel, p2, IMAGE_TRUEPOSITION_COLOR, IMAGE_TPOS_ARROW_THICKNESS);
-#endif
-		}
-
-
-		//cv::Point true_pixel = ToPixel(true_position->at(all_stock_tidx[step]), map_img_clone2, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
-		//cv::circle(map_img_clone2, true_pixel, IMAGE_TRUEPOSITION_RADIUS, IMAGE_TRUEPOSITION_COLOR, IMAGE_TPOS_ARROW_THICKNESS, 8, 0);
-		//// 矢印描画
-		//double l = IMAGE_TPOS_ARROW_LENGTH*MAP_RES;
-		//Coor<> coor2;
-		//coor2.x = l*std::cos(true_position->at(all_stock_tidx[step]).r) + true_position->at(all_stock_tidx[step]).x;
-		//coor2.y = l*std::sin(true_position->at(all_stock_tidx[step]).r) + true_position->at(all_stock_tidx[step]).y;
-		//cv::Point p2 = ToPixel(coor2, map_img_clone2, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//	パーティクルピクセル
-		//cv::line(map_img_clone2, true_pixel, p2, IMAGE_TRUEPOSITION_COLOR, IMAGE_TPOS_ARROW_THICKNESS);
-
-		/*  画像の切り出し  */
-		Coor<> upleft(true_position->at(all_stock_tidx[step]).x - CUT_MAP_RADIUS_X, true_position->at(all_stock_tidx[step]).y - CUT_MAP_RADIUS_Y);
-		//Coor<> upleft(estimated_position.back().x - CUT_MAP_RADIUS_X, estimated_position.back().y - CUT_MAP_RADIUS_Y);
-		Coor<> rect(CUT_MAP_RADIUS_X*2.0, CUT_MAP_RADIUS_Y*2.0);
-
-		cv::Point upleft_pix = ToPixel(upleft, map_img_clone2, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//
-		cv::Size rect_pix = ToPixelSize(rect, map_img_clone2, MAP_RES);
-
-		if (upleft_pix.x < 0)	upleft_pix.x = 0;
-		if (upleft_pix.y < 0)	upleft_pix.y = 0;
-
-		if (upleft_pix.x >= map_img_clone2.cols - rect_pix.width)	upleft_pix.x = map_img_clone2.cols - rect_pix.width;
-		if (upleft_pix.y >= map_img_clone2.rows - rect_pix.height)	upleft_pix.y = map_img_clone2.rows - rect_pix.height;
-
-		map_img_clone2 = cv::Mat(map_img_clone2, cv::Rect(upleft_pix, rect_pix));
-
-		cv::flip(map_img_clone2, map_img_clone2, 0);
-
-		out = map_img_clone2.clone();
-
-
-
-
-
-	}
-
-	/*  重み付きパーティクルを障害物地図上に表示  */
-	void visualizeParticleWeight(cv::Mat& img, const std::vector<double> &likelihood, int step)
-	{
-		cv::cvtColor(img, img, CV_BGR2HSV); // RGB→HSVに変換
-		std::vector<int> up_idx = sortUpIdx(likelihood);		//	パーティクルを昇順にソート
-
-		//for (const auto &idx : up_idx)
-		//{
-		//	cv::Point particle_pixel = ToPixel(*getParticles()[idx]->getState(), img, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//	パーティクルピクセル
-		//	if (likelihood[idx] != 0.0) {
-		//		cv::Scalar color;
-		//		//color = cv::Scalar(150, 255 - (int)(likelihood[idx] / max*255.0 + 0.5), 255);
-		//		color = cv::Scalar(180, (int)(likelihood[idx] / IMAGE_PARTICLE_MAX_LIKELIHOOD*255.0 + 0.5), 255);
-		//		if ((int)(likelihood[idx] / IMAGE_PARTICLE_MAX_LIKELIHOOD*255.0 + 0.5)<5){
-		//			color = cv::Scalar(180, 5, 255);
-		//		}
-		//		cv::circle(img, particle_pixel, IMAGE_PARTICLE_RADIUS, color, IMAGE_PARTICLE_ARROW_THICKNESS, 8, 0);	//	パーティクルの描画
-		//		// 矢印の描画
-		//		//double l = likelihood[idx] * IMAGE_PARTICLE_ARROW_LENGTH*MAP_RES;
-		//		double l = IMAGE_PARTICLE_ARROW_LENGTH*MAP_RES;
-		//		Coor<> coor2;
-		//		coor2.x = l*std::cos(getParticles()[idx]->getState()->r) + getParticles()[idx]->getState()->x;
-		//		coor2.y = l*std::sin(getParticles()[idx]->getState()->r) + getParticles()[idx]->getState()->y;
-		//		cv::Point p2 = ToPixel(coor2, img, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//	パーティクルピクセル
-		//		cv::line(img, particle_pixel, p2, color, IMAGE_PARTICLE_ARROW_THICKNESS);
-		//	}
-		//}
-
-		for (const auto &idx : up_idx)
-		{
-			cv::Point particle_pixel = ToPixel(all_particles[step][idx], img, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//	パーティクルピクセル
-			if (likelihood[idx] != 0.0) {
-				cv::Scalar color;
-				//color = cv::Scalar(150, 255 - (int)(likelihood[idx] / max*255.0 + 0.5), 255);
-				color = cv::Scalar(180, (int)(likelihood[idx] / IMAGE_PARTICLE_MAX_LIKELIHOOD*255.0 + 0.5), 255);
-				cv::circle(img, particle_pixel, IMAGE_PARTICLE_RADIUS, color, IMAGE_PARTICLE_ARROW_THICKNESS, 8, 0);	//	パーティクルの描画
-				// 矢印の描画
-				//double l = likelihood[idx] * IMAGE_PARTICLE_ARROW_LENGTH*MAP_RES;
-				double l = IMAGE_PARTICLE_ARROW_LENGTH*MAP_RES;
-				Coor<> coor2;
-				coor2.x = l*std::cos(all_particles[step][idx].r) + all_particles[step][idx].x;
-				coor2.y = l*std::sin(all_particles[step][idx].r) + all_particles[step][idx].y;
-				cv::Point p2 = ToPixel(coor2, img, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//	パーティクルピクセル
-				cv::line(img, particle_pixel, p2, color, IMAGE_PARTICLE_ARROW_THICKNESS);
-			}
-		}
-
-		//for (int th = 0; th < LIKELIHOOD_THREAD; th++){
-		//	std::vector<std::vector<Position<>>>& all_particles_tmp = all_particles;
-		//	cv::Mat& img_tmp = img;
-		//	likelihood_threads[th] = std::thread([all_particles_tmp, &img_tmp, likelihood, up_idx, step, th]{
-		//		for (int i = th; i < up_idx.size(); i += LIKELIHOOD_THREAD)
-		//		{
-		//			cv::Point particle_pixel = ToPixel(all_particles_tmp[step][up_idx[i]], img_tmp, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//	パーティクルピクセル
-		//			if (likelihood[up_idx[i]] != 0.0) {
-		//				cv::Scalar color;
-		//				//color = cv::Scalar(150, 255 - (int)(likelihood[idx] / max*255.0 + 0.5), 255);
-		//				color = cv::Scalar(180, (int)(likelihood[up_idx[i]] / IMAGE_PARTICLE_MAX_LIKELIHOOD*255.0 + 0.5), 255);
-		//				cv::circle(img_tmp, particle_pixel, IMAGE_PARTICLE_RADIUS, color, IMAGE_PARTICLE_ARROW_THICKNESS, 8, 0);	//	パーティクルの描画
-		//				// 矢印の描画
-		//				//double l = likelihood[idx] * IMAGE_PARTICLE_ARROW_LENGTH*MAP_RES;
-		//				double l = IMAGE_PARTICLE_ARROW_LENGTH*MAP_RES;
-		//				Coor<> coor2;
-		//				coor2.x = l*std::cos(all_particles_tmp[step][up_idx[i]].r) + all_particles_tmp[step][up_idx[i]].x;
-		//				coor2.y = l*std::sin(all_particles_tmp[step][up_idx[i]].r) + all_particles_tmp[step][up_idx[i]].y;
-		//				cv::Point p2 = ToPixel(coor2, img_tmp, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//	パーティクルピクセル
-		//				cv::line(img_tmp, particle_pixel, p2, color, IMAGE_PARTICLE_ARROW_THICKNESS);
-		//			}
-		//		}
-		//	});
-		//}
-		//for (auto& thread : likelihood_threads){
-		//	thread.join();
-		//}
-
-
-		cv::cvtColor(img, img, CV_HSV2BGR); // HSV→RGBに変換
-
-		/* 真の位置のみ描画 */
-		if (true_time[all_stock_tidx[step]] == esti_time || all_stock_tidx[step] - 1 < 0) {
-			cv::Point true_pixel = ToPixel(true_position->at(all_stock_tidx[step]), img, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
-			cv::circle(img, true_pixel, IMAGE_TRUEPOSITION_RADIUS, IMAGE_TRUEPOSITION_COLOR, IMAGE_TPOS_ARROW_THICKNESS, 8, 0);
-			// 矢印描画
-			double l = IMAGE_TPOS_ARROW_LENGTH*MAP_RES;
-			Coor<> coor2;
-			coor2.x = l*std::cos(true_position->at(all_stock_tidx[step]).r) + true_position->at(all_stock_tidx[step]).x;
-			coor2.y = l*std::sin(true_position->at(all_stock_tidx[step]).r) + true_position->at(all_stock_tidx[step]).y;
-			cv::Point p2 = ToPixel(coor2, img, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//	パーティクルピクセル
-			cv::line(img, true_pixel, p2, IMAGE_TRUEPOSITION_COLOR, IMAGE_TPOS_ARROW_THICKNESS);
-		}
-		else {
-#if MODE_LINIER_INTERPOLATION
-			//std::cout << true_time[all_stock_tidx[step]] << "," << esti_time << std::endl;
-			Position<> diff_tpos = true_position->at(all_stock_tidx[step]) - true_position->at(all_stock_tidx[step] - 1);
-			double diff_ttime = MyTime::diff(true_time[all_stock_tidx[step] - 1], true_time[all_stock_tidx[step]]);
-			double diff_etime = MyTime::diff(true_time[all_stock_tidx[step] - 1], esti_time);
-			Position<> tpos_tmp = true_position->at(all_stock_tidx[step] - 1) + diff_tpos / diff_ttime*diff_etime;
-			tpos_tmp.r = true_position->at(all_stock_tidx[step] - 1).r;
-			cv::Point true_pixel = ToPixel(tpos_tmp, img, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
-			cv::circle(img, true_pixel, IMAGE_TRUEPOSITION_RADIUS, IMAGE_TRUEPOSITION_COLOR, IMAGE_TPOS_ARROW_THICKNESS, 8, 0);
-			// 矢印描画
-			double l = IMAGE_TPOS_ARROW_LENGTH*MAP_RES;
-			Coor<> coor2;
-			coor2.x = l*std::cos(tpos_tmp.r) + tpos_tmp.x;
-			coor2.y = l*std::sin(tpos_tmp.r) + tpos_tmp.y;
-			cv::Point p2 = ToPixel(coor2, img, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//	パーティクルピクセル
-			cv::line(img, true_pixel, p2, IMAGE_TRUEPOSITION_COLOR, IMAGE_TPOS_ARROW_THICKNESS);
-#endif
+		if (exist_true_position){
+			Position<> now_tpos = getTruePosition(step);
+			drawPosition(now_tpos, map, IMAGE_TRUEPOSITION_COLOR, map.cols, map.rows, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y, cv::Point(0, 0), TRUE_POSITION);
 		}
 	}
 
 
 	/*  重み付きパーティクルを障害物地図上に表示  */
-	void visualizeParticleWeight(cv::Mat& img, const std::vector<Position<>>& particle, const std::vector<double> &likelihood, int step, bool visualize_weighted_mean)
+	void visualizeParticleWeight(cv::Mat& map, const std::vector<Position<>>& particle, const std::vector<double> &likelihood, int step, int cols, int rows, double map_res, cv::Point upleft_pix, bool visualize_weighted_mean)
 	{
-		cv::cvtColor(img, img, CV_BGR2HSV); // RGB→HSVに変換
+		// パーティクル描画
+		cv::cvtColor(map, map, CV_BGR2HSV); // RGB→HSVに変換
 		std::vector<int> up_idx = sortUpIdx(likelihood);		//	パーティクルを昇順にソート
-		//cv::cvtColor(img, img, cv::COLOR_RGB2HSV);	// RGB→HSVに変換
+		//cv::cvtColor(map, map, cv::COLOR_RGB2HSV);	// RGB→HSVに変換
 		for (const auto &idx : up_idx)
 		{
-			cv::Point particle_pixel = ToPixel(particle[idx], img, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//	パーティクルピクセル
 			if (likelihood[idx] != 0.0) {
 				cv::Scalar color;
 				//color = cv::Scalar(150, 255 - (int)(likelihood[idx] / max*255.0 + 0.5), 255);
 				color = cv::Scalar(180, (int)(likelihood[idx] / IMAGE_PARTICLE_MAX_LIKELIHOOD*255.0 + 0.5), 255);
-				if ((int)(likelihood[idx] / IMAGE_PARTICLE_MAX_LIKELIHOOD*255.0 + 0.5) < 5){
-					color = cv::Scalar(180, 5, 255);
-				}
-				cv::circle(img, particle_pixel, IMAGE_PARTICLE_RADIUS, color, IMAGE_PARTICLE_ARROW_THICKNESS, 8, 0);	//	パーティクルの描画
-				// 矢印の描画
-				//double l = likelihood[idx] * IMAGE_PARTICLE_ARROW_LENGTH*MAP_RES;
-				double l = IMAGE_PARTICLE_ARROW_LENGTH*MAP_RES;
-				Coor<> coor2;
-				coor2.x = l*std::cos(particle[idx].r) + particle[idx].x;
-				coor2.y = l*std::sin(particle[idx].r) + particle[idx].y;
-				cv::Point p2 = ToPixel(coor2, img, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//	パーティクルピクセル
-				cv::line(img, particle_pixel, p2, color, IMAGE_PARTICLE_ARROW_THICKNESS);
+				drawPosition(particle[idx], map, color, cols, rows, map_res, MAP_IMG_ORG_X, MAP_IMG_ORG_Y, upleft_pix, PARTICLE);
 			}
 		}
+		cv::cvtColor(map, map, CV_HSV2BGR); // HSV→RGBに変換
 
-		//cv::cvtColor(img, img, CV_BGR2HSV); // RGB→HSVに変換
-		//std::vector<int> up_idx = sortUpIdx(likelihood);		//	パーティクルを昇順にソート
-		////cv::cvtColor(img, img, cv::COLOR_RGB2HSV);	// RGB→HSVに変換
-		//for (int th = 0; th < LIKELIHOOD_THREAD; th++){
-		//	cv::Mat& img_tmp = img;
-		//	likelihood_threads[th] = std::thread([particle, &img_tmp, likelihood, up_idx, step, th]{
-		//		for (int i = th; i < up_idx.size(); i += LIKELIHOOD_THREAD){
-		//			cv::Point particle_pixel = ToPixel(particle[up_idx[i]], img_tmp, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//	パーティクルピクセル
-		//			if (likelihood[up_idx[i]] != 0.0) {
-		//				cv::Scalar color;
-		//				//color = cv::Scalar(150, 255 - (int)(likelihood[up_idx[i]] / max*255.0 + 0.5), 255);
-		//				color = cv::Scalar(180, (int)(likelihood[up_idx[i]] / IMAGE_PARTICLE_MAX_LIKELIHOOD*255.0 + 0.5), 255);
-		//				cv::circle(img_tmp, particle_pixel, IMAGE_PARTICLE_RADIUS, color, IMAGE_PARTICLE_ARROW_THICKNESS, 8, 0);	//	パーティクルの描画
-		//				// 矢印の描画
-		//				//double l = likelihood[up_idx[i]] * IMAGE_PARTICLE_ARROW_LENGTH*MAP_RES;
-		//				double l = IMAGE_PARTICLE_ARROW_LENGTH*MAP_RES;
-		//				Coor<> coor2;
-		//				coor2.x = l*std::cos(particle[up_idx[i]].r) + particle[up_idx[i]].x;
-		//				coor2.y = l*std::sin(particle[up_idx[i]].r) + particle[up_idx[i]].y;
-		//				cv::Point p2 = ToPixel(coor2, img_tmp, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//	パーティクルピクセル
-		//				cv::line(img_tmp, particle_pixel, p2, color, IMAGE_PARTICLE_ARROW_THICKNESS);
-		//			}
-		//		}
-		//	});
-		//}
-		//for (auto& thread : likelihood_threads){
-		//	thread.join();
-		//}
-
-
-		cv::cvtColor(img, img, CV_HSV2BGR); // HSV→RGBに変換
-
-#if VISUALIZE_PRE_ESTI
-		/* 事前推定位置の出力*/
-		if (!init){
-			cv::Point esti_pixel = ToPixel(estimated_position[step - 1], img, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
-			cv::circle(img, esti_pixel, IMAGE_PRE_ESTIPOSITION_RADIUS, IMAGE_PRE_ESTIPOSITION_COLOR, IMAGE_PRE_ESTI_ARROW_THICKNESS, 8, 0);
-			// 矢印描画
-			double l_e = IMAGE_PRE_ESTI_ARROW_LENGTH*MAP_RES;
-			Coor<> coor2_e;
-			coor2_e.x = l_e*std::cos(estimated_position[step - 1].r) + estimated_position[step - 1].x;
-			coor2_e.y = l_e*std::sin(estimated_position[step - 1].r) + estimated_position[step - 1].y;
-			cv::Point p2_e = ToPixel(coor2_e, img, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//	パーティクルピクセル
-			cv::line(img, esti_pixel, p2_e, IMAGE_PRE_ESTIPOSITION_COLOR, IMAGE_PRE_ESTI_ARROW_THICKNESS);
-		}
-#endif
-
-#if VISUALIZE_ESTI
-		///* 推定位置の出力*/
-		//cv::Point esti_pixel = ToPixel(estimated_position[step], img, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
-		//cv::circle(img, esti_pixel, IMAGE_ESTIPOSITION_RADIUS, IMAGE_ESTIPOSITION_COLOR, IMAGE_ESTI_ARROW_THICKNESS, 8, 0);
-		//// 矢印描画
-		//double l_e = IMAGE_ESTI_ARROW_LENGTH*MAP_RES;
-		//Coor<> coor2_e;
-		//coor2_e.x = l_e*std::cos(estimated_position[step].r) + estimated_position[step].x;
-		//coor2_e.y = l_e*std::sin(estimated_position[step].r) + estimated_position[step].y;
-		//cv::Point p2_e = ToPixel(coor2_e, img, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//	パーティクルピクセル
-		//cv::line(img, esti_pixel, p2_e, IMAGE_ESTIPOSITION_COLOR, IMAGE_ESTI_ARROW_THICKNESS);
-
-		if (visualize_weighted_mean){
-			/* 重み付き平均の出力*/
-			Position<> esti_pos(0.0, 0.0, 0.0);
-			std::vector<double> likelihood_tmp = likelihood;
-			if (std::count(likelihood_tmp.begin(), likelihood_tmp.end(), 1.0) == likelihood_tmp.size()){
-				likelihood_tmp = std::vector<double>(likelihood_tmp.size(), 1.0 / likelihood_tmp.size());
-			}
-			for (int i = 0; i < particle.size(); i++){
-				esti_pos += particle[i] * likelihood_tmp[i];
-			}
-
-			cv::Point esti_pixel = ToPixel(esti_pos, img, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
-			cv::circle(img, esti_pixel, IMAGE_ESTIPOSITION_RADIUS, IMAGE_ESTIPOSITION_COLOR, IMAGE_ESTI_ARROW_THICKNESS, 8, 0);
-			// 矢印描画
-			double l_e = IMAGE_ESTI_ARROW_LENGTH*MAP_RES;
-			Coor<> coor2_e;
-			coor2_e.x = l_e*std::cos(esti_pos.r) + esti_pos.x;
-			coor2_e.y = l_e*std::sin(esti_pos.r) + esti_pos.y;
-			cv::Point p2_e = ToPixel(coor2_e, img, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//	パーティクルピクセル
-			cv::line(img, esti_pixel, p2_e, IMAGE_ESTIPOSITION_COLOR, IMAGE_ESTI_ARROW_THICKNESS);
-		}
-#endif
-
-
-		/* 真の位置のみ描画 */
-		if (true_time[all_stock_tidx[step]] == esti_time || all_stock_tidx[step] - 1 < 0) {
-			cv::Point true_pixel = ToPixel(true_position->at(all_stock_tidx[step]), img, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
-			cv::circle(img, true_pixel, IMAGE_TRUEPOSITION_RADIUS, IMAGE_TRUEPOSITION_COLOR, IMAGE_TPOS_ARROW_THICKNESS, 8, 0);
-			// 矢印描画
-			double l = IMAGE_TPOS_ARROW_LENGTH*MAP_RES;
-			Coor<> coor2;
-			coor2.x = l*std::cos(true_position->at(all_stock_tidx[step]).r) + true_position->at(all_stock_tidx[step]).x;
-			coor2.y = l*std::sin(true_position->at(all_stock_tidx[step]).r) + true_position->at(all_stock_tidx[step]).y;
-			cv::Point p2 = ToPixel(coor2, img, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//	パーティクルピクセル
-			cv::line(img, true_pixel, p2, IMAGE_TRUEPOSITION_COLOR, IMAGE_TPOS_ARROW_THICKNESS);
-		}
-		else {
-#if MODE_LINIER_INTERPOLATION
-			//std::cout << true_time[all_stock_tidx[step]] << "," << esti_time << std::endl;
-			Position<> diff_tpos = true_position->at(all_stock_tidx[step]) - true_position->at(all_stock_tidx[step] - 1);
-			double diff_ttime = MyTime::diff(true_time[all_stock_tidx[step] - 1], true_time[all_stock_tidx[step]]);
-			double diff_etime = MyTime::diff(true_time[all_stock_tidx[step] - 1], esti_time);
-			Position<> tpos_tmp = true_position->at(all_stock_tidx[step] - 1) + diff_tpos / diff_ttime*diff_etime;
-			tpos_tmp.r = true_position->at(all_stock_tidx[step] - 1).r;
-			cv::Point true_pixel = ToPixel(tpos_tmp, img, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
-			cv::circle(img, true_pixel, IMAGE_TRUEPOSITION_RADIUS, IMAGE_TRUEPOSITION_COLOR, IMAGE_TPOS_ARROW_THICKNESS, 8, 0);
-			// 矢印描画
-			double l = IMAGE_TPOS_ARROW_LENGTH*MAP_RES;
-			Coor<> coor2;
-			coor2.x = l*std::cos(tpos_tmp.r) + tpos_tmp.x;
-			coor2.y = l*std::sin(tpos_tmp.r) + tpos_tmp.y;
-			cv::Point p2 = ToPixel(coor2, img, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//	パーティクルピクセル
-			cv::line(img, true_pixel, p2, IMAGE_TRUEPOSITION_COLOR, IMAGE_TPOS_ARROW_THICKNESS);
-#endif
-		}
-
-		//cv::Point esti_pixel = ToPixel(estimated_position.back(), img, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
-		//cv::circle(img, esti_pixel, 5, cv::Scalar(255, 0, 0), -1, 8, 0);
-
-	}
-	void visualizeParticleWeightLarge(cv::Mat& img, const std::vector<Position<>>& particle, const std::vector<double> &likelihood, int step, int cols, int rows, double map_res, cv::Point upleft_pix, bool visualize_weighted_mean)
-	{
-		cv::cvtColor(img, img, CV_BGR2HSV); // RGB→HSVに変換
-		std::vector<int> up_idx = sortUpIdx(likelihood);		//	パーティクルを昇順にソート
-		//cv::cvtColor(img, img, cv::COLOR_RGB2HSV);	// RGB→HSVに変換
-		for (const auto &idx : up_idx)
-		{
-			//if (!onObject_(particle[idx])){
-			cv::Point particle_pixel = ToPixel(particle[idx], cols, rows, map_res, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//	パーティクルピクセル
-			particle_pixel -= upleft_pix;
-			if (particle_pixel.x > 0 && particle_pixel.x < img.cols &&
-				particle_pixel.y>0 && particle_pixel.y < img.rows){
-				if (likelihood[idx] != 0.0) {
-					cv::Scalar color;
-					//color = cv::Scalar(150, 255 - (int)(likelihood[idx] / max*255.0 + 0.5), 255);
-					color = cv::Scalar(180, (int)(likelihood[idx] / IMAGE_PARTICLE_MAX_LIKELIHOOD*255.0 + 0.5), 255);
-					cv::circle(img, particle_pixel, IMAGE_PARTICLE_RADIUS, color, IMAGE_PARTICLE_ARROW_THICKNESS, 8, 0);	//	パーティクルの描画
-					// 矢印の描画
-					//double l = likelihood[idx] * IMAGE_PARTICLE_ARROW_LENGTH*map_res;
-					double l = IMAGE_PARTICLE_ARROW_LENGTH*map_res;
-					Coor<> coor2;
-					coor2.x = l*std::cos(particle[idx].r) + particle[idx].x;
-					coor2.y = l*std::sin(particle[idx].r) + particle[idx].y;
-					cv::Point p2 = ToPixel(coor2, cols, rows, map_res, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//	パーティクルピクセル
-					p2 -= upleft_pix;
-					cv::line(img, particle_pixel, p2, color, IMAGE_PARTICLE_ARROW_THICKNESS);
-				}
-			}
-			//}
-		}
-
-
-
-
-		cv::cvtColor(img, img, CV_HSV2BGR); // HSV→RGBに変換
-
-		/* 前ステップの推定位置の出力*/
-#if VISUALIZE_PRE_ESTI
-		if (!init){
-			cv::Point esti_pixel = ToPixel(estimated_position[step - 1], cols, rows, map_res, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
-			esti_pixel -= upleft_pix;
-			cv::circle(img, esti_pixel, IMAGE_PRE_ESTIPOSITION_RADIUS, IMAGE_PRE_ESTIPOSITION_COLOR, IMAGE_PRE_ESTI_ARROW_THICKNESS, 8, 0);
-			// 矢印描画
-			double l_e = IMAGE_PRE_ESTI_ARROW_LENGTH*map_res;
-			Coor<> coor2_e;
-			coor2_e.x = l_e*std::cos(estimated_position[step - 1].r) + estimated_position[step - 1].x;
-			coor2_e.y = l_e*std::sin(estimated_position[step - 1].r) + estimated_position[step - 1].y;
-			cv::Point p2_e = ToPixel(coor2_e, cols, rows, map_res, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//	パーティクルピクセル
-			p2_e -= upleft_pix;
-			cv::line(img, esti_pixel, p2_e, IMAGE_PRE_ESTIPOSITION_COLOR, IMAGE_PRE_ESTI_ARROW_THICKNESS);
-		}
-#endif
-
-#if VISUALIZE_ESTI
+		/* 重み付き平均の出力*/
 		if (visualize_weighted_mean)
 		{
-			/* 重み付き平均の出力*/
 			Position<> esti_pos(0.0, 0.0, 0.0);
 			std::vector<double> likelihood_tmp = likelihood;
 			if (std::count(likelihood_tmp.begin(), likelihood_tmp.end(), 1.0) == likelihood_tmp.size()){
@@ -2071,207 +1646,50 @@ public:
 			for (int i = 0; i < particle.size(); i++){
 				esti_pos += particle[i] * likelihood_tmp[i];
 			}
-			cv::Point esti_pixel = ToPixel(esti_pos, cols, rows, map_res, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
-			//cv::Point esti_pixel = ToPixel(estimated_position[step], cols, rows, map_res, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
-			esti_pixel -= upleft_pix;
-			cv::circle(img, esti_pixel, IMAGE_ESTIPOSITION_RADIUS, IMAGE_ESTIPOSITION_COLOR, IMAGE_ESTI_ARROW_THICKNESS, 8, 0);
-			// 矢印描画
-			double l_e = IMAGE_ESTI_ARROW_LENGTH*map_res;
-			Coor<> coor2_e;
-			coor2_e.x = l_e*std::cos(esti_pos.r) + esti_pos.x;
-			coor2_e.y = l_e*std::sin(esti_pos.r) + esti_pos.y;
-			cv::Point p2_e = ToPixel(coor2_e, cols, rows, map_res, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//	パーティクルピクセル
-			p2_e -= upleft_pix;
-			cv::line(img, esti_pixel, p2_e, IMAGE_ESTIPOSITION_COLOR, IMAGE_ESTI_ARROW_THICKNESS);
+			drawPosition(esti_pos, map, IMAGE_ESTIPOSITION_COLOR, cols, rows, map_res, MAP_IMG_ORG_X, MAP_IMG_ORG_Y, upleft_pix, ESTIMATED_POSITION);
 		}
-#endif
-
-
 
 		/* 真の位置のみ描画 */
-		if (true_time[all_stock_tidx[step]] == esti_time || all_stock_tidx[step] - 1 < 0) {
-			cv::Point true_pixel = ToPixel(true_position->at(all_stock_tidx[step]), cols, rows, map_res, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
-			true_pixel -= upleft_pix;
-			if (true_pixel.x > 0 && true_pixel.x < img.cols &&
-				true_pixel.y>0 && true_pixel.y < img.rows){
-				cv::circle(img, true_pixel, IMAGE_TRUEPOSITION_RADIUS, IMAGE_TRUEPOSITION_COLOR, IMAGE_TPOS_ARROW_THICKNESS, 8, 0);
-				// 矢印描画
-				double l = IMAGE_TPOS_ARROW_LENGTH*map_res;
-				Coor<> coor2;
-				coor2.x = l*std::cos(true_position->at(all_stock_tidx[step]).r) + true_position->at(all_stock_tidx[step]).x;
-				coor2.y = l*std::sin(true_position->at(all_stock_tidx[step]).r) + true_position->at(all_stock_tidx[step]).y;
-				cv::Point p2 = ToPixel(coor2, cols, rows, map_res, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//	パーティクルピクセル
-				p2 -= upleft_pix;
-				cv::line(img, true_pixel, p2, IMAGE_TRUEPOSITION_COLOR, IMAGE_TPOS_ARROW_THICKNESS);
-			}
+		if (exist_true_position){
+			Position<> now_tpos = getTruePosition(step);
+			drawPosition(now_tpos, map, IMAGE_TRUEPOSITION_COLOR, map.cols, map.rows, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y, upleft_pix, TRUE_POSITION);
 		}
-		else {
-#if MODE_LINIER_INTERPOLATION
-			//std::cout << true_time[all_stock_tidx[step]] << "," << esti_time << std::endl;
-			Position<> diff_tpos = true_position->at(all_stock_tidx[step]) - true_position->at(all_stock_tidx[step] - 1);
-			double diff_ttime = MyTime::diff(true_time[all_stock_tidx[step] - 1], true_time[all_stock_tidx[step]]);
-			double diff_etime = MyTime::diff(true_time[all_stock_tidx[step] - 1], result_time[step]);
-			Position<> tpos_tmp = true_position->at(all_stock_tidx[step] - 1) + diff_tpos / diff_ttime*diff_etime;
-			tpos_tmp.r = true_position->at(all_stock_tidx[step] - 1).r;
-			cv::Point true_pixel = ToPixel(tpos_tmp, cols, rows, map_res, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
-			true_pixel -= upleft_pix;
-			if (true_pixel.x > 0 && true_pixel.x < img.cols &&
-				true_pixel.y>0 && true_pixel.y < img.rows){
-				cv::circle(img, true_pixel, IMAGE_TRUEPOSITION_RADIUS, IMAGE_TRUEPOSITION_COLOR, IMAGE_TPOS_ARROW_THICKNESS, 8, 0);
-				// 矢印描画
-				double l = IMAGE_TPOS_ARROW_LENGTH*map_res;
-				Coor<> coor2;
-				coor2.x = l*std::cos(tpos_tmp.r) + tpos_tmp.x;
-				coor2.y = l*std::sin(tpos_tmp.r) + tpos_tmp.y;
-				cv::Point p2 = ToPixel(coor2, cols, rows, map_res, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//	パーティクルピクセル
-				p2 -= upleft_pix;
-				cv::line(img, true_pixel, p2, IMAGE_TRUEPOSITION_COLOR, IMAGE_TPOS_ARROW_THICKNESS);
-			}
-#endif
-		}
-
-		//cv::Point esti_pixel = ToPixel(estimated_position.back(), img, map_res, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
-		//cv::circle(img, esti_pixel, 5, cv::Scalar(255, 0, 0), -1, 8, 0);
-
-	}
-
-	//
-	/*  確率分布出力  */
-	cv::Mat createParImgAfterResampling(int step)
-	{
-		cv::Mat img = map_img_color.clone();
-		std::vector<double> likelihood = std::vector<double>(SAMPLE_SIZE, 1.0);
-		visualizeParticleWeight(img, likelihood, step);
-
-		/*  画像の切り出し  */
-		Coor<> upleft(true_position->at(tidx).x - CUT_MAP_RADIUS_X, true_position->at(tidx).y - CUT_MAP_RADIUS_Y);
-		//Coor<> upleft(estimated_position.back().x - CUT_MAP_RADIUS_X, estimated_position.back().y - CUT_MAP_RADIUS_Y);
-		Coor<> rect(CUT_MAP_RADIUS_X*2.0, CUT_MAP_RADIUS_Y*2.0);
-
-		cv::Point upleft_pix = ToPixel(upleft, img, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//
-		cv::Size rect_pix = ToPixelSize(rect, img, MAP_RES);
-
-		if (upleft_pix.x < 0)	upleft_pix.x = 0;
-		if (upleft_pix.y < 0)	upleft_pix.y = 0;
-
-		if (upleft_pix.x >= img.cols - rect_pix.width)	upleft_pix.x = img.cols - rect_pix.width;
-		if (upleft_pix.y >= img.rows - rect_pix.height)	upleft_pix.y = img.rows - rect_pix.height;
-
-		img = cv::Mat(img, cv::Rect(upleft_pix, rect_pix));
-
-		cv::flip(img, img, 0);
-
-		return img;
-
-	}
-	cv::Mat createWeightedParImg(const std::vector<Position<>>& particle, const std::vector<double>& likelihood, int step, bool visualize_weighted_mean)
-	{
-		cv::Mat img = map_img_color.clone();
-		visualizeParticleWeight(img, particle, likelihood, step, visualize_weighted_mean);
-
-		/*  画像の切り出し  */
-		Coor<> upleft(true_position->at(tidx).x - CUT_MAP_RADIUS_X, true_position->at(tidx).y - CUT_MAP_RADIUS_Y);
-		//Coor<> upleft(estimated_position.back().x - CUT_MAP_RADIUS_X, estimated_position.back().y - CUT_MAP_RADIUS_Y);
-		Coor<> rect(CUT_MAP_RADIUS_X*2.0, CUT_MAP_RADIUS_Y*2.0);
-
-		cv::Point upleft_pix = ToPixel(upleft, img, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//
-		cv::Size rect_pix = ToPixelSize(rect, img, MAP_RES);
-
-		if (upleft_pix.x < 0)	upleft_pix.x = 0;
-		if (upleft_pix.y < 0)	upleft_pix.y = 0;
-
-		if (upleft_pix.x >= img.cols - rect_pix.width)	upleft_pix.x = img.cols - rect_pix.width;
-		if (upleft_pix.y >= img.rows - rect_pix.height)	upleft_pix.y = img.rows - rect_pix.height;
-
-		img = cv::Mat(img, cv::Rect(upleft_pix, rect_pix));
-
-		cv::flip(img, img, 0);
-
-		return img;
-
-	}
-	cv::Mat createWeightedParImgLarge(const std::vector<Position<>>& particle, const std::vector<double>& likelihood, int step, bool visualize_weighted_mean)
-	{
-		cv::Mat img = map_img_color.clone();
-
-		Position<> tpos_tmp;
-		/* 真の位置のみ描画 */
-		if (true_time[all_stock_tidx[step]] == esti_time || all_stock_tidx[step] - 1 < 0) {
-			tpos_tmp = true_position->at(all_stock_tidx[step]);
-		}
-		else {
-			//std::cout << true_time[all_stock_tidx[step]] << "," << esti_time << std::endl;
-			Position<> diff_tpos = true_position->at(all_stock_tidx[step]) - true_position->at(all_stock_tidx[step] - 1);
-			double diff_ttime = MyTime::diff(true_time[all_stock_tidx[step] - 1], true_time[all_stock_tidx[step]]);
-			double diff_etime = MyTime::diff(true_time[all_stock_tidx[step] - 1], result_time[step]);
-			tpos_tmp = true_position->at(all_stock_tidx[step] - 1) + diff_tpos / diff_ttime*diff_etime;
-			tpos_tmp.r = true_position->at(all_stock_tidx[step] - 1).r;
-		}
-
-
-
-
-		/*  画像の切り出し  */
-		Coor<> upleft(tpos_tmp.x - CUT_LARGE_MAP_RADIUS_X, tpos_tmp.y - CUT_LARGE_MAP_RADIUS_Y);
-		//Coor<> upleft(true_position->at(tidx).x - CUT_LARGE_MAP_RADIUS_X, true_position->at(tidx).y - CUT_LARGE_MAP_RADIUS_Y);
-		//Coor<> upleft(estimated_position[step].x - CUT_LARGE_MAP_RADIUS_X, estimated_position[step].y - CUT_LARGE_MAP_RADIUS_Y);
-		//Coor<> upleft(estimated_position.back().x - CUT_LARGE_MAP_RADIUS_X, estimated_position.back().y - CUT_LARGE_MAP_RADIUS_Y);
-		Coor<> rect(CUT_LARGE_MAP_RADIUS_X*2.0, CUT_LARGE_MAP_RADIUS_Y*2.0);
-
-		cv::Point upleft_pix = ToPixel(upleft, img, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);	//
-		cv::Size rect_pix = ToPixelSize(rect, img, MAP_RES);
-
-		if (upleft_pix.x < 0)	upleft_pix.x = 0;
-		if (upleft_pix.y < 0)	upleft_pix.y = 0;
-
-		if (upleft_pix.x >= img.cols - rect_pix.width)	upleft_pix.x = img.cols - rect_pix.width;
-		if (upleft_pix.y >= img.rows - rect_pix.height)	upleft_pix.y = img.rows - rect_pix.height;
-
-		img = cv::Mat(img, cv::Rect(upleft_pix, rect_pix));
-
-		double scale = CUT_MAP_RADIUS_X / CUT_LARGE_MAP_RADIUS_X;
-		cv::resize(img, img, cv::Size(), scale, scale);
-		upleft_pix.x *= scale;
-		upleft_pix.y *= scale;
-		int cols = map_img_color.cols*scale;
-		int rows = map_img_color.rows*scale;
-
-		double map_res = MAP_RES / scale;
-
-		int radius_pix = IMAGE_PARTICLE_LARGE_GRAY_CIRCLE_RADIUS / map_res;
-
-		/* 真の位置のみ描画 */
-		cv::Point true_pixel = ToPixel(tpos_tmp, cols, rows, map_res, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
-		true_pixel -= upleft_pix;
-		if (true_pixel.x > 0 && true_pixel.x < img.cols &&
-			true_pixel.y>0 && true_pixel.y < img.rows){
-			cv::circle(img, true_pixel, radius_pix, IMAGE_PARTICLE_LARGE_GRAY_CIRCLE_COLOR, IMAGE_PARTICLE_LARGE_GRAY_CIRCLE_THICHNESS);
-		}
-
-
-		// 真の位置を中心に円を描画
-		visualizeParticleWeightLarge(img, particle, likelihood, step, cols, rows, map_res, upleft_pix, visualize_weighted_mean);
-
-		cv::flip(img, img, 0);
-
-		return img;
-
 	}
 
 
 	/*  パーティクル動画にフレームを追加  */
+	void addMeasurementVideo() {
 
-	void addMeasurementVideo2() {
 		cv::Mat img_lrf_l, img_lrf_u, img_omni, img_gps;
-		visualizeScanL(all_meas_lrf_l.front(), estimated_position[movie_step], img_lrf_l, movie_step);
+		img_lrf_l = map_img_lower.clone();
+		img_lrf_u = map_img_upper.clone();
+		img_omni = map_img_color.clone();
+		img_gps = map_img_color.clone();
+
+		// 描画
+		visualizeScan(all_meas_lrf_l.front(), img_lrf_l, estimated_position[movie_step], movie_step);
 		if (sensor_num == 3){
-			img_lrf_u = cv::Mat::zeros(cv::Size(img_lrf_l.cols, img_lrf_l.rows), CV_8UC3);
+			img_lrf_u = cv::Mat::zeros(cv::Size(map_img_color.cols, map_img_color.rows), CV_8UC3);
 		}
 		else{
-			visualizeScanU(all_meas_lrf_u.front(), estimated_position[movie_step], img_lrf_u, movie_step);
+			visualizeScan(all_meas_lrf_l.front(), img_lrf_u, estimated_position[movie_step], movie_step);
 		}
-		visualizeOmniImg(all_omni_img_sim_pos.front(), all_omni_img_sim.front(), estimated_position[movie_step], img_omni, movie_step);
-		visualizeGPS(all_meas_gps_pos.front(), estimated_position[movie_step], img_gps, movie_step);
+		visualizeOmniImg(all_omni_img_sim_pos.front(), img_omni, all_omni_img_sim.front(), estimated_position[movie_step], movie_step);
+		visualizeGPS(all_meas_gps_pos.front(), img_gps, estimated_position[movie_step], movie_step);
+
+
+		// カット
+		Position<> center = estimated_position[movie_step];
+		rectMap(img_lrf_l, img_lrf_l, center, CUT_MAP_RADIUS_X, CUT_MAP_RADIUS_Y, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
+		rectMap(img_lrf_u, img_lrf_u, center, CUT_MAP_RADIUS_X, CUT_MAP_RADIUS_Y, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
+		rectMap(img_omni, img_omni, center, CUT_MAP_RADIUS_X, CUT_MAP_RADIUS_Y, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
+		rectMap(img_gps, img_gps, center, CUT_MAP_RADIUS_X, CUT_MAP_RADIUS_Y, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
+
+		// 上下反転
+		cv::flip(img_lrf_l, img_lrf_l, 0);
+		cv::flip(img_lrf_u, img_lrf_u, 0);
+		cv::flip(img_omni, img_omni, 0);
+		cv::flip(img_gps, img_gps, 0);
 
 
 		cv::putText(img_lrf_l, "l_l" + result_time[movie_step].str(), WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, WEIGHTED_STAT_PAR_IMG_TEXT_COLOR, WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
@@ -2298,46 +1716,98 @@ public:
 
 		measurement_data_video << img;
 
-#if SHOW_MOVIES
-		cv::imshow("Measurements", img);
-		cv::waitKey(1);
-#endif
-
-
 	}
-	void addFlameWeightedStatParImg2()
+	void addFlameWeightedParImg(bool stat_)
 	{
-		cv::Mat img_lrf_l, img_lrf_u, img_omni, img_gpgga, img_fusion;
-		std::thread thread_lrf_l, thread_lrf_u, thread_omni, thread_gpgga;
+		std::vector<Position<>> particle;
+		std::vector<double> likelihood_lid2_l, likelihood_lid2_u, likelihood_omni, likelihood_gps, likelihood_fusion, likelihood_all;
+		if (stat_){
+			particle = all_stat_particles[movie_step];
+			likelihood_lid2_l = all_stat_lid2_l_likelihood[movie_step];
+			likelihood_lid2_u = all_stat_lid2_u_likelihood[movie_step];
+			likelihood_omni = all_stat_omni_likelihood[movie_step];
+			likelihood_gps = all_stat_gpgga_likelihood[movie_step];
+			likelihood_fusion = std::vector<double>(STAT_SAMPLE_SIZE, 0.0);
+		}
+		else{
+			particle = all_particles[movie_step];
+			likelihood_lid2_l = all_lid2_l_likelihood[movie_step];
+			likelihood_lid2_u = all_lid2_u_likelihood[movie_step];
+			likelihood_omni = all_omni_likelihood[movie_step];
+			likelihood_gps = all_gpgga_likelihood[movie_step];
+			likelihood_fusion = all_fusion_likelihood[movie_step];
+		}
+		likelihood_all = std::vector<double>(particle.size(), 1.0);
 
-		switch (trial_type)
-		{
-		case TRIAL_SIMULTANEOUS:
-		case TRIAL_PEARSON:
-		case TRIAL_PEARSON_NONSTAT:
-		case TRIAL_NON_TIMESEQUENCE:
-		case TRIAL_NON_TIMESEQUENCE_SIMUL:
-		case TRIAL_SUYAMA_STAT:
-		case TRIAL_SUYAMA_NONSTAT:
+		// 描画と切り出し
+		cv::Mat img_lrf_l, img_lrf_u, img_omni, img_gps, img_fusion, img_all;
+		img_lrf_l = map_img_color.clone();
+		img_lrf_u = map_img_color.clone();
+		img_omni = map_img_color.clone();
+		img_gps = map_img_color.clone();
+		img_fusion = map_img_color.clone();
+		img_all = map_img_color.clone();
+		Position<> center;
 
-			thread_lrf_l = std::thread([&]{
-				img_lrf_l = createWeightedParImg(all_stat_particles[movie_step], all_stat_lid2_l_likelihood[movie_step], movie_step, false);
-			});
-			thread_lrf_u = std::thread([&]{
-				img_lrf_u = createWeightedParImg(all_stat_particles[movie_step], all_stat_lid2_u_likelihood[movie_step], movie_step, false);
-			});
-			thread_omni = std::thread([&]{
-				img_omni = createWeightedParImg(all_stat_particles[movie_step], all_stat_omni_likelihood[movie_step], movie_step, false);
-			});
-			thread_gpgga = std::thread([&]{
-				img_gpgga = createWeightedParImg(all_stat_particles[movie_step], all_stat_gpgga_likelihood[movie_step], movie_step, false);
-			});
+		/* 切り出し中心 */
+		if (exist_true_position){
+			center = getTruePosition(movie_step);
+		}
+		else{
+			center = estimated_position[movie_step];
+		}
 
-			thread_lrf_l.join();
-			thread_lrf_u.join();
-			thread_omni.join();
-			thread_gpgga.join();
 
+		std::thread thread_lrf_l, thread_lrf_u, thread_omni, thread_gpgga, thread_fusion, thread_all;
+		thread_lrf_l = std::thread([&]{
+			visualizeParticleWeight(img_lrf_l, particle, likelihood_lid2_l, movie_step, img_lrf_l.cols, img_lrf_l.rows, MAP_RES, cv::Point(0, 0), false);
+			rectMap(img_lrf_l, img_lrf_l, center, CUT_MAP_RADIUS_X, CUT_MAP_RADIUS_Y, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
+		});
+		thread_lrf_u = std::thread([&]{
+			if (sensor_num == 4){
+				visualizeParticleWeight(img_lrf_u, particle, likelihood_lid2_u, movie_step, img_lrf_u.cols, img_lrf_u.rows, MAP_RES, cv::Point(0, 0), false);
+			}
+			else if (sensor_num == 3){
+				img_lrf_u = cv::Mat::zeros(cv::Size(map_img_color.cols, map_img_color.rows), CV_8UC3);
+			}
+			rectMap(img_lrf_u, img_lrf_u, center, CUT_MAP_RADIUS_X, CUT_MAP_RADIUS_Y, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
+		});
+		thread_omni = std::thread([&]{
+			visualizeParticleWeight(img_omni, particle, likelihood_omni, movie_step, img_omni.cols, img_omni.rows, MAP_RES, cv::Point(0, 0), false);
+			rectMap(img_omni, img_omni, center, CUT_MAP_RADIUS_X, CUT_MAP_RADIUS_Y, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
+		});
+		thread_gpgga = std::thread([&]{
+			visualizeParticleWeight(img_gps, particle, likelihood_gps, movie_step, img_gps.cols, img_gps.rows, MAP_RES, cv::Point(0, 0), false);
+			rectMap(img_gps, img_gps, center, CUT_MAP_RADIUS_X, CUT_MAP_RADIUS_Y, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
+		});
+		thread_fusion = std::thread([&]{
+			visualizeParticleWeight(img_fusion, particle, likelihood_fusion, movie_step, img_fusion.cols, img_fusion.rows, MAP_RES, cv::Point(0, 0), false);
+			drawPosition(estimated_position[movie_step], img_fusion, IMAGE_ESTIPOSITION_COLOR, img_fusion.cols, img_fusion.rows, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y, cv::Point(0, 0), ESTIMATED_POSITION);
+			rectMap(img_fusion, img_fusion, center, CUT_MAP_RADIUS_X, CUT_MAP_RADIUS_Y, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
+		});
+		thread_all = std::thread([&]{
+			visualizeParticleWeight(img_all, particle, likelihood_all, movie_step, img_all.cols, img_all.rows, MAP_RES, cv::Point(0, 0), false);
+			rectMap(img_all, img_all, center, CUT_MAP_RADIUS_X, CUT_MAP_RADIUS_Y, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
+		});
+
+		thread_lrf_l.join();
+		thread_lrf_u.join();
+		thread_omni.join();
+		thread_gpgga.join();
+		thread_fusion.join();
+		thread_all.join();
+
+		// 上下反転
+		cv::flip(img_lrf_l, img_lrf_l, 0);
+		cv::flip(img_lrf_u, img_lrf_u, 0);
+		cv::flip(img_omni, img_omni, 0);
+		cv::flip(img_gps, img_gps, 0);
+		cv::flip(img_fusion, img_fusion, 0);
+		cv::flip(img_all, img_all, 0);
+
+
+		/* 時刻表記 */
+		if (sensor_num == 4){
 			if (use_sim_[movie_step][0] == true){
 				cv::putText(img_lrf_l, "l_l" + result_time[movie_step].str() + " Use", WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, cv::Scalar(0, 255, 0), WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
 			}
@@ -2357,34 +1827,13 @@ public:
 				cv::putText(img_omni, "c" + result_time[movie_step].str() + " Eli", WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, cv::Scalar(0, 0, 255), WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
 			}
 			if (use_sim_[movie_step][3] == true){
-				cv::putText(img_gpgga, "g" + result_time[movie_step].str() + " Use", WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, cv::Scalar(0, 255, 0), WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
+				cv::putText(img_gps, "g" + result_time[movie_step].str() + " Use", WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, cv::Scalar(0, 255, 0), WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
 			}
 			else{
-				cv::putText(img_gpgga, "g" + result_time[movie_step].str() + " Eli", WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, cv::Scalar(0, 0, 255), WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
+				cv::putText(img_gps, "g" + result_time[movie_step].str() + " Eli", WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, cv::Scalar(0, 0, 255), WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
 			}
-
-			break;
-		case TRIAL_3SENSORS_SIMULATNEOUS:
-		case TRIAL_3SENSORS_PEARSON:
-		case TRIAL_3SENSORS_PEARSON_NONSTAT:
-		case TRIAL_3SENSORS_SUYAMA_NONSTAT:
-		case TRIAL_3SENSORS_LRF_GPS:
-
-			thread_lrf_l = std::thread([&]{
-				img_lrf_l = createWeightedParImg(all_stat_particles[movie_step], all_stat_lid2_l_likelihood[movie_step], movie_step, false);
-			});
-			thread_omni = std::thread([&]{
-				img_omni = createWeightedParImg(all_stat_particles[movie_step], all_stat_omni_likelihood[movie_step], movie_step, false);
-			});
-			thread_gpgga = std::thread([&]{
-				img_gpgga = createWeightedParImg(all_stat_particles[movie_step], all_stat_gpgga_likelihood[movie_step], movie_step, false);
-			});
-
-			thread_lrf_l.join();
-			thread_omni.join();
-			thread_gpgga.join();
-			img_lrf_u = cv::Mat::zeros(cv::Size(img_lrf_l.cols, img_lrf_l.rows), CV_8UC3);
-
+		}
+		else if (sensor_num == 3){
 			if (use_sim_[movie_step][0] == true){
 				cv::putText(img_lrf_l, "l_l" + result_time[movie_step].str() + " Use", WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, cv::Scalar(0, 255, 0), WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
 			}
@@ -2398,78 +1847,132 @@ public:
 				cv::putText(img_omni, "c" + result_time[movie_step].str() + " Eli", WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, cv::Scalar(0, 0, 255), WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
 			}
 			if (use_sim_[movie_step][2] == true){
-				cv::putText(img_gpgga, "g" + result_time[movie_step].str() + " Use", WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, cv::Scalar(0, 255, 0), WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
+				cv::putText(img_gps, "g" + result_time[movie_step].str() + " Use", WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, cv::Scalar(0, 255, 0), WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
 			}
 			else{
-				cv::putText(img_gpgga, "g" + result_time[movie_step].str() + " Eli", WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, cv::Scalar(0, 0, 255), WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
+				cv::putText(img_gps, "g" + result_time[movie_step].str() + " Eli", WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, cv::Scalar(0, 0, 255), WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
 			}
-
-			break;
-		default:
-			break;
 		}
 
+		if (std::find(use_sim_[movie_step].begin(), use_sim_[movie_step].end(), true) == use_sim_[movie_step].end()) {
+			cv::putText(img_fusion, "Fu" + result_time[movie_step].str() + " Use All", WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, WEIGHTED_STAT_PAR_IMG_TEXT_COLOR, WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
+		}
+		else{
+			cv::putText(img_fusion, "Fu" + result_time[movie_step].str(), WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, WEIGHTED_STAT_PAR_IMG_TEXT_COLOR, WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
+		}
+		cv::putText(img_all, "All" + result_time[movie_step].str(), WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, WEIGHTED_STAT_PAR_IMG_TEXT_COLOR, WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
 
 		int w = img_lrf_l.cols;
 		int h = img_lrf_l.rows;
 
-		cv::Mat img(cv::Size(w*2.0, h*2.0), CV_8UC3, cv::Scalar(0, 0, 0));
+		cv::Mat img(cv::Size(w*3.0, h*2.0), CV_8UC3, cv::Scalar(0, 0, 0));
 
 		img_lrf_l.copyTo(img(cv::Rect(cv::Point(0, 0), cv::Size(w, h))));
 		img_lrf_u.copyTo(img(cv::Rect(cv::Point(w, 0), cv::Size(w, h))));
 		img_omni.copyTo(img(cv::Rect(cv::Point(0, h), cv::Size(w, h))));
-		img_gpgga.copyTo(img(cv::Rect(cv::Point(w, h), cv::Size(w, h))));
+		img_gps.copyTo(img(cv::Rect(cv::Point(w, h), cv::Size(w, h))));
+		img_fusion.copyTo(img(cv::Rect(cv::Point(2 * w, 0), cv::Size(w, h))));
+		img_all.copyTo(img(cv::Rect(cv::Point(2 * w, h), cv::Size(w, h))));
 
 		cv::resize(img, img, cv::Size(), MOVIE_SCALE_W, MOVIE_SCALE_H);
+
 
 		//writeWeightedStatParAllImg(img);
 
-		weighted_stat_particle_video << img;
+		if (stat_){
+			weighted_stat_particle_video << img;
+		}
+		else{
+			particle_video << img;
+		}
 
-#if SHOW_MOVIES
-		cv::imshow("Stat Particles", img);
-		cv::waitKey(1);
-#endif
 
 
 	}
-	void addFlameParticleVideo2()
+	void addFlameParticleLargeVideo()
 	{
-		cv::Mat img_lrf_l, img_lrf_u, img_omni, img_gpgga, img_fusion;
-		std::thread thread_lrf_l, thread_lrf_u, thread_omni, thread_gpgga,thread_fusion;
+		std::vector<Position<>> particle;
+		std::vector<double> likelihood_lid2_l, likelihood_lid2_u, likelihood_omni, likelihood_gps, likelihood_fusion, likelihood_all;
+		particle = all_particles[movie_step];
+		likelihood_lid2_l = all_lid2_l_likelihood[movie_step];
+		likelihood_lid2_u = all_lid2_u_likelihood[movie_step];
+		likelihood_omni = all_omni_likelihood[movie_step];
+		likelihood_gps = all_gpgga_likelihood[movie_step];
+		likelihood_fusion = all_fusion_likelihood[movie_step];
+		likelihood_all = std::vector<double>(particle.size(), 1.0);
 
-		switch (trial_type)
-		{
-		case TRIAL_SIMULTANEOUS:
-		case TRIAL_PEARSON:
-		case TRIAL_PEARSON_NONSTAT:
-		case TRIAL_NON_TIMESEQUENCE:
-		case TRIAL_NON_TIMESEQUENCE_SIMUL:
-		case TRIAL_SUYAMA_STAT:
-		case TRIAL_SUYAMA_NONSTAT:
-			thread_lrf_l = std::thread([&]{
-				img_lrf_l = createWeightedParImg(all_particles[movie_step], all_lid2_l_likelihood[movie_step], movie_step,false);
-			});
-			thread_lrf_u = std::thread([&]{
-				img_lrf_u = createWeightedParImg(all_particles[movie_step], all_lid2_u_likelihood[movie_step], movie_step,false);
-			});
-			thread_omni = std::thread([&]{
-				img_omni = createWeightedParImg(all_particles[movie_step], all_omni_likelihood[movie_step], movie_step,false);
-			});
-			thread_gpgga = std::thread([&]{
-				img_gpgga = createWeightedParImg(all_particles[movie_step], all_gpgga_likelihood[movie_step], movie_step,false);
-			});
-			thread_fusion = std::thread([&]{
-				img_fusion = createWeightedParImg(all_particles[movie_step], all_fusion_likelihood[movie_step], movie_step,true);
-			});
+		/* 切り出し中心 */
+		Position<> center;
+		if (exist_true_position){
+			center = getTruePosition(movie_step);
+		}
+		else{
+			center = estimated_position[movie_step];
+		}
 
-			thread_lrf_l.join();
-			thread_lrf_u.join();
-			thread_omni.join();
-			thread_gpgga.join();
-			thread_fusion.join();
+		// 描画と切り出し
+		cv::Mat mat = map_img_color.clone();
+		cv::Point upleft_pix = rectMap(mat, mat, center, CUT_LARGE_MAP_RADIUS_X, CUT_LARGE_MAP_RADIUS_Y, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
+		double scale = CUT_MAP_RADIUS_X / CUT_LARGE_MAP_RADIUS_X;
+		cv::resize(mat, mat, cv::Size(), scale, scale);
+		upleft_pix.x *= scale;
+		upleft_pix.y *= scale;
+		int cols = map_img_color.cols*scale;
+		int rows = map_img_color.rows*scale;
+		float map_res = MAP_RES / scale;
+
+		cv::Mat img_lrf_l, img_lrf_u, img_omni, img_gps, img_fusion, img_all;
+		img_lrf_l = mat.clone();
+		img_lrf_u = mat.clone();
+		img_omni = mat.clone();
+		img_gps = mat.clone();
+		img_fusion = mat.clone();
+		img_all = mat.clone();
+
+		std::thread thread_lrf_l, thread_lrf_u, thread_omni, thread_gpgga, thread_fusion, thread_all;
+		thread_lrf_l = std::thread([&]{
+			visualizeParticleWeight(img_lrf_l, particle, likelihood_lid2_l, movie_step, cols, rows, map_res, upleft_pix, false);
+		});
+		thread_lrf_u = std::thread([&]{
+			if (sensor_num == 4){
+				visualizeParticleWeight(img_lrf_u, particle, likelihood_lid2_u, movie_step, cols, rows, map_res, upleft_pix, false);
+			}
+			else if (sensor_num == 3){
+				img_lrf_u = cv::Mat::zeros(cv::Size(img_lrf_u.cols, img_lrf_u.rows), CV_8UC3);
+			}
+		});
+		thread_omni = std::thread([&]{
+			visualizeParticleWeight(img_omni, particle, likelihood_omni, movie_step, cols, rows, map_res, upleft_pix, false);
+		});
+		thread_gpgga = std::thread([&]{
+			visualizeParticleWeight(img_gps, particle, likelihood_gps, movie_step, cols, rows, map_res, upleft_pix, false);
+		});
+		thread_fusion = std::thread([&]{
+			visualizeParticleWeight(img_fusion, particle, likelihood_fusion, movie_step, cols, rows, map_res, upleft_pix, false);
+			drawPosition(estimated_position[movie_step], img_fusion, IMAGE_ESTIPOSITION_COLOR, cols, rows, map_res, MAP_IMG_ORG_X, MAP_IMG_ORG_Y, upleft_pix, ESTIMATED_POSITION);
+		});
+		thread_all = std::thread([&]{
+			visualizeParticleWeight(img_all, particle, likelihood_all, movie_step, cols, rows, map_res, upleft_pix, false);
+		});
+
+		thread_lrf_l.join();
+		thread_lrf_u.join();
+		thread_omni.join();
+		thread_gpgga.join();
+		thread_fusion.join();
+		thread_all.join();
+
+		// 上下反転
+		cv::flip(img_lrf_l, img_lrf_l, 0);
+		cv::flip(img_lrf_u, img_lrf_u, 0);
+		cv::flip(img_omni, img_omni, 0);
+		cv::flip(img_gps, img_gps, 0);
+		cv::flip(img_fusion, img_fusion, 0);
+		cv::flip(img_all, img_all, 0);
 
 
+		/* 時刻表記 */
+		if (sensor_num == 4){
 			if (use_sim_[movie_step][0] == true){
 				cv::putText(img_lrf_l, "l_l" + result_time[movie_step].str() + " Use", WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, cv::Scalar(0, 255, 0), WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
 			}
@@ -2489,45 +1992,13 @@ public:
 				cv::putText(img_omni, "c" + result_time[movie_step].str() + " Eli", WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, cv::Scalar(0, 0, 255), WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
 			}
 			if (use_sim_[movie_step][3] == true){
-				cv::putText(img_gpgga, "g" + result_time[movie_step].str() + " Use", WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, cv::Scalar(0, 255, 0), WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
+				cv::putText(img_gps, "g" + result_time[movie_step].str() + " Use", WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, cv::Scalar(0, 255, 0), WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
 			}
 			else{
-				cv::putText(img_gpgga, "g" + result_time[movie_step].str() + " Eli", WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, cv::Scalar(0, 0, 255), WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
+				cv::putText(img_gps, "g" + result_time[movie_step].str() + " Eli", WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, cv::Scalar(0, 0, 255), WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
 			}
-			if (std::find(use_sim_[movie_step].begin(), use_sim_[movie_step].end(), true) == use_sim_[movie_step].end()) {
-				cv::putText(img_fusion, "Fu" + result_time[movie_step].str() + " Use All", WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, WEIGHTED_STAT_PAR_IMG_TEXT_COLOR, WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
-			}
-			else{
-				cv::putText(img_fusion, "Fu" + result_time[movie_step].str(), WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, WEIGHTED_STAT_PAR_IMG_TEXT_COLOR, WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
-			}
-
-			break;
-		case TRIAL_3SENSORS_SIMULATNEOUS:
-		case TRIAL_3SENSORS_PEARSON:
-		case TRIAL_3SENSORS_PEARSON_NONSTAT:
-		case TRIAL_3SENSORS_SUYAMA_NONSTAT:
-		case TRIAL_3SENSORS_LRF_GPS:
-
-			thread_lrf_l = std::thread([&]{
-				img_lrf_l = createWeightedParImg(all_particles[movie_step], all_lid2_l_likelihood[movie_step], movie_step, false);
-			});
-			thread_omni = std::thread([&]{
-				img_omni = createWeightedParImg(all_particles[movie_step], all_omni_likelihood[movie_step], movie_step, false);
-			});
-			thread_gpgga = std::thread([&]{
-				img_gpgga = createWeightedParImg(all_particles[movie_step], all_gpgga_likelihood[movie_step], movie_step, false);
-			});
-			thread_fusion = std::thread([&]{
-				img_fusion = createWeightedParImg(all_particles[movie_step], all_fusion_likelihood[movie_step], movie_step, true);
-			});
-
-			thread_lrf_l.join();
-			thread_omni.join();
-			thread_gpgga.join();
-			thread_fusion.join();
-			img_lrf_u = cv::Mat::zeros(cv::Size(img_lrf_l.cols, img_lrf_l.rows), CV_8UC3);
-
-
+		}
+		else if (sensor_num == 3){
 			if (use_sim_[movie_step][0] == true){
 				cv::putText(img_lrf_l, "l_l" + result_time[movie_step].str() + " Use", WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, cv::Scalar(0, 255, 0), WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
 			}
@@ -2541,46 +2012,19 @@ public:
 				cv::putText(img_omni, "c" + result_time[movie_step].str() + " Eli", WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, cv::Scalar(0, 0, 255), WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
 			}
 			if (use_sim_[movie_step][2] == true){
-				cv::putText(img_gpgga, "g" + result_time[movie_step].str() + " Use", WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, cv::Scalar(0, 255, 0), WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
+				cv::putText(img_gps, "g" + result_time[movie_step].str() + " Use", WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, cv::Scalar(0, 255, 0), WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
 			}
 			else{
-				cv::putText(img_gpgga, "g" + result_time[movie_step].str() + " Eli", WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, cv::Scalar(0, 0, 255), WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
+				cv::putText(img_gps, "g" + result_time[movie_step].str() + " Eli", WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, cv::Scalar(0, 0, 255), WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
 			}
-			if (std::find(use_sim_[movie_step].begin(), use_sim_[movie_step].end(), true) == use_sim_[movie_step].end()) {
-				cv::putText(img_fusion, "Fu" + result_time[movie_step].str() + " Use All", WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, WEIGHTED_STAT_PAR_IMG_TEXT_COLOR, WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
-			}
-			else{
-				cv::putText(img_fusion, "Fu" + result_time[movie_step].str(), WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, WEIGHTED_STAT_PAR_IMG_TEXT_COLOR, WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
-			}
-			break;
-
-		default:
-			break;
 		}
-
-
-
-		VisualizeAfterorBeforeResampling vabr = VISUALIZE_AFTER_OR_BEFORE_RESAMPLING;
-		std::vector<double> likelihood;
-		cv::Mat img_resampling;
-		switch (vabr)
-		{
-		case AFTER_RESAMPLING:
-			likelihood = std::vector<double>(SAMPLE_SIZE, 1.0);
-			img_resampling = createWeightedParImg(all_particles_after_resampling[movie_step], likelihood, movie_step,false);
-			cv::putText(img_resampling, "Re" + result_time[movie_step].str(), WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, WEIGHTED_STAT_PAR_IMG_TEXT_COLOR, WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
-			break;
-		case BEFORE_RESAMPLING:
-			likelihood = std::vector<double>(SAMPLE_SIZE, 1.0);
-			img_resampling = createWeightedParImg(all_particles[movie_step], likelihood, movie_step, false);
-			cv::putText(img_resampling, "All" + result_time[movie_step].str(), WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, WEIGHTED_STAT_PAR_IMG_TEXT_COLOR, WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
-			break;
-		default:
-			std::cout << "NON SAMPLING VISUALIZE_AFTER_OR_BEFORE_RESAMPLING: " << vabr << std::endl;
-			exit(0);
-			break;
+		if (std::find(use_sim_[movie_step].begin(), use_sim_[movie_step].end(), true) == use_sim_[movie_step].end()) {
+			cv::putText(img_fusion, "Fu" + result_time[movie_step].str() + " Use All", WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, WEIGHTED_STAT_PAR_IMG_TEXT_COLOR, WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
 		}
-
+		else{
+			cv::putText(img_fusion, "Fu" + result_time[movie_step].str(), WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, WEIGHTED_STAT_PAR_IMG_TEXT_COLOR, WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
+		}
+		cv::putText(img_all, "All" + result_time[movie_step].str(), WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, WEIGHTED_STAT_PAR_IMG_TEXT_COLOR, WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
 
 		int w = img_lrf_l.cols;
 		int h = img_lrf_l.rows;
@@ -2590,189 +2034,17 @@ public:
 		img_lrf_l.copyTo(img(cv::Rect(cv::Point(0, 0), cv::Size(w, h))));
 		img_lrf_u.copyTo(img(cv::Rect(cv::Point(w, 0), cv::Size(w, h))));
 		img_omni.copyTo(img(cv::Rect(cv::Point(0, h), cv::Size(w, h))));
-		img_gpgga.copyTo(img(cv::Rect(cv::Point(w, h), cv::Size(w, h))));
+		img_gps.copyTo(img(cv::Rect(cv::Point(w, h), cv::Size(w, h))));
 		img_fusion.copyTo(img(cv::Rect(cv::Point(2 * w, 0), cv::Size(w, h))));
-		img_resampling.copyTo(img(cv::Rect(cv::Point(2 * w, h), cv::Size(w, h))));
+		img_all.copyTo(img(cv::Rect(cv::Point(2 * w, h), cv::Size(w, h))));
 
 		cv::resize(img, img, cv::Size(), MOVIE_SCALE_W, MOVIE_SCALE_H);
 
-		particle_video << img;
 
-#if SHOW_MOVIES
-		cv::imshow("Particles", img);
-		cv::waitKey(1);
-#endif
-
-
-	}
-	void addFlameParticleLargeVideo2()
-	{
-		cv::Mat img_lrf_l, img_lrf_u, img_omni, img_gpgga, img_fusion;
-		std::thread thread_lrf_l, thread_lrf_u, thread_omni, thread_gpgga, thread_fusion;
-
-		switch (trial_type)
-		{
-		case TRIAL_SIMULTANEOUS:
-		case TRIAL_PEARSON:
-		case TRIAL_PEARSON_NONSTAT:
-		case TRIAL_NON_TIMESEQUENCE:
-		case TRIAL_NON_TIMESEQUENCE_SIMUL:
-		case TRIAL_SUYAMA_STAT:
-		case TRIAL_SUYAMA_NONSTAT:
-			thread_lrf_l = std::thread([&]{
-				img_lrf_l = createWeightedParImgLarge(all_particles[movie_step], all_lid2_l_likelihood[movie_step], movie_step, false);
-			});
-			thread_lrf_u = std::thread([&]{
-				img_lrf_u = createWeightedParImgLarge(all_particles[movie_step], all_lid2_u_likelihood[movie_step], movie_step, false);
-			});
-			thread_omni = std::thread([&]{
-				img_omni = createWeightedParImgLarge(all_particles[movie_step], all_omni_likelihood[movie_step], movie_step, false);
-			});
-			thread_gpgga = std::thread([&]{
-				img_gpgga = createWeightedParImgLarge(all_particles[movie_step], all_gpgga_likelihood[movie_step], movie_step, false);
-			});
-			thread_fusion = std::thread([&]{
-				img_fusion = createWeightedParImgLarge(all_particles[movie_step], all_fusion_likelihood[movie_step], movie_step, true);
-			});
-
-			thread_lrf_l.join();
-			thread_lrf_u.join();
-			thread_omni.join();
-			thread_gpgga.join();
-			thread_fusion.join();
-
-
-			if (use_sim_[movie_step][0] == true){
-				cv::putText(img_lrf_l, "l_l" + result_time[movie_step].str() + " Use", WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, cv::Scalar(0, 255, 0), WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
-			}
-			else{
-				cv::putText(img_lrf_l, "l_l" + result_time[movie_step].str() + " Eli", WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, cv::Scalar(0, 0, 255), WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
-			}
-			if (use_sim_[movie_step][1] == true){
-				cv::putText(img_lrf_u, "l_u" + result_time[movie_step].str() + " Use", WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, cv::Scalar(0, 255, 0), WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
-			}
-			else{
-				cv::putText(img_lrf_u, "l_u" + result_time[movie_step].str() + " Eli", WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, cv::Scalar(0, 0, 255), WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
-			}
-			if (use_sim_[movie_step][2] == true){
-				cv::putText(img_omni, "c" + result_time[movie_step].str() + " Use", WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, cv::Scalar(0, 255, 0), WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
-			}
-			else{
-				cv::putText(img_omni, "c" + result_time[movie_step].str() + " Eli", WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, cv::Scalar(0, 0, 255), WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
-			}
-			if (use_sim_[movie_step][3] == true){
-				cv::putText(img_gpgga, "g" + result_time[movie_step].str() + " Use", WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, cv::Scalar(0, 255, 0), WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
-			}
-			else{
-				cv::putText(img_gpgga, "g" + result_time[movie_step].str() + " Eli", WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, cv::Scalar(0, 0, 255), WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
-			}
-			if (std::find(use_sim_[movie_step].begin(), use_sim_[movie_step].end(), true) == use_sim_[movie_step].end()) {
-				cv::putText(img_fusion, "Fu" + result_time[movie_step].str() + " Use All", WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, WEIGHTED_STAT_PAR_IMG_TEXT_COLOR, WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
-			}
-			else{
-				cv::putText(img_fusion, "Fu" + result_time[movie_step].str(), WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, WEIGHTED_STAT_PAR_IMG_TEXT_COLOR, WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
-			}
-
-			break;
-		case TRIAL_3SENSORS_SIMULATNEOUS:
-		case TRIAL_3SENSORS_PEARSON:
-		case TRIAL_3SENSORS_PEARSON_NONSTAT:
-		case TRIAL_3SENSORS_SUYAMA_NONSTAT:
-		case TRIAL_3SENSORS_LRF_GPS:
-
-			thread_lrf_l = std::thread([&]{
-				img_lrf_l = createWeightedParImgLarge(all_particles[movie_step], all_lid2_l_likelihood[movie_step], movie_step, false);
-			});
-			thread_omni = std::thread([&]{
-				img_omni = createWeightedParImgLarge(all_particles[movie_step], all_omni_likelihood[movie_step], movie_step, false);
-			});
-			thread_gpgga = std::thread([&]{
-				img_gpgga = createWeightedParImgLarge(all_particles[movie_step], all_gpgga_likelihood[movie_step], movie_step, false);
-			});
-			thread_fusion = std::thread([&]{
-				img_fusion = createWeightedParImgLarge(all_particles[movie_step], all_fusion_likelihood[movie_step], movie_step, true);
-			});
-
-			thread_lrf_l.join();
-			thread_omni.join();
-			thread_gpgga.join();
-			thread_fusion.join();
-			img_lrf_u = cv::Mat::zeros(cv::Size(img_lrf_l.cols, img_lrf_l.rows), CV_8UC3);
-
-
-			if (use_sim_[movie_step][0] == true){
-				cv::putText(img_lrf_l, "l_l" + result_time[movie_step].str() + " Use", WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, cv::Scalar(0, 255, 0), WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
-			}
-			else{
-				cv::putText(img_lrf_l, "l_l" + result_time[movie_step].str() + " Eli", WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, cv::Scalar(0, 0, 255), WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
-			}
-			if (use_sim_[movie_step][1] == true){
-				cv::putText(img_omni, "c" + result_time[movie_step].str() + " Use", WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, cv::Scalar(0, 255, 0), WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
-			}
-			else{
-				cv::putText(img_omni, "c" + result_time[movie_step].str() + " Eli", WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, cv::Scalar(0, 0, 255), WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
-			}
-			if (use_sim_[movie_step][2] == true){
-				cv::putText(img_gpgga, "g" + result_time[movie_step].str() + " Use", WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, cv::Scalar(0, 255, 0), WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
-			}
-			else{
-				cv::putText(img_gpgga, "g" + result_time[movie_step].str() + " Eli", WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, cv::Scalar(0, 0, 255), WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
-			}
-			if (std::find(use_sim_[movie_step].begin(), use_sim_[movie_step].end(), true) == use_sim_[movie_step].end()) {
-				cv::putText(img_fusion, "Fu" + result_time[movie_step].str() + " Use All", WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, WEIGHTED_STAT_PAR_IMG_TEXT_COLOR, WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
-			}
-			else{
-				cv::putText(img_fusion, "Fu" + result_time[movie_step].str(), WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, WEIGHTED_STAT_PAR_IMG_TEXT_COLOR, WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
-			}
-			break;
-
-		default:
-			break;
-		}
-
-
-		VisualizeAfterorBeforeResampling vabr = VISUALIZE_AFTER_OR_BEFORE_RESAMPLING;
-		std::vector<double> likelihood;
-		cv::Mat img_resampling;
-		switch (vabr)
-		{
-		case AFTER_RESAMPLING:
-			likelihood = std::vector<double>(SAMPLE_SIZE, 1.0);
-			img_resampling = createWeightedParImgLarge(all_particles_after_resampling[movie_step], likelihood, movie_step,false);
-			cv::putText(img_resampling, "Re" + result_time[movie_step].str(), WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, WEIGHTED_STAT_PAR_IMG_TEXT_COLOR, WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
-			break;
-		case BEFORE_RESAMPLING:
-			likelihood = std::vector<double>(SAMPLE_SIZE, 1.0);
-			img_resampling = createWeightedParImgLarge(all_particles[movie_step], likelihood, movie_step, false);
-			cv::putText(img_resampling, "All" + result_time[movie_step].str(), WEIGHTED_STAT_PAR_IMG_TEXT_POINT, WEIGHTED_STAT_PAR_IMG_TEXT_FONT, WEIGHTED_STAT_PAR_IMG_TEXT_SCALE, WEIGHTED_STAT_PAR_IMG_TEXT_COLOR, WEIGHTED_STAT_PAR_IMG_TEXT_THIN, CV_AA);
-			break;
-		default:
-			std::cout << "NON SAMPLING VISUALIZE_AFTER_OR_BEFORE_RESAMPLING: " << vabr << std::endl;
-			exit(0);
-			break;
-		}
-
-
-		int w = img_lrf_l.cols;
-		int h = img_lrf_l.rows;
-
-		cv::Mat img(cv::Size(w*3.0, h*2.0), CV_8UC3, cv::Scalar(0, 0, 0));
-
-		img_lrf_l.copyTo(img(cv::Rect(cv::Point(0, 0), cv::Size(w, h))));
-		img_lrf_u.copyTo(img(cv::Rect(cv::Point(w, 0), cv::Size(w, h))));
-		img_omni.copyTo(img(cv::Rect(cv::Point(0, h), cv::Size(w, h))));
-		img_gpgga.copyTo(img(cv::Rect(cv::Point(w, h), cv::Size(w, h))));
-		img_fusion.copyTo(img(cv::Rect(cv::Point(2 * w, 0), cv::Size(w, h))));
-		img_resampling.copyTo(img(cv::Rect(cv::Point(2 * w, h), cv::Size(w, h))));
-
-		cv::resize(img, img, cv::Size(), MOVIE_SCALE_W, MOVIE_SCALE_H);
+		//writeWeightedStatParAllImg(img);
 
 		particle_large_video << img;
 
-#if SHOW_MOVIES
-		cv::imshow("ParticlesLarge", img);
-		cv::waitKey(1);
-#endif
 
 
 	}
@@ -3343,7 +2615,7 @@ public:
 		}
 		ofs.close();
 		std::cout << "Complete Output Use Sensor" << std::endl;
-		
+
 		{
 			std::string filename = ofpath + "Data/use_sensor_sim_.csv";
 			std::ofstream ofs(filename, std::ios_base::out);
@@ -3479,7 +2751,7 @@ public:
 		default:
 			break;
 		}
-	
+
 		for (int i = 0; i < similarity_table.size(); i++) {
 			for (int j = 0; j < similarity_table[i].size(); j++) {
 				ofs << i << "," << result_time[i] << "," << diff_time_ini_now[i] << "," << similarity_table[i][j] << std::endl;
@@ -3846,7 +3118,6 @@ public:
 	cv::Mat_<float> reliabity_map_omni;
 	cv::Mat_<float> reliabity_map_gps;
 
-
 	bool finish = false;
 	bool read_all_measurement_ = false;
 	bool fin_read_env = false;
@@ -3855,6 +3126,7 @@ public:
 	int read_meas_no = FIRST_NO;
 	int read_meas_step = FIRST_STEP;
 
+	const bool exist_true_position;
 
 	/* スレッド */
 	std::thread set_environment_thread;
