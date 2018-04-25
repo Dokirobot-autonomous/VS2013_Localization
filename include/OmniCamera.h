@@ -171,38 +171,55 @@ public:
 	}
 
 	/* 環境画像descriptorの読み込み */
+	//void readEnvDescriptor(std::string filepath) {
+	//	int fnum = 1;
+	//	while (true) {
+	//		std::string filename = filepath + "descriptor/desc_" + std::to_string(fnum) + "th.csv";
+	//		cv::Mat descriptors_tmp;
+	//		std::ifstream ifs(filename);
+	//		if (ifs.fail()) {
+	//			break;
+	//		}
+	//		
+	//		std::vector<std::vector<float>> v;
+	//		{
+	//			v.reserve(1500);
+	//			std::string str;
+	//			while (std::getline(ifs, str))
+	//			{
+	//				std::vector<float> tmp = Split<float>(str, ",");
+	//				v.push_back(tmp);
+	//			}
+	//		}
+	//		clock_t lap4_7 = clock();
+	//		cv::Mat descriptor_tmp;
+	//		for (int i = 0; i < v.size(); i++){
+	//			cv::Mat mat(v[i], true);
+	//			mat = mat.t();
+	//			descriptor_tmp.push_back(mat);
+	//		}
+	//		env_descriptors.push_back(descriptor_tmp);
+	//		fnum++;
+	//		std::cout << fnum << std::endl;
+	//	}
+	//	if (env_descriptors.empty()) {
+	//		readError(filepath + "descriptor");
+	//	}
+	//}
 	void readEnvDescriptor(std::string filepath) {
 
 		int fnum = 1;
 		while (true) {
-			std::string filename = filepath + "descriptor/desc_" + std::to_string(fnum) + "th.csv";
-			cv::Mat descriptors_tmp;
-			std::ifstream ifs(filename);
-			if (ifs.fail()) {
+			std::string filename = filepath + "descriptor/desc_" + std::to_string(fnum) + "th.bmp";
+			cv::Mat_<float> descriptor_tmp=cv::imread(filename,CV_LOAD_IMAGE_ANYCOLOR);
+			if (descriptor_tmp.empty()){
 				break;
 			}
-			
-			std::vector<std::vector<float>> v;
-			{
-				v.reserve(1500);
-				std::string str;
-				while (std::getline(ifs, str))
-				{
-					std::vector<float> tmp = Split<float>(str, ",");
-					v.push_back(tmp);
-				}
-			}
-			clock_t lap4_7 = clock();
-			cv::Mat descriptor_tmp;
-			for (int i = 0; i < v.size(); i++){
-				cv::Mat mat(v[i], true);
-				mat = mat.t();
-				descriptor_tmp.push_back(mat);
-			}
+
 			env_descriptors.push_back(descriptor_tmp);
 
 			fnum++;
-
+			std::cout << fnum << std::endl;
 		}
 		if (env_descriptors.empty()) {
 			readError(filepath + "descriptor");
@@ -549,8 +566,14 @@ public:
 		// ヒストグラムから類似画像検索
 		//	環境画像の特徴ベクトルと撮影画像の特徴ベクトルとの内積をとり，小さいベクトルは類似
 		dot_product = mes_histgram * env_histgram.t(); // こっちは内積
+		for (int i = 0; i < dot_product.cols; i++){
+			dot_product_vec.push_back(dot_product(0, i));
+		}
 
-		std::cout << dot_product << std::endl;
+		for (int i = 0; i < dot_product.cols; i++){
+			//std::cout << dot_product(0,i) << std::endl;
+		}
+
 
 		//	閾値処理
 		for (int i = 0; i < dot_product.cols; i++)
@@ -818,7 +841,6 @@ public:
 
 	template<typename T>
 	void calcSimilarityBetweenImages(const Position<T>& esti_positioin, OMNI_FEATURE_TYPE feature) {
-
 		imgForCalcAll_img.clear();
 		imgForCalcAll_dmatch_size.clear();
 		imgForCalcLikeAll_positioin.clear();
@@ -840,8 +862,8 @@ public:
 			imgForCalcLikeAll_positioin.push_back(env_img_position.at(i));
 			imgForCalcLikeAll_inImgAll_keypoint.push_back(env_keypoints[i]);
 			imgForCalcLikeAll_descriptors.push_back(env_descriptors[i].clone());
+		//std::cout << 2 << std::endl;
 		}
-
 		switch (feature)
 		{
 		case OMNI_FEATURE_SIFT:
@@ -1245,6 +1267,40 @@ public:
 
 	}
 
+	void debug(int no,int step){
+		// debugモードではない場合、スキップ
+		if (!mode_debug){
+			return;
+		}
+		std::string filename = HDD_PATH + "Data/Localization/Measurement/" + MEASUREMENT_DATE + "/" + MEASUREMENT_TIME + "/img/img_no" + std::to_string(no) + "_" + std::to_string(step) + "th.bmp";
+		cv::Mat mat = cv::imread(filename, CV_LOAD_IMAGE_GRAYSCALE);
+		if (mat.empty()){
+			readError(filename);
+		}
+
+		cv::Point center(mat.cols / 1.9, mat.rows / 2);
+
+		///*  Operatorの塗りつぶし  */
+		//cv::Size radius(mat.rows / 3, mat.rows / 3);
+		//double start_angle = -105;	//	扇系の中心角度
+		//double angle = 35;	//	角度
+		//cv::ellipse(mat, center, radius, start_angle, 0, angle, cv::Scalar(0, 0, 0), -1, CV_AA);
+
+		/* 外枠の塗りつぶし */
+		cv::circle(mat, center, 510, cv::Scalar(0, 0, 0), 150);
+
+		//　等間隔の画像に切り出し
+		cv::Rect roi_rect(ROI_ORG_X, ROI_ORG_Y, ROI_SIZE_X, ROI_SIZE_Y); // x,y,w,h
+		mat = mat(roi_rect);
+
+
+
+		cv::drawKeypoints(mat, keypoints, mat);
+
+		cv::resize(mat, mat, cv::Size(), 0.25, 0.25);
+		cv::imshow("omni image", mat);
+
+	}
 
 	template<typename T>
 	double getLikelihood(const Position<T> particle, OMNI_FEATURE_TYPE feature)
@@ -1413,6 +1469,9 @@ public:
 	}
 
 
+	/* パラメータの出力 */
+	
+
 	/**********************************************************/
 	//	メンバ変数
 	/**********************************************************/
@@ -1434,7 +1493,7 @@ public:
 	std::vector<cv::KeyPoint> keypoints;
 	cv::Mat_<float> descriptors;		// ROWS:特徴点数 COLS:128
 	cv::Mat_<double> dot_product;	//	環境ヒストグラムと計測ヒストグラムの内積
-
+	std::vector<double> dot_product_vec;
 									/*  尤度生成関連  */
 	std::vector<int> sim_img_idx;	//	計測画像と類似する環境画像のインデックス
 
@@ -1446,5 +1505,8 @@ public:
 	std::vector<std::vector<cv::KeyPoint>> imgForCalcLikeAll_inImgAll_keypoint;	// [画像番号][キーポイント番号]
 	std::vector<cv::Mat> imgForCalcLikeAll_descriptors;
 
+	double bof_th_sim = BOF_TH_SIM;
+
+	bool mode_debug=CAMERA_DEBUG;
 
 };

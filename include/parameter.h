@@ -4,6 +4,9 @@
 #include "myfun.h"
 #include "mycv.h"
 
+#define MODE_TEST false
+#define CAMERA_DEBUG true
+
 /**********************************************************/
 // 実験条件
 /**********************************************************/
@@ -13,7 +16,7 @@
 #define LOCALIZATION_SQUARE 1
 #define LOCALIZATION_B2 2
 #define LOCALIZATION_AROUND_8GO 3
-#define LOCALIZATION_AREA LOCALIZATION_SQUARE
+#define LOCALIZATION_AREA LOCALIZATION_PARKING
 
 /* 分布の底上げ */
 #define ADD_BIAS true
@@ -22,7 +25,7 @@
 #define TEST 0
 
 /* True position */
-#define EXIST_TRUE_POSITION 0
+#define EXIST_TRUE_POSITION 1
 
 /* Visualize Map Scale */
 #define VISUALIZE_MAP_SCALE 0.5
@@ -63,7 +66,7 @@ enum TrialType
 	TRIAL_3SENSORS_SUYAMA_NONSTAT = 10,
 	TRIAL_3SENSORS_LRF_GPS=11,
 };
-#define TRIAL_TYPE TRIAL_SIMULTANEOUS
+#define TRIAL_TYPE TRIAL_3SENSORS_SIMULATNEOUS
 
 /* カメラ特徴量 */
 enum OMNI_FEATURE_TYPE
@@ -83,7 +86,7 @@ enum OMNI_FEATURE_TYPE
 /*  開始ステップと終了ステップ  */
 #define FIRST_STEP 1
 #define FIRST_NO 1
-#define LAST_STEP 10000// 最後まで実行したい場合は10000にする
+#define LAST_STEP 30000// 最後まで実行したい場合は10000にする
 //#define LAST_STEP 1 // 最後まで実行したい場合は10000にする
 #define LAST_NO 1
 #define TRUE_IDX_INI 1
@@ -191,8 +194,8 @@ const std::string ENVIRONMENT_DATE = "171115"; // 入力ファイルのディレクトリ
 const std::string ENVIRONMENT_TIME = "1536";
 const std::string ENVIRONMENT_DATE_OMNI = "180407"; // 入力ファイルのディレクトリ
 const std::string ENVIRONMENT_TIME_OMNI = "1404";
-#define BOF_A 3.8452E+13
-#define BOF_B -44.27
+#define BOF_A 53143.71
+#define BOF_B -4.672
 //#define BOF_A 168423.8
 //#define BOF_B -6.31
 #define MAP_ORG_LAT 35110390 // 地図の原点の緯度（地図生成時のLeica位置）
@@ -219,10 +222,21 @@ const std::string ENVIRONMENT_TIME_OMNI = "1700";
 #endif
 // 8号館周辺
 #if LOCALIZATION_AREA==LOCALIZATION_AROUND_8GO
+//const std::string ENVIRONMENT_DATE = "180209"; // 入力ファイルのディレクトリ
+//const std::string ENVIRONMENT_TIME = "1404";
+//const std::string ENVIRONMENT_DATE_OMNI = "180209"; // 入力ファイルのディレクトリ
+//const std::string ENVIRONMENT_TIME_OMNI = "1404";
+//#define MAP_ORG_LAT 35110367 // 地図の原点の緯度（地図生成時のLeica位置）35110367
+//#define MAP_ORG_LON 137064898 // 地図の原点の経度（地図生成時のLeica位置）137064898
+//#define MAP_ORG_ELE 170 // 地図の原点の高度（環境内ではこの値で一定と見なす）
+//#define MAP_ORG_HEAD 0 // 地図の原点の初期角度（北を0°として時計回りを正，ほぼ全ての地図で0）
+//#define MAP_IMG_ORG_X 0.5 // 地図画像の原点（正規化）
+//#define MAP_IMG_ORG_Y 0.8 // 地図画像の原点（正規化）
+//#define MAP_RES 50 // 地図画像の分解能[mm]
 const std::string ENVIRONMENT_DATE = "180209"; // 入力ファイルのディレクトリ
 const std::string ENVIRONMENT_TIME = "1404";
-const std::string ENVIRONMENT_DATE_OMNI = "180209"; // 入力ファイルのディレクトリ
-const std::string ENVIRONMENT_TIME_OMNI = "1404";
+const std::string ENVIRONMENT_DATE_OMNI = "180414"; // 入力ファイルのディレクトリ
+const std::string ENVIRONMENT_TIME_OMNI = "1259";
 #define MAP_ORG_LAT 35110367 // 地図の原点の緯度（地図生成時のLeica位置）35110367
 #define MAP_ORG_LON 137064898 // 地図の原点の経度（地図生成時のLeica位置）137064898
 #define MAP_ORG_ELE 170 // 地図の原点の高度（環境内ではこの値で一定と見なす）
@@ -237,12 +251,12 @@ const std::string ENVIRONMENT_TIME_OMNI = "1404";
 // 地図データ作成時にleicaに方向バイアスを加えた場合，加えた分を引いておくこと
 #if LOCALIZATION_AREA==LOCALIZATION_PARKING
 /* parking */
-const std::string MEASUREMENT_DATE = "171031"; // 入力ファイルのディレクトリ
-const std::string MEASUREMENT_TIME = "1237";
-#define LEICA_ORG_LAT 35110177 // 地図の原点の緯度
-#define LEICA_ORG_LON 137063850// 地図の原点の経度
-#define LEICA_ORG_ELE 150 // 地図の原点の高度（環境内ではこの値で一定と見なす）
-#define LEICA_HORIZONTAL_ERROR -112+0.05/M_PI*180  // LEICAが0°を指すときの北からの角度
+//const std::string MEASUREMENT_DATE = "171031"; // 入力ファイルのディレクトリ
+//const std::string MEASUREMENT_TIME = "1237";
+//#define LEICA_ORG_LAT 35110177 // 地図の原点の緯度
+//#define LEICA_ORG_LON 137063850// 地図の原点の経度
+//#define LEICA_ORG_ELE 150 // 地図の原点の高度（環境内ではこの値で一定と見なす）
+//#define LEICA_HORIZONTAL_ERROR -112+0.05/M_PI*180  // LEICAが0°を指すときの北からの角度
 ///* parking */
 //const std::string MEASUREMENT_DATE = "171031"; // 入力ファイルのディレクトリ
 //const std::string MEASUREMENT_TIME = "1223";
@@ -252,12 +266,12 @@ const std::string MEASUREMENT_TIME = "1237";
 //#define LEICA_HORIZONTAL_ERROR -112 // LEICAが0°を指すときの北からの角度
 //#define LEICA_HORIZONTAL_ERROR -260+0.05/M_PI*180.0 // LEICAが0°を指すときの北からの角度
 /* parking */
-//const std::string MEASUREMENT_DATE = "171217"; // 入力ファイルのディレクトリ
-//const std::string MEASUREMENT_TIME = "0914";
-//#define LEICA_ORG_LAT 35110177 // 地図の原点の緯度
-//#define LEICA_ORG_LON 137063850// 地図の原点の経度
-//#define LEICA_ORG_ELE 150 // 地図の原点の高度（環境内ではこの値で一定と見なす）
-//#define LEICA_HORIZONTAL_ERROR 288.439 - 323 // LEICAが0°を指すときの北からの角度
+const std::string MEASUREMENT_DATE = "171217"; // 入力ファイルのディレクトリ
+const std::string MEASUREMENT_TIME = "0914";
+#define LEICA_ORG_LAT 35110177 // 地図の原点の緯度
+#define LEICA_ORG_LON 137063850// 地図の原点の経度
+#define LEICA_ORG_ELE 150 // 地図の原点の高度（環境内ではこの値で一定と見なす）
+#define LEICA_HORIZONTAL_ERROR 288.439 - 323 // LEICAが0°を指すときの北からの角度
 #endif
 #if LOCALIZATION_AREA==LOCALIZATION_SQUARE
 ///* square */
@@ -288,28 +302,35 @@ const std::string MEASUREMENT_TIME = "1237";
 //#define LEICA_ORG_LON 137064840 // 地図の原点の経度（地図生成時のLeica位置）
 //#define LEICA_ORG_ELE 170 // 地図の原点の高度（環境内ではこの値で一定と見なす）
 //#define LEICA_HORIZONTAL_ERROR 211.688-178 // LEICAが0°を指すときの北からの角度
+///* square */
+//const std::string MEASUREMENT_DATE = "180410"; // 入力ファイルのディレクトリ
+//const std::string MEASUREMENT_TIME = "1544";
+//#define LEICA_ORG_LAT 35110390 // 地図の原点の緯度（地図生成時のLeica位置）
+//#define LEICA_ORG_LON 137064840 // 地図の原点の経度（地図生成時のLeica位置）
+//#define LEICA_ORG_ELE 170 // 地図の原点の高度（環境内ではこの値で一定と見なす）
+//#define LEICA_HORIZONTAL_ERROR 211.688-178 // LEICAが0°を指すときの北からの角度
 /* square */
-const std::string MEASUREMENT_DATE = "180410"; // 入力ファイルのディレクトリ
-const std::string MEASUREMENT_TIME = "1544";
+const std::string MEASUREMENT_DATE = "180414"; // 入力ファイルのディレクトリ
+const std::string MEASUREMENT_TIME = "1531";
 #define LEICA_ORG_LAT 35110390 // 地図の原点の緯度（地図生成時のLeica位置）
 #define LEICA_ORG_LON 137064840 // 地図の原点の経度（地図生成時のLeica位置）
 #define LEICA_ORG_ELE 170 // 地図の原点の高度（環境内ではこの値で一定と見なす）
-#define LEICA_HORIZONTAL_ERROR 211.688-178 // LEICAが0°を指すときの北からの角度
+#define LEICA_HORIZONTAL_ERROR 28.996-179 // LEICAが0°を指すときの北からの角度
 #endif
 #if LOCALIZATION_AREA==LOCALIZATION_B2
 /* b2f */
-const std::string MEASUREMENT_DATE = "171213"; // 入力ファイルのディレクトリ
-const std::string MEASUREMENT_TIME = "1700";
-#define LEICA_ORG_LAT 35110177 // 地図の原点の緯度
-#define LEICA_ORG_LON 137063850// 地図の原点の経度
-#define LEICA_ORG_ELE 150 // 地図の原点の高度（環境内ではこの値で一定と見なす）
-#define LEICA_HORIZONTAL_ERROR -113 // LEICAが0°を指すときの北からの角度
-//const std::string MEASUREMENT_DATE = "171216"; // 入力ファイルのディレクトリ
-//const std::string MEASUREMENT_TIME = "2320";
+//const std::string MEASUREMENT_DATE = "171213"; // 入力ファイルのディレクトリ
+//const std::string MEASUREMENT_TIME = "1700";
 //#define LEICA_ORG_LAT 35110177 // 地図の原点の緯度
 //#define LEICA_ORG_LON 137063850// 地図の原点の経度
 //#define LEICA_ORG_ELE 150 // 地図の原点の高度（環境内ではこの値で一定と見なす）
-//#define LEICA_HORIZONTAL_ERROR -23 // LEICAが0°を指すときの北からの角度
+//#define LEICA_HORIZONTAL_ERROR -113 // LEICAが0°を指すときの北からの角度
+const std::string MEASUREMENT_DATE = "171216"; // 入力ファイルのディレクトリ
+const std::string MEASUREMENT_TIME = "2320";
+#define LEICA_ORG_LAT 35110177 // 地図の原点の緯度
+#define LEICA_ORG_LON 137063850// 地図の原点の経度
+#define LEICA_ORG_ELE 150 // 地図の原点の高度（環境内ではこの値で一定と見なす）
+#define LEICA_HORIZONTAL_ERROR -23 // LEICAが0°を指すときの北からの角度
 #endif
 // 8号館周辺
 #if LOCALIZATION_AREA==LOCALIZATION_AROUND_8GO
@@ -386,7 +407,7 @@ enum PositionType
 #define IMAGE_PARTICLE_LARGE_GRAY_CIRCLE_THICHNESS 1
 
 /* ピアソン閾値 */
-#define PEARSON_CORRCOEF_TH 0.2 // ピアソン積率相関係数の類似性の閾値
+#define PEARSON_CORRCOEF_TH 0.0 // ピアソン積率相関係数の類似性の閾値
 
 
 ///*  尤度算出時分割数  */
@@ -420,26 +441,31 @@ enum PositionType
 #define BOF_TH_DST 2.0 // BoFの撮像位置の閾値（*σ）
 // PARKING
 #if LOCALIZATION_AREA==LOCALIZATION_PARKING
-#define BOF_A 3.982E+13 
-#define BOF_B -36.15
+#define BOF_A 235812.5
+#define BOF_B -5.47251
 #endif
 // SQUARE
 #if LOCALIZATION_AREA==LOCALIZATION_SQUARE
 #endif
 #if LOCALIZATION_AREA==LOCALIZATION_B2
-#define BOF_A 2.117997E+5
-#define BOF_B -7.04353
+#define BOF_A 36340.69
+#define BOF_B -4.2695
 #endif
 #if LOCALIZATION_AREA==LOCALIZATION_AROUND_8GO
-#define BOF_A 2.24441E+5
-#define BOF_B -5.37
+#define BOF_A 97562.96
+#define BOF_B -5.23
+//#define BOF_A 65639.76
+//#define BOF_B -5.04
+//#define BOF_A 195639.76
+//#define BOF_B -9.04
 #endif
 //#define BOF_SGM(sim) 1.15E+08 * std::exp(-13.5598*sim) // y = 1E+10e-20.25x
 #define BOF_SGM(sim) BOF_A* std::exp(BOF_B*sim) // y = BOF_Ae-BOF_Bx
 #define SYS_X 7500 // 初期システムノイズ（x[mm]） // システムノイズはそんなに大きくしない方がよい
-#define BOF_TH_SIM -1/BOF_B*log(SYS_X/BOF_A) // BoFの類似度の閾値
-// Typeを指定 BruteForce（-L1, -SL2, -Hamming, -Hamming(2)）, FlannBased
-// FlannBasedは回転ダメ？ L1かSL2が良さそう（L1のが緩い）
+//#define BOF_TH_SIM -1/BOF_B*log(SYS_X/BOF_A) // BoFの類似度の閾値
+//// Typeを指定 BruteForce（-L1, -SL2, -Hamming, -Hamming(2)）, FlannBased
+//// FlannBasedは回転ダメ？ L1かSL2が良さそう（L1のが緩い）
+#define BOF_TH_SIM 0.4 // BoFの類似度の閾値
 const std::string matching_type = "BruteForce-SL2";
 #define CLUSTER_NUM 1000
 #define SIFT_DIM 128
@@ -450,7 +476,7 @@ const std::string matching_type = "BruteForce-SL2";
 #define SIFT_AMP_FUNCTION(dis_keys) 1/dis_keys	//	SURFにおいてkeyポイントの大きさを決定
 // SURFとの直接比較
 #define SURF_DMATCH_DIST_TH 0.008
-#define ENV_IMG_TH 3000	//	現在のパーティクル位置から位置推定に使用する画像の閾値[mm]
+#define ENV_IMG_TH 6000	//	現在のパーティクル位置から位置推定に使用する画像の閾値[mm]
 #define SURF_SD_GMM 500	//	GMMにおける各正規分布の標準偏差．画像間の距離に応じて適切値を決定
 #define SURF_SIZE_USE_FUTURES 200 
 #define SURF_AMP_FUNCTION(dis_keys) 1/dis_keys	//	SURFにおいてkeyポイントの大きさを決定
@@ -482,6 +508,10 @@ cv::Scalar WEIGHTED_STAT_PAR_IMG_TEXT_COLOR(0, 0, 0);
 #define CUT_LARGE_MAP_RADIUS_Y CUT_LARGE_MAP_RADIUS_X
 
 // filepath
+/* HDD */
+std::string HDD_PATH="E://";
+
+
 /*  入力ファイルパス  */
 //const std::string IFPATH = "\\\\Desktop-mt35ltg/f/Data/Localization/";
 //const std::string IFPATH = "F://Data/Localization/";

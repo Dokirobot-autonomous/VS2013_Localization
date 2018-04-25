@@ -14,8 +14,6 @@
 #include <direct.h>
 #include <signal.h>
 
-bool fin = false;
-
 
 /**********************************************************/
 //	PFによる位置推定用のクラス
@@ -78,7 +76,7 @@ public:
 		omni.resize(LIKELIHOOD_THREAD);
 		gpgga.resize(LIKELIHOOD_THREAD);
 
-
+		
 
 		///* thread確保 */
 		//lid2_l.resize(LIKELIHOOD_THREAD);
@@ -424,6 +422,7 @@ public:
 		}
 		/* 計測ステップも進める */
 		while (true) {
+			std::cout << read_meas_step << std::endl;
 			readTime(no, read_meas_step + 1);
 
 			if (true_time[tidx] < esti_time) {
@@ -436,6 +435,20 @@ public:
 			}
 			read_meas_step++;
 		}
+
+		while (esti_time > true_time[tidx]) {
+			tidx++;
+		}
+
+		int idx;
+		if (tidx<dataset_leica.size()-1){
+			idx = tidx + 1;
+		}
+		else{
+			idx = tidx;
+		}
+		ini_position = dataset_leica[tidx].position(dataset_leica[idx]);
+
 
 		ini_time = esti_time;
 		ini_step = read_meas_step;
@@ -550,6 +563,7 @@ public:
 			case OMNI_FEATURE_SIFT:
 				omni[0].readEnvKeypoint(IFPATH_ENV_OMNI + "omni/sift/");
 				omni[0].readEnvDescriptor(IFPATH_ENV_OMNI + "omni/sift/");
+					omni[0].readEnvImgPosition(IFPATH_ENV_OMNI + "omni/sift/img_pos.csv");
 				assert(omni[0].env_img_position.size() == omni[0].env_keypoints.size());
 				assert(omni[0].env_img_position.size() == omni[0].env_descriptors.size());
 				std::cout << omni[0].env_img_position.size() << std::endl;
@@ -557,16 +571,15 @@ public:
 				if (USE_BOF){
 					omni[0].readEnvCentroid(IFPATH_ENV_OMNI + "omni/sift/centroid.csv");
 					omni[0].readEnvHistgram(IFPATH_ENV_OMNI + "omni/sift/histogram.csv");
-					omni[0].readEnvImgPosition(IFPATH_ENV_OMNI + "omni/sift/img_pos.csv");
 				}
 				break;
 			case OMNI_FEATURE_SURF:
 				omni[0].readEnvKeypoint(IFPATH_ENV_OMNI + "omni/surf/");
 				omni[0].readEnvDescriptor(IFPATH_ENV_OMNI + "omni/surf/");
+					omni[0].readEnvImgPosition(IFPATH_ENV_OMNI + "omni/surf/img_pos.csv");
 				if (USE_BOF){
 					omni[0].readEnvCentroid(IFPATH_ENV_OMNI + "omni/surf/centroid.csv");
 					omni[0].readEnvHistgram(IFPATH_ENV_OMNI + "omni/surf/histgram.csv");
-					omni[0].readEnvImgPosition(IFPATH_ENV_OMNI + "omni/surf/img_pos.csv");
 				}
 				break;
 			default:
@@ -596,6 +609,7 @@ public:
 				while (true){
 					// 真の位置がない場合、初期位置を指定
 					std::string window_name = "map";
+					cv::namedWindow(window_name);
 					cv::Mat mat = map_img_color.clone();
 					std::cout << "clic left button for initial: ";
 					Coor<> coor1 = getMapClickedCoor(window_name, mat);
@@ -627,7 +641,6 @@ public:
 			}
 
 
-
 			/*  センサデータの読み込み  */
 
 			filename = IFPATH_ENV + "map.csv";
@@ -636,14 +649,13 @@ public:
 			lid2_l[0].setEnvICP();
 			omni[0].readImg(IFPATH + "Environment/img.bmp");
 
-
-
 			//omni[0].readEnvImgAvi(IFPATH_ENV_OMNI + "omni/img.avi");
 			switch (OMNI_FEATURE)
 			{
 			case OMNI_FEATURE_SIFT:
 				omni[0].readEnvKeypoint(IFPATH_ENV_OMNI + "omni/sift/");
 				omni[0].readEnvDescriptor(IFPATH_ENV_OMNI + "omni/sift/");
+				omni[0].readEnvImgPosition(IFPATH_ENV_OMNI + "omni/sift/img_pos.csv");
 				assert(omni[0].env_img_position.size() == omni[0].env_keypoints.size());
 				assert(omni[0].env_img_position.size() == omni[0].env_descriptors.size());
 				std::cout << omni[0].env_img_position.size() << std::endl;
@@ -651,27 +663,24 @@ public:
 				if (USE_BOF){
 					omni[0].readEnvCentroid(IFPATH_ENV_OMNI + "omni/sift/centroid.csv");
 					omni[0].readEnvHistgram(IFPATH_ENV_OMNI + "omni/sift/histogram.csv");
-					omni[0].readEnvImgPosition(IFPATH_ENV_OMNI + "omni/sift/img_pos.csv");
 				}
 				break;
 			case OMNI_FEATURE_SURF:
 				omni[0].readEnvKeypoint(IFPATH_ENV_OMNI + "omni/surf/");
 				omni[0].readEnvDescriptor(IFPATH_ENV_OMNI + "omni/surf/");
+				omni[0].readEnvImgPosition(IFPATH_ENV_OMNI + "omni/surf/img_pos.csv");
 				if (USE_BOF){
 					omni[0].readEnvCentroid(IFPATH_ENV_OMNI + "omni/surf/centroid.csv");
 					omni[0].readEnvHistgram(IFPATH_ENV_OMNI + "omni/surf/histgram.csv");
-					omni[0].readEnvImgPosition(IFPATH_ENV_OMNI + "omni/surf/img_pos.csv");
 				}
 				break;
 			default:
 				std::cout << "OMNI_FEATURE: " << OMNI_FEATURE << std::endl;
 				break;
 			}
+
 			//omni_tmp[th].readEnvDescriptor(ENVIRONMENT_DATE_OMNI + "omni/surf/");
 			gpgga[0].setMapOrgGL(MAP_ORG_LAT, MAP_ORG_LON, MAP_ORG_ELE);
-
-
-
 
 			break;
 		default:
@@ -1261,29 +1270,31 @@ public:
 
 			clock_t lap4 = clock();
 
-			filename = IFPATH_MEAS + "sift/descriptor/desc_no" + std::to_string(read_meas_no) + "_" + std::to_string(read_meas_step) + "th.csv";
-			std::ifstream ifs(filename);
-			if (ifs.fail()){
-				read_all_measurement_ = true;
-			}
-			clock_t lap4_5 = clock();
-			std::vector<std::vector<float>> v;
-			{
-				v.reserve(1500);
-				std::string str;
-				while (std::getline(ifs, str))
-				{
-					std::vector<float> tmp = Split<float>(str, ",");
-					v.push_back(tmp);
-				}
-			}
-			clock_t lap4_7 = clock();
-			cv::Mat descriptor;
-			for (int i = 0; i < v.size(); i++){
-				cv::Mat mat(v[i], true);
-				mat = mat.t();
-				descriptor.push_back(mat);
-			}
+			//filename = IFPATH_MEAS + "sift/descriptor/desc_no" + std::to_string(read_meas_no) + "_" + std::to_string(read_meas_step) + "th.csv";
+			//std::ifstream ifs(filename);
+			//if (ifs.fail()){
+			//	read_all_measurement_ = true;
+			//}
+			//clock_t lap4_5 = clock();
+			//std::vector<std::vector<float>> v;
+			//{
+			//	v.reserve(1500);
+			//	std::string str;
+			//	while (std::getline(ifs, str))
+			//	{
+			//		std::vector<float> tmp = Split<float>(str, ",");
+			//		v.push_back(tmp);
+			//	}
+			//}
+			//clock_t lap4_7 = clock();
+			//cv::Mat descriptor;
+			//for (int i = 0; i < v.size(); i++){
+			//	cv::Mat mat(v[i], true);
+			//	mat = mat.t();
+			//	descriptor.push_back(mat);
+			//}
+			filename = IFPATH_MEAS + "sift/descriptor/desc_no" + std::to_string(read_meas_no) + "_" + std::to_string(read_meas_step) + "th.bmp";
+			cv::Mat_<float> descriptor = cv::imread(filename, CV_LOAD_IMAGE_ANYCOLOR);
 			all_meas_desriptor.push_back(descriptor);
 
 			//cv::Mat desc = setDescriptor(img, keys);
@@ -1652,7 +1663,7 @@ public:
 		/* 真の位置のみ描画 */
 		if (exist_true_position){
 			Position<> now_tpos = getTruePosition(step);
-			drawPosition(now_tpos, map, IMAGE_TRUEPOSITION_COLOR, map.cols, map.rows, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y, upleft_pix, TRUE_POSITION);
+			drawPosition(now_tpos, map, IMAGE_TRUEPOSITION_COLOR, cols, rows, map_res, MAP_IMG_ORG_X, MAP_IMG_ORG_Y, upleft_pix, TRUE_POSITION);
 		}
 	}
 
@@ -1715,6 +1726,7 @@ public:
 		cv::resize(img, img, cv::Size(), MOVIE_SCALE_W, MOVIE_SCALE_H);
 
 		measurement_data_video << img;
+		measurement_data_img = img;
 
 	}
 	void addFlameWeightedParImg(bool stat_)
@@ -1881,9 +1893,11 @@ public:
 
 		if (stat_){
 			weighted_stat_particle_video << img;
+			weighted_stat_particle_img = img;
 		}
 		else{
 			particle_video << img;
+			particle_img = img;
 		}
 
 
@@ -2044,7 +2058,7 @@ public:
 		//writeWeightedStatParAllImg(img);
 
 		particle_large_video << img;
-
+		particle_large_img = img;
 
 
 	}
@@ -2174,6 +2188,28 @@ public:
 	}
 
 
+	void debug(){
+		if (!MODE_TEST){
+			return;
+		}
+		omni[0].debug(no, now_step);
+		cv::Mat img = particle_img;
+		cv::resize(img, img, cv::Size(), 0.5, 0.5);
+		cv::imshow("particle", img);
+		cv::Mat measure_img = measurement_data_img;
+		cv::resize(measure_img, measure_img, cv::Size(), 0.5, 0.5);
+		cv::imshow("measure_img", measure_img);
+		cv::Mat weighted_img;
+		if (weighted_stat_particle_img.empty()){
+			weighted_img = cv::Mat::zeros(300, 300, CV_8UC1);
+		}
+		else{
+			weighted_img = weighted_stat_particle_img;
+		}
+		cv::resize(weighted_img, weighted_img, cv::Size(), 0.5, 0.5);
+		cv::imshow("weighted_par", weighted_img);
+		cv::waitKey();
+	}
 
 
 
@@ -2290,7 +2326,7 @@ public:
 		std::cout << "Time: " << true_time[tidx] << ", Error: " << error << std::endl;
 
 		if (tidx + 1 >= true_position->size()) {
-			fin = true;
+			finish = true;
 		}
 		std::cout << "Complete calcError" << std::endl;
 	}
@@ -2970,7 +3006,7 @@ public:
 		error_time.push_back(true_time[tidx]);
 
 		if (tidx + 1 >= true_position->size()) {
-			fin = true;
+			finish = true;
 		}
 
 	}
@@ -3197,9 +3233,13 @@ public:
 
 	/*  パーティクルの動画  */
 	cv::VideoWriter particle_video;
+	cv::Mat particle_img;
 	cv::VideoWriter weighted_stat_particle_video;
+	cv::Mat weighted_stat_particle_img;
 	cv::VideoWriter measurement_data_video;
+	cv::Mat measurement_data_img;
 	cv::VideoWriter particle_large_video;
+	cv::Mat particle_large_img;
 
 	/*  現在のステップ  */
 	int now_step = 0;

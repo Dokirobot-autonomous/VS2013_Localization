@@ -99,12 +99,12 @@ public:
 		case TRIAL_3SENSORS_SUYAMA_NONSTAT:
 		case TRIAL_3SENSORS_LRF_GPS:
 			thread_meas = std::thread(&LocalizationPF::addMeasurementVideo, this);
+			thread_meas.join();
 			thread_par = std::thread([&]{
 				addFlameWeightedParImg(false);
 			});
-			thread_par_large = std::thread(&LocalizationPF::addFlameParticleLargeVideo, this);
-			thread_meas.join();
 			thread_par.join();
+			thread_par_large = std::thread(&LocalizationPF::addFlameParticleLargeVideo, this);
 			thread_par_large.join();
 			break;
 		case TRIAL_PEARSON:
@@ -2136,7 +2136,7 @@ public:
 			particle_large_video.~VideoWriter();
 			weighted_stat_particle_video.~VideoWriter();
 			measurement_data_video.~VideoWriter();
-			fin = true;
+			finish = true;
 			break;
 		default:
 			break;
@@ -2442,6 +2442,10 @@ int _tmain(int argc, _TCHAR* argv[])
 			loca.createMovie();
 			clock_t lap7 = clock();
 
+			if (MODE_TEST){
+				loca.debug();
+			}
+
 			loca.clearMeasurement();
 			clock_t lap8 = clock();
 
@@ -2457,6 +2461,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			}
 
 			if (loca.init = true) loca.init = false;
+
 			
 		}
 

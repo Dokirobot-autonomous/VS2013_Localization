@@ -1579,7 +1579,7 @@
 //				cv::Mat img;	//	全方位カメラ画像
 //
 //								/*  ファイルの読み込み  */
-//				std::string filename = "F://Data/Localization/Measurement/" + MEASUREMENT_DATE + "/" + MEASUREMENT_TIME + "/img/img_no" + std::to_string(no) + "_" + std::to_string(step) + "th.bmp";
+//				std::string filename = "E://Data/Localization/Measurement/" + MEASUREMENT_DATE + "/" + MEASUREMENT_TIME + "/img/img_no" + std::to_string(no) + "_" + std::to_string(step) + "th.bmp";
 //				img = cv::imread(filename, CV_LOAD_IMAGE_COLOR);
 //				//if (img.empty()) break;	//	終了条件
 //				if (img.empty()) readError(filename);	//	終了条件
@@ -1662,7 +1662,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	{
 		/*  threadの生成  */
 		thread.push_back(std::thread([&] {
-			int step = th + 1;
+			int step = th + 2539;
 			bool init_ = false;
 			//int step = th * 5 + 2;
 			while (1)
@@ -1671,7 +1671,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 				/*  ファイルの読み込み  */
 				//std::string filename = "\\\\Desktop-mt35ltg/f/Data/Localization/Measurement/" + MEASUREMENT_DATE + "/" + MEASUREMENT_TIME + "/img/img_no" + std::to_string(no) + "_" + std::to_string(step) + "th.bmp";
-				std::string filename = "F://Data/Localization/Measurement/" + MEASUREMENT_DATE + "/" + MEASUREMENT_TIME + "/img/img_no" + std::to_string(no) + "_" + std::to_string(step) + "th.bmp";
+				std::string filename = "E://Data/Localization/Measurement/" + MEASUREMENT_DATE + "/" + MEASUREMENT_TIME + "/img/img_no" + std::to_string(no) + "_" + std::to_string(step) + "th.bmp";
 				img = cv::imread(filename, CV_LOAD_IMAGE_COLOR);
 				//if (img.empty()) break;	//	終了条件
 				if (img.empty()) readError(filename);	//	終了条件
@@ -1684,8 +1684,8 @@ int _tmain(int argc, _TCHAR* argv[])
 				//double angle = 35;	//	角度
 				//cv::ellipse(img, center, radius, start_angle, 0, angle, cv::Scalar(0, 0, 0), -1, CV_AA);
 
-				/* 外枠の塗りつぶし */
-				cv::circle(img, center, 510, cv::Scalar(0, 0, 0), 150);
+				///* 外枠の塗りつぶし */
+				//cv::circle(img, center, 510, cv::Scalar(0, 0, 0), 150);
 
 				//　等間隔の画像に切り出し
 				cv::Rect roi_rect(ROI_ORG_X, ROI_ORG_Y, ROI_SIZE_X, ROI_SIZE_Y); // x,y,w,h
@@ -1706,7 +1706,7 @@ int _tmain(int argc, _TCHAR* argv[])
 				int x_interval = img.cols / 10.0;
 				std::vector<cv::KeyPoint> keypoints_tmp;
 				for (const auto& key : keypoints){
-					if (key.pt.x < img.cols / 2.0 - x_interval || key.pt.x > img.cols / 2.0 + x_interval){
+					if (key.pt.x < img.cols / 2.0 - x_interval || key.pt.x > img.cols / 2.0 + x_interval || key.pt.y > img.rows / 2.0){
 						keypoints_tmp.push_back(key);
 					}
 				}
@@ -1719,8 +1719,10 @@ int _tmain(int argc, _TCHAR* argv[])
 
 				/* keypointの描画 */
 				if (init_){
-					cv::drawKeypoints(img, keypoints_tmp, img);
-					cv::imshow("hoge" + std::to_string(th), img);
+					cv::Mat mat = img.clone();
+					cv::drawKeypoints(mat, keypoints_tmp, mat);
+					cv::resize( mat,mat, cv::Size(), 0.5, 0.5);
+					cv::imshow("hoge" + std::to_string(th), mat);
 					cv::waitKey();
 					init_ = false;
 				}
@@ -1737,10 +1739,12 @@ int _tmain(int argc, _TCHAR* argv[])
 				cv::write(fs, "keypoints", keypoints);
 
 				/*  descriptorの書き出し  */
-				filename = IFPATH_MEAS + "sift/descriptor/desc_no" + std::to_string(no) + "_" + std::to_string(step) + "th.csv";
-				std::ofstream ofs(filename);
-				if (ofs.fail())	readError(filename);
-				ofs << cv::format(descriptors, "csv");
+				//filename = IFPATH_MEAS + "sift/descriptor/desc_no" + std::to_string(no) + "_" + std::to_string(step) + "th.csv";
+				//std::ofstream ofs(filename);
+				//if (ofs.fail())	readError(filename);
+				//ofs << cv::format(descriptors, "csv");
+				filename = IFPATH_MEAS + "sift/descriptor/desc_no" + std::to_string(no) + "_" + std::to_string(step) + "th.bmp";
+				cv::imwrite(filename, descriptors);
 
 
 				std::cout << "Finish Step: " << step << std::endl;
