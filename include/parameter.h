@@ -659,6 +659,7 @@ enum SensorsName{
 	OMNI = 2,
 	GPS = 3
 };
+
 #pragma once
 
 #include <string>
@@ -677,7 +678,7 @@ enum SensorsName{
 #define LOCALIZATION_SQUARE 1
 #define LOCALIZATION_B2 2
 #define LOCALIZATION_AROUND_8GO 3
-#define LOCALIZATION_AREA LOCALIZATION_SQUARE
+#define LOCALIZATION_AREA LOCALIZATION_AROUND_8GO
 
 /* 分布の底上げ */
 #define ADD_BIAS true
@@ -727,7 +728,7 @@ enum TrialType
 	TRIAL_3SENSORS_SUYAMA_NONSTAT = 10,
 	TRIAL_3SENSORS_LRF_GPS = 11,
 };
-#define TRIAL_TYPE TRIAL_3SENSORS_SIMULATNEOUS
+#define TRIAL_TYPE TRIAL_PEARSON
 
 /* カメラ特徴量 */
 enum OMNI_FEATURE_TYPE
@@ -855,8 +856,8 @@ const std::string ENVIRONMENT_DATE = "171115"; // 入力ファイルのディレクトリ
 const std::string ENVIRONMENT_TIME = "1536";
 const std::string ENVIRONMENT_DATE_OMNI = "180407"; // 入力ファイルのディレクトリ
 const std::string ENVIRONMENT_TIME_OMNI = "1404";
-#define BOF_A 53143.71
-#define BOF_B -4.672
+#define BOF_A 3.8452E+13
+#define BOF_B -44.27
 //#define BOF_A 168423.8
 //#define BOF_B -6.31
 #define MAP_ORG_LAT 35110390 // 地図の原点の緯度（地図生成時のLeica位置）

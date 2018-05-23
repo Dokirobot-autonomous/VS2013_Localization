@@ -34,38 +34,6 @@ public:
 	~Localization() {};
 
 
-	void initialize() {
-
-		//*odometry1 = Position<>(0.0, 0.0, 0.0);
-
-		//for (auto& tmp : lid2_l)
-		//{
-		//	tmp.clearMeasurement();
-		//}
-		//for (auto& tmp : lid2_u)
-		//{
-		//	tmp.clearMeasurement();
-		//}
-		//for (auto& tmp : omni)
-		//{
-		//	tmp.clearMeasurement();
-		//}
-		//for (auto& tmp : gpgga)
-		//{
-		//	tmp.clearMeasurement();
-		//}
-		stat_particles.clear();
-		stat_lid2_l_likelihood.clear();
-		stat_lid2_u_likelihood.clear();
-		stat_omni_likelihood.clear();
-		stat_gpgga_likelihood.clear();
-		lid2_l_likelihood.clear();
-		lid2_u_likelihood.clear();
-		omni_likelihood.clear();
-		gpgga_likelihood.clear();
-		fusion_likelihood.clear();
-
-	}
 
 
 	/**********************************************************/

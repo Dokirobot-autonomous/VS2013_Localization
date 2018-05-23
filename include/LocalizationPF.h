@@ -1683,7 +1683,7 @@ public:
 					intensity = 255;
 				}
 				else{
-					intensity = 255 / likelihood.size();
+					intensity = 128;
 				}
 				if (intensity < 0) intensity = 0;
 				color = cv::Scalar(180, intensity, 255);

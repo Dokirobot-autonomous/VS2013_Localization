@@ -1649,121 +1649,121 @@
 //}
 
 /* 計測画像から特徴量とkeypointを保存(SIFT) */
-//#include "include\parameter.h"
-//int _tmain(int argc, _TCHAR* argv[])
-//{
-//	int no = 1;
-//
-//	int thread_num =4;
-//	//int thread_num = std::thread::hardware_concurrency() / 2;
-//
-//	std::vector<std::thread> thread;
-//	for (int th = 0; th < thread_num; th++)
-//	{
-//		/*  threadの生成  */
-//		thread.push_back(std::thread([&] {
-//			int step = th + 1565;
-//			bool init_ = false;
-//			//int step = th * 5 + 2;
-//			while (1)
-//			{
-//				cv::Mat img;	//	全方位カメラ画像
-//
-//				/*  ファイルの読み込み  */
-//				//std::string filename = "\\\\Desktop-mt35ltg/f/Data/Localization/Measurement/" + MEASUREMENT_DATE + "/" + MEASUREMENT_TIME + "/img/img_no" + std::to_string(no) + "_" + std::to_string(step) + "th.bmp";
-//				std::string filename = "E://Data/Localization/Measurement/" + MEASUREMENT_DATE + "/" + MEASUREMENT_TIME + "/img/img_no" + std::to_string(no) + "_" + std::to_string(step) + "th.bmp";
-//				img = cv::imread(filename, CV_LOAD_IMAGE_COLOR);
-//				//if (img.empty()) break;	//	終了条件
-//				if (img.empty()) readError(filename);	//	終了条件
-//
-//				cv::Point center(img.cols / 1.9, img.rows / 2);
-//
-//				///*  Operatorの塗りつぶし  */
-//				//cv::Size radius(img.rows / 3, img.rows / 3);
-//				//double start_angle = -105;	//	扇系の中心角度
-//				//double angle = 35;	//	角度
-//				//cv::ellipse(img, center, radius, start_angle, 0, angle, cv::Scalar(0, 0, 0), -1, CV_AA);
-//
-//				///* 外枠の塗りつぶし */
-//				//cv::circle(img, center, 510, cv::Scalar(0, 0, 0), 150);
-//
-//				//　等間隔の画像に切り出し
-//				cv::Rect roi_rect(ROI_ORG_X, ROI_ORG_Y, ROI_SIZE_X, ROI_SIZE_Y); // x,y,w,h
-//				img = img(roi_rect);
-//
-//				cv::SiftFeatureDetector detector(1000);
-//				cv::SiftDescriptorExtractor extractor;
-//
-//				//clock_t lap1 = clock();
-//
-//				//画像から特徴点を検出
-//				std::vector<cv::KeyPoint> keypoints;
-//				detector.detect(img, keypoints);
-//
-//				//clock_t lap2 = clock();
-//
-//				// Operatorとロボット前方の棒部分の特徴点を排除
-//				int x_interval = img.cols / 10.0;
-//				std::vector<cv::KeyPoint> keypoints_tmp;
-//				for (const auto& key : keypoints){
-//					if (key.pt.x < img.cols / 2.0 - x_interval || key.pt.x > img.cols / 2.0 + x_interval || key.pt.y > img.rows / 2.0){
-//						keypoints_tmp.push_back(key);
-//					}
-//				}
-//				keypoints = keypoints_tmp;
-//
-//
-//				//画像の特徴点における特徴量を抽出
-//				cv::Mat descriptors;
-//				extractor.compute(img, keypoints, descriptors);
-//
-//				/* keypointの描画 */
-//				if (init_){
-//					cv::Mat mat = img.clone();
-//					cv::drawKeypoints(mat, keypoints_tmp, mat);
-//					cv::resize( mat,mat, cv::Size(), 0.5, 0.5);
-//					cv::imshow("hoge" + std::to_string(th), mat);
-//					cv::waitKey();
-//					init_ = false;
-//				}
-//
-//
-//				//clock_t lap3 = clock();
-//
-//				/* keypointの保存 */
-//				filename = IFPATH_MEAS + "sift/keypoint/keypoint_no" + std::to_string(no) + "_" + std::to_string(step) + "th.yml";
-//				cv::FileStorage fs(filename, cv::FileStorage::WRITE);
-//				if (!fs.isOpened()) {
-//					writeError(filename);
-//				}
-//				cv::write(fs, "keypoints", keypoints);
-//
-//				/*  descriptorの書き出し  */
-//				//filename = IFPATH_MEAS + "sift/descriptor/desc_no" + std::to_string(no) + "_" + std::to_string(step) + "th.csv";
-//				//std::ofstream ofs(filename);
-//				//if (ofs.fail())	readError(filename);
-//				//ofs << cv::format(descriptors, "csv");
-//				filename = IFPATH_MEAS + "sift/descriptor/desc_no" + std::to_string(no) + "_" + std::to_string(step) + "th.bmp";
-//				cv::imwrite(filename, descriptors);
-//
-//
-//				std::cout << "Finish Step: " << step << std::endl;
-//				//if (step > 2260)	break;
-//
-//
-//				step += thread_num;
-//			}
-//		}));	//	threadの定義ここまで
-//	}
-//
-//	for (auto& th : thread)
-//	{
-//		th.join();
-//	}
-//
-//	return 0;
-//
-//}
+#include "include\parameter.h"
+int _tmain(int argc, _TCHAR* argv[])
+{
+	int no = 1;
+
+	int thread_num =4;
+	//int thread_num = std::thread::hardware_concurrency() / 2;
+
+	std::vector<std::thread> thread;
+	for (int th = 0; th < thread_num; th++)
+	{
+		/*  threadの生成  */
+		thread.push_back(std::thread([&] {
+			int step = th + 1565;
+			bool init_ = false;
+			//int step = th * 5 + 2;
+			while (1)
+			{
+				cv::Mat img;	//	全方位カメラ画像
+
+				/*  ファイルの読み込み  */
+				//std::string filename = "\\\\Desktop-mt35ltg/f/Data/Localization/Measurement/" + MEASUREMENT_DATE + "/" + MEASUREMENT_TIME + "/img/img_no" + std::to_string(no) + "_" + std::to_string(step) + "th.bmp";
+				std::string filename = "E://Data/Localization/Measurement/" + MEASUREMENT_DATE + "/" + MEASUREMENT_TIME + "/img/img_no" + std::to_string(no) + "_" + std::to_string(step) + "th.bmp";
+				img = cv::imread(filename, CV_LOAD_IMAGE_COLOR);
+				//if (img.empty()) break;	//	終了条件
+				if (img.empty()) readError(filename);	//	終了条件
+
+				cv::Point center(img.cols / 1.9, img.rows / 2);
+
+				///*  Operatorの塗りつぶし  */
+				//cv::Size radius(img.rows / 3, img.rows / 3);
+				//double start_angle = -105;	//	扇系の中心角度
+				//double angle = 35;	//	角度
+				//cv::ellipse(img, center, radius, start_angle, 0, angle, cv::Scalar(0, 0, 0), -1, CV_AA);
+
+				///* 外枠の塗りつぶし */
+				//cv::circle(img, center, 510, cv::Scalar(0, 0, 0), 150);
+
+				//　等間隔の画像に切り出し
+				cv::Rect roi_rect(ROI_ORG_X, ROI_ORG_Y, ROI_SIZE_X, ROI_SIZE_Y); // x,y,w,h
+				img = img(roi_rect);
+
+				cv::SiftFeatureDetector detector(1000);
+				cv::SiftDescriptorExtractor extractor;
+
+				//clock_t lap1 = clock();
+
+				//画像から特徴点を検出
+				std::vector<cv::KeyPoint> keypoints;
+				detector.detect(img, keypoints);
+
+				//clock_t lap2 = clock();
+
+				// Operatorとロボット前方の棒部分の特徴点を排除
+				int x_interval = img.cols / 10.0;
+				std::vector<cv::KeyPoint> keypoints_tmp;
+				for (const auto& key : keypoints){
+					if (key.pt.x < img.cols / 2.0 - x_interval || key.pt.x > img.cols / 2.0 + x_interval || key.pt.y < img.rows / 2.0){
+						keypoints_tmp.push_back(key);
+					}
+				}
+				keypoints = keypoints_tmp;
+
+
+				//画像の特徴点における特徴量を抽出
+				cv::Mat descriptors;
+				extractor.compute(img, keypoints, descriptors);
+
+				/* keypointの描画 */
+				if (init_){
+					cv::Mat mat = img.clone();
+					cv::drawKeypoints(mat, keypoints_tmp, mat);
+					cv::resize( mat,mat, cv::Size(), 0.5, 0.5);
+					cv::imshow("hoge" + std::to_string(th), mat);
+					cv::waitKey();
+					init_ = false;
+				}
+
+
+				//clock_t lap3 = clock();
+
+				/* keypointの保存 */
+				filename = IFPATH_MEAS + "sift/keypoint/keypoint_no" + std::to_string(no) + "_" + std::to_string(step) + "th.yml";
+				cv::FileStorage fs(filename, cv::FileStorage::WRITE);
+				if (!fs.isOpened()) {
+					writeError(filename);
+				}
+				cv::write(fs, "keypoints", keypoints);
+
+				/*  descriptorの書き出し  */
+				//filename = IFPATH_MEAS + "sift/descriptor/desc_no" + std::to_string(no) + "_" + std::to_string(step) + "th.csv";
+				//std::ofstream ofs(filename);
+				//if (ofs.fail())	readError(filename);
+				//ofs << cv::format(descriptors, "csv");
+				filename = IFPATH_MEAS + "sift/descriptor/desc_no" + std::to_string(no) + "_" + std::to_string(step) + "th.bmp";
+				cv::imwrite(filename, descriptors);
+
+
+				std::cout << "Finish Step: " << step << std::endl;
+				//if (step > 2260)	break;
+
+
+				step += thread_num;
+			}
+		}));	//	threadの定義ここまで
+	}
+
+	for (auto& th : thread)
+	{
+		th.join();
+	}
+
+	return 0;
+
+}
 
 /* keypointとdescriptorの読み込み */
 //const std::string matching_type = "BruteForce-SL2";
@@ -2309,623 +2309,623 @@
 //}
 
 /* Particle の作製 */
-#include "include\LocalizationPF.h"
-#define START_MOVIE_STEP 0
-#define STOP_MOVIE_STEP 30000
-std::vector<SensorsName> SET_SENSORS = { LRF_L, OMNI, GPS };
-// 確率分布関係
-#define MAP_RES_TEST MAP_RES
-class Hoge : public LocalizationPF
-{
-public:
-
-	std::vector<SensorsName> set_sensors;
-	std::vector<Position<>> esti_pos;
-	std::vector<std::vector<bool>> use_sim_tmp;
-	std::vector<std::vector<std::string>> particle_data;
-	std::vector<std::vector<std::string>> similar_table_str_;
-	std::vector<int> step_tmp_tmp;
-	std::vector<MyTime> time_tmp_tmp;
-	std::vector<std::vector<Position<>>> particles_tmp_tmp;
-	std::vector<std::vector<Position<>>> stat_particles_tmp_tmp;
-	std::vector<std::vector<double>> fusion_likelihood_tmp_tmp;
-	std::vector<std::vector<double>> lrf_l_likelihood_tmp_tmp;
-	std::vector<std::vector<double>> lrf_u_likelihood_tmp_tmp;
-	std::vector<std::vector<double>> cmr_likelihood_tmp_tmp;
-	std::vector<std::vector<double>> gps_likelihood_tmp_tmp;
-	std::vector<std::vector<double>>  stat_lrf_l_likelihood_tmp_tmp;
-	std::vector<std::vector<double>>  stat_lrf_u_likelihood_tmp_tmp;
-	std::vector<std::vector<double>>  stat_cmr_likelihood_tmp_tmp;
-	std::vector<std::vector<double>>  stat_gps_likelihood_tmp_tmp;
-	std::vector<std::vector<Position<>>> particle_after_resampling_tmp_tmp;
-
-	Hoge(){
-		set_sensors = SET_SENSORS;
-
-	};
-	~Hoge(){};
-
-	/*  パーティクル動画の初期化  */
-	void initParticleVideo(std::string ofpath)
-	{
-		/*  ビデオ関係  */
-		// ファイルをオープンし，ビデオライタを初期化
-		// filename - 出力ファイル名
-		// fourcc - コーデック
-		// fps - 1 秒あたりのフレーム数
-		// frameSize - ビデオフレームのサイズ
-		// isColor - ビデオストリームがカラーか，グレースケールかを指定
-
-		std::string filename = ofpath + "movie2/particle.avi";
-		//std::string filename = "./output/Movie/particle.avi";
-		Coor<> rect(CUT_MAP_RADIUS_X*6.0, CUT_MAP_RADIUS_Y*4.0);
-		cv::Size rect_pix = ToPixelSize(rect, map_img_clone, MAP_RES);
-		rect_pix.width *= MOVIE_SCALE_W;
-		rect_pix.height *= MOVIE_SCALE_H;
-		particle_video.open(filename, CV_FOURCC('X', 'V', 'I', 'D'), PARTICLE_FPS, rect_pix);
-		if (!particle_video.isOpened())	writeError(filename);
-	}
-	void initParticleLargeVideo(std::string ofpath)
-	{
-		/*  ビデオ関係  */
-		// ファイルをオープンし，ビデオライタを初期化
-		// filename - 出力ファイル名
-		// fourcc - コーデック
-		// fps - 1 秒あたりのフレーム数
-		// frameSize - ビデオフレームのサイズ
-		// isColor - ビデオストリームがカラーか，グレースケールかを指定
-
-		std::string filename = ofpath + "movie2/particle_large.avi";
-		//std::string filename = "./output/Movie/particle.avi";
-		Coor<> rect(CUT_MAP_RADIUS_X*6.0, CUT_MAP_RADIUS_Y*4.0);
-		cv::Size rect_pix = ToPixelSize(rect, map_img_color, MAP_RES);
-		rect_pix.width *= MOVIE_SCALE_W;
-		rect_pix.height *= MOVIE_SCALE_H;
-		particle_large_video.open(filename, CV_FOURCC('X', 'V', 'I', 'D'), PARTICLE_FPS, rect_pix);
-		if (!particle_large_video.isOpened())	writeError(filename);
-	}
-	void initWeightedStatParVideo(std::string ofpath)
-	{
-		/*  ビデオ関係  */
-		// ファイルをオープンし，ビデオライタを初期化
-		// filename - 出力ファイル名
-		// fourcc - コーデック
-		// fps - 1 秒あたりのフレーム数
-		// frameSize - ビデオフレームのサイズ
-		// isColor - ビデオストリームがカラーか，グレースケールかを指定
-
-		std::string filename = ofpath + "movie2/weighted_stat_particle.avi";
-		//std::string filename = "./output/Movie/weighted_stat_particle.avi";
-		Coor<> rect(CUT_MAP_RADIUS_X*6.0, CUT_MAP_RADIUS_Y*4.0);
-		cv::Size rect_pix = ToPixelSize(rect, map_img_clone, MAP_RES);
-		rect_pix.width *= MOVIE_SCALE_W;
-		rect_pix.height *= MOVIE_SCALE_H;
-		weighted_stat_particle_video.open(filename, CV_FOURCC('X', 'V', 'I', 'D'), PARTICLE_FPS, rect_pix);
-		if (!weighted_stat_particle_video.isOpened())	writeError(filename);
-	}
-	void initMeasurementDataVideo(std::string ofpath)
-	{
-		/*  ビデオ関係  */
-		// ファイルをオープンし，ビデオライタを初期化
-		// filename - 出力ファイル名
-		// fourcc - コーデック
-		// fps - 1 秒あたりのフレーム数
-		// frameSize - ビデオフレームのサイズ
-		// isColor - ビデオストリームがカラーか，グレースケールかを指定
-
-		std::string filename = ofpath + "movie2/measurement_data.avi";
-		int fps = MEASUREMENT_DATA_VIDEO_FPS;
-		Coor<> rect(CUT_MAP_RADIUS_X*4.0, CUT_MAP_RADIUS_Y*4.0);
-		cv::Size rect_pix = ToPixelSize(rect, map_img_clone, MAP_RES);
-		rect_pix.width *= MOVIE_SCALE_W;
-		rect_pix.height *= MOVIE_SCALE_H;
-		measurement_data_video.open(filename, MEASUREMENT_DATA_VIDEO_FOURCC, fps, rect_pix);
-		if (!measurement_data_video.isOpened())	writeError(filename);
-	}
-
-
-	void readParticles(std::string ofpath){
-
-		/* 推定位置の読み込み */
-		{
-			std::string filename = ofpath + "Data/estimated_position.csv";
-			std::ifstream ifs(filename);
-			if (ifs.fail()){
-				readError(filename);
-			}
-			std::string str;
-			std::getline(ifs, str);
-			while (std::getline(ifs, str)){
-				std::istringstream istr(str);
-				Position<> pos;
-				int tmp;
-				MyTime time_tmp;
-				char c;
-				istr >> tmp >> c >> time_tmp >> c >> tmp >> c >> pos;
-				esti_pos.push_back(pos);
-			}
-		}
-
-		/* use_sim_の読み込み */
-		switch (trial_type)
-		{
-		case TRIAL_SIMULTANEOUS:
-		case TRIAL_NON_TIMESEQUENCE_SIMUL:
-		case TRIAL_3SENSORS_SIMULATNEOUS:
-			use_sim_tmp = std::vector<std::vector<bool>>(esti_pos.size(), std::vector<bool>(sensor_num, true));
-			break;
-		case TRIAL_PEARSON:
-		case TRIAL_PEARSON_NONSTAT:
-		case TRIAL_NON_TIMESEQUENCE:
-		case TRIAL_SUYAMA_STAT:
-		case TRIAL_SUYAMA_NONSTAT:
-		case TRIAL_3SENSORS_PEARSON:
-		case TRIAL_3SENSORS_PEARSON_NONSTAT:
-		case TRIAL_3SENSORS_SUYAMA_NONSTAT:
-		case TRIAL_3SENSORS_LRF_GPS:
-		{
-			std::string filename = ofpath + "Data/use_sensor_sim_.csv";
-			std::ifstream ifs(filename);
-			if (ifs.fail()){
-				readError(filename);
-			}
-			std::string str;
-			std::getline(ifs, str);
-			while (std::getline(ifs, str)){
-				int tmp;
-				MyTime time_tmp;
-				char c;
-				std::vector<bool> vec;
-				std::istringstream istr(str);
-				istr >> tmp >> c >> time_tmp >> c >> tmp >> c >> vec;
-				use_sim_tmp.push_back(vec);
-			}
-		}
-		break;
-		default:
-			break;
-		}
-
-		/* データの生成 */
-		{
-			std::string filename = ofpath + "Data/gitignore/particle.csv";
-			std::ifstream ifs(filename);
-			if (ifs.fail()){
-				readError(filename);
-			}
-			std::string str;
-			std::getline(ifs, str);
-			ifs >> particle_data;
-		}
-		std::cout << particle_data.size() << std::endl;
-
-		//std::vector<std::vector<std::string>> particle_data_after_resampling;
-		//{
-		//	std::string filename = TEST_PATH + "Data/gitignore/particle_before_resampling.csv";
-		//	std::ifstream ifs(filename);
-		//	if (ifs.fail()){
-		//		readError(filename);
-		//	}
-		//	std::string str;
-		//	std::getline(ifs, str);
-		//	ifs >> particle_data_after_resampling;
-		//}
-
-		//{
-		//	std::string filename = ofpath + "Data/gitignore/similar_table_.csv";
-		//	std::ifstream ifs(filename);
-		//	if (ifs.fail()){
-		//		readError(filename);
-		//	}
-		//	std::string str;
-		//	std::getline(ifs, str);
-		//	ifs >> similar_table_str_;
-		//}
-
-
-
-		//std::vector<std::vector<bool>> use_sim_tmp_;
-		//for (int i = 0; i < similar_table_str_.size(); i += 4){
-		//	std::vector<std::vector<bool>> similar_tables_;
-		//	for (int j = 0; j < 4; j++){
-		//		bool s1 = std::stod(similar_table_str_[i + j][3]);
-		//		bool s2 = std::stod(similar_table_str_[i + j][4]);
-		//		bool s3 = std::stod(similar_table_str_[i + j][5]);
-		//		bool s4 = std::stod(similar_table_str_[i + j][6]);
-		//		similar_tables_.push_back({ s1, s2, s3, s4 });
-		//	}
-		//	std::vector<bool> use_sim_tmp_tmp = UseIndex(similar_tables_, 2);
-		//	use_sim_tmp_.push_back(use_sim_tmp_tmp);
-		//}
-		//use_sim_ = use_sim_tmp_;
-
-		trial_type = TRIAL_PEARSON_NONSTAT;
-
-
-		int i = 0;
-		while (i < particle_data.size()){
-			int step_tmp = std::stoi(particle_data[i][0]);
-			int step_next_tmp = step_tmp;
-
-			MyTime time_tmp(particle_data[i][1]);
-			std::vector<Position<>> particles_tmp;
-			std::map<SensorsName, std::vector<double>> likelihood_tmp;
-			std::vector<double> fusion_likelihood_tmp;
-
-			while (true){
-				double x = std::stod(particle_data[i][3]);
-				double y = std::stod(particle_data[i][4]);
-				double rad = std::stod(particle_data[i][5]);
-				particles_tmp.push_back(Position<>(x, y, rad));
-				fusion_likelihood_tmp.push_back(std::stod(particle_data[i][6]));
-				int j = 0;
-				for (const auto& sensor : set_sensors){
-					likelihood_tmp[sensor].push_back(std::stod(particle_data[i][7 + j]));
-					j++;
-				}
-
-				i++;
-				if (i >= particle_data.size()){
-					break;
-				}
-				step_next_tmp = std::stoi(particle_data[i][0]);
-				if (step_tmp != step_next_tmp){
-					break;
-				}
-			}
-
-
-
-			assert(particles_tmp.size() == fusion_likelihood_tmp.size());
-			//assert(particles_tmp.size() == lrf_l_likelihood_tmp.size());
-			//assert(particles_tmp.size() == lrf_u_likelihood_tmp.size());
-			//assert(particles_tmp.size() == cmr_likelihood_tmp.size());
-			//assert(particles_tmp.size() == gps_likelihood_tmp.size());
-
-			step_tmp_tmp.push_back(step_tmp);
-			time_tmp_tmp.push_back(time_tmp);
-			particles_tmp_tmp.push_back(particles_tmp);
-			fusion_likelihood_tmp_tmp.push_back(fusion_likelihood_tmp);
-			if (std::find(set_sensors.begin(), set_sensors.end(), LRF_L) != set_sensors.end()){
-				lrf_l_likelihood_tmp_tmp.push_back(likelihood_tmp[LRF_L]);
-			}
-			else{
-				lrf_l_likelihood_tmp_tmp.push_back(std::vector<double>(time_tmp_tmp.size(), 1));
-			}
-			if (std::find(set_sensors.begin(), set_sensors.end(), LRF_U) != set_sensors.end()){
-				lrf_u_likelihood_tmp_tmp.push_back(likelihood_tmp[LRF_U]);
-			}
-			else{
-				lrf_u_likelihood_tmp_tmp.push_back(std::vector<double>(time_tmp_tmp.size(), 1));
-			}
-			if (std::find(set_sensors.begin(), set_sensors.end(), OMNI) != set_sensors.end()){
-				cmr_likelihood_tmp_tmp.push_back(likelihood_tmp[OMNI]);
-			}
-			else{
-				cmr_likelihood_tmp_tmp.push_back(std::vector<double>(time_tmp_tmp.size(), 1));
-			}
-			if (std::find(set_sensors.begin(), set_sensors.end(), GPS) != set_sensors.end()){
-				gps_likelihood_tmp_tmp.push_back(likelihood_tmp[GPS]);
-			}
-			else{
-				gps_likelihood_tmp_tmp.push_back(std::vector<double>(time_tmp_tmp.size(), 1));
-			}
-
-			//this->lid2_l_likelihood = lrf_l_likelihood_tmp;
-			//this->lid2_u_likelihood = lrf_u_likelihood_tmp;
-			//this->omni_likelihood = cmr_likelihood_tmp;
-			//this->gpgga_likelihood = gps_likelihood_tmp;
-
-		}
-		assert(step_tmp_tmp.size() == time_tmp_tmp.size());
-		assert(step_tmp_tmp.size() == particles_tmp_tmp.size());
-		assert(step_tmp_tmp.size() == fusion_likelihood_tmp_tmp.size());
-		assert(step_tmp_tmp.size() == lrf_l_likelihood_tmp_tmp.size());
-		assert(step_tmp_tmp.size() == lrf_u_likelihood_tmp_tmp.size());
-		assert(step_tmp_tmp.size() == cmr_likelihood_tmp_tmp.size());
-		assert(step_tmp_tmp.size() == gps_likelihood_tmp_tmp.size());
-		assert(step_tmp_tmp.size() == esti_pos.size());
-
-		//all_particles_after_resampling = particle_after_resampling;
-
-
-
-
-	}
-
-	void setValue(){
-		if (movie_step >= particles_tmp_tmp.size()){
-			finish = true;
-			return;
-		}
-		for (int i = 0; i < getParticles().size(); i++){
-			*getParticles()[i]->getState() = particles_tmp_tmp[movie_step][i];
-			getParticles()[i]->setWeight(fusion_likelihood_tmp_tmp[movie_step][i]);
-		}
-		lid2_l_likelihood = lrf_l_likelihood_tmp_tmp[movie_step];
-		lid2_u_likelihood = lrf_u_likelihood_tmp_tmp[movie_step];
-		omni_likelihood = cmr_likelihood_tmp_tmp[movie_step];
-		gpgga_likelihood = gps_likelihood_tmp_tmp[movie_step];
-		fusion_likelihood = fusion_likelihood_tmp_tmp[movie_step];
-		if (stat_lrf_l_likelihood_tmp_tmp.empty()){
-			stat_particles = std::vector<Position<>>(STAT_SAMPLE_SIZE);
-			stat_lid2_l_likelihood = std::vector<double>(STAT_SAMPLE_SIZE, 1.0);
-			stat_lid2_u_likelihood = std::vector<double>(STAT_SAMPLE_SIZE, 1.0);
-			stat_omni_likelihood = std::vector<double>(STAT_SAMPLE_SIZE, 1.0);
-			stat_gpgga_likelihood = std::vector<double>(STAT_SAMPLE_SIZE, 1.0);
-		}
-		else{
-			stat_particles = stat_particles_tmp_tmp[movie_step];
-			stat_lid2_l_likelihood = stat_lrf_l_likelihood_tmp_tmp[movie_step];
-			stat_lid2_u_likelihood = stat_lrf_u_likelihood_tmp_tmp[movie_step];
-			stat_omni_likelihood = stat_cmr_likelihood_tmp_tmp[movie_step];
-			stat_gpgga_likelihood = stat_gps_likelihood_tmp_tmp[movie_step];
-		}
-		esti_time = time_tmp_tmp[movie_step];
-		use_sim_.push_back(use_sim_tmp[movie_step]);
-
-
-	}
-
-	void createMovie()
-	{
-		//std::thread thread_meas=std::thread(&LocalizationPF::addMeasurementVideo1,this);
-		//std::thread thread_par = std::thread(&LocalizationPF::addFlameParticleVideo1,this);
-		//std::thread thread_stat_par = std::thread(&LocalizationPF::addFlameWeightedStatParImg1,this);
-		//thread_meas.join();
-		//thread_par.join();
-		//thread_stat_par.join();
-
-		std::thread thread_meas;
-		std::thread thread_par;
-		std::thread thread_par_large;
-		std::thread thread_stat_par;
-
-		switch (trial_type)
-		{
-		case TRIAL_SIMULTANEOUS:
-		case TRIAL_PEARSON_NONSTAT:
-		case TRIAL_NON_TIMESEQUENCE:
-		case TRIAL_NON_TIMESEQUENCE_SIMUL:
-		case TRIAL_SUYAMA_NONSTAT:
-		case TRIAL_3SENSORS_SIMULATNEOUS:
-		case TRIAL_3SENSORS_PEARSON_NONSTAT:
-		case TRIAL_3SENSORS_SUYAMA_NONSTAT:
-		case TRIAL_3SENSORS_LRF_GPS:
-			//thread_meas = std::thread(&LocalizationPF::addMeasurementVideo, this);
-			//thread_meas.join();
-			std::cout << 1 << std::endl;
-			//thread_par = std::thread([&]{
-			addFlameWeightedParImg(false);
-			//});
-			//thread_par.join();
-			std::cout << 1 << std::endl;
-			thread_par_large = std::thread(&LocalizationPF::addFlameParticleLargeVideo, this);
-			thread_par_large.join();
-			//std::cout << 1 << std::endl;
-			break;
-		case TRIAL_PEARSON:
-		case TRIAL_SUYAMA_STAT:
-		case TRIAL_3SENSORS_PEARSON:
-			thread_meas = std::thread(&LocalizationPF::addMeasurementVideo, this);
-			thread_par = std::thread([&]{
-				addFlameWeightedParImg(false);
-			});
-			thread_par_large = std::thread(&LocalizationPF::addFlameParticleLargeVideo, this);
-			thread_stat_par = std::thread([&]{
-				addFlameWeightedParImg(true);
-			});
-			thread_meas.join();
-			thread_par.join();
-			thread_stat_par.join();
-			thread_par_large.join();
-			break;
-
-			std::cout << "Error 'TRIAL': " << TRIAL_TYPE << "FILE: " << __FILE__ << " LINE: " << __LINE__ << std::endl;
-			exit(0);
-			break;
-		}
-
-
-		//addMeasurementVideo2();
-		//addFlameParticleVideo2();
-		//addFlameWeightedStatParImg2();
-
-		movie_step++;
-
-		std::cout << "Complete createMovie" << std::endl;
-	}
-
-
-	void Likelihood(){};
-
-};
-int _tmain(int argc, _TCHAR* argv[])
-{
-
-	Hoge loca;
-
-	loca.setEnvironment();
-
-
-	//loca.readMeasurement();
-
-	for (int i = FIRST_OUTPUT; i <= LAST_OUTPUT; i++) {
-
-
-		int stop_movie_step = STOP_MOVIE_STEP;
-
-		loca.init = true;
-		std::string ofpath_i;
-
-		/* cout MODE */
-		switch (loca.trial_type)
-		{
-		case TRIAL_SIMULTANEOUS:
-			std::cout << "SIMULTANEOUS! " << i << std::endl;
-			ofpath_i = OFPATH_SIMUL + std::to_string(i) + "/";
-			break;
-		case TRIAL_PEARSON:
-			std::cout << "PEARSON! " << i << std::endl;
-			ofpath_i = OFPATH_PEAR + std::to_string(i) + "/";
-			break;
-		case TRIAL_PEARSON_NONSTAT:
-			std::cout << "PEARSON WITHOUT STAT! " << i << std::endl;
-			ofpath_i = OFPATH_PEAR_NONSTAT + std::to_string(i) + "/";
-			break;
-		case TRIAL_NON_TIMESEQUENCE:
-			std::cout << "NON TIME SEQUENCE! " << i << std::endl;
-			ofpath_i = OFPATH_NON_TIMESEQUENCE + std::to_string(i) + "/";
-			break;
-		case TRIAL_NON_TIMESEQUENCE_SIMUL:
-			std::cout << "NON TIME SEQUENCE SIMULTANEOUS! " << i << std::endl;
-			ofpath_i = OFPATH_NON_TIMESEQUENCE_SIMUL + std::to_string(i) + "/";
-			break;
-		case TRIAL_SUYAMA_STAT:
-			std::cout << "SUYAMA STAT! " << i << std::endl;
-			ofpath_i = OFPATH_SUYAMA_STAT + std::to_string(i) + "/";
-			break;
-		case TRIAL_SUYAMA_NONSTAT:
-			std::cout << "SUYAMA NONSTAT! " << i << std::endl;
-			ofpath_i = OFPATH_SUYAMA_NONSTAT + std::to_string(i) + "/";
-			break;
-		case TRIAL_3SENSORS_SIMULATNEOUS:
-			std::cout << "TRIAL_3SENSORS_SIMULATNEOUS! " << i << std::endl;
-			ofpath_i = OFPATH_3SENSORS_SIMULTANEOUS + std::to_string(i) + "/";
-			break;
-		case TRIAL_3SENSORS_PEARSON:
-			std::cout << "TRIAL_3SENSORS_PEARSON! " << i << std::endl;
-			ofpath_i = OFPATH_3SENSORS_PEARSON + std::to_string(i) + "/";
-			break;
-		case TRIAL_3SENSORS_PEARSON_NONSTAT:
-			std::cout << "TRIAL_3SENSORS_PEARSON_NONSTAT! " << i << std::endl;
-			ofpath_i = OFPATH_3SENSORS_PEARSON_NONSTAT + std::to_string(i) + "/";
-			break;
-		case TRIAL_3SENSORS_SUYAMA_NONSTAT:
-			std::cout << "TRIAL_3SENSORS_SUYAMA_NONSTAT!" << std::endl;
-			ofpath_i = OFPATH_3SENSORS_SUYAMA_NONSTAT + std::to_string(i) + "/";
-			break;
-		case TRIAL_3SENSORS_LRF_GPS:
-			std::cout << "TRIAL_3SENSORS_LRF_GPS!" << std::endl;
-			ofpath_i = OFPATH_3SENSORS_LRF_GPS + std::to_string(i) + "/";
-			break;
-		default:
-			std::cout << "Error 'MODE': " << TRIAL_TYPE << "FILE: " << __FILE__ << " LINE: " << __LINE__ << std::endl;
-			exit(0);
-			break;
-		}
-
-
-
-
-
-		loca.ofpath_i = ofpath_i;
-
-		int j = 0;
-		//loca.initOutput(ofpath_i);
-		loca.initParticleVideo(ofpath_i);
-		loca.initParticleLargeVideo(ofpath_i);
-		loca.initMeasurementDataVideo(ofpath_i);
-		loca.initWeightedStatParVideo(ofpath_i);
-
-		loca.initPF();
-
-		loca.initialize();
-
-
-
-		//{
-		//	std::string filename = "F://Data/Localization/Environment/171031/1237/one_skip/lrf_lower/pos.csv";
-		//	std::ifstream ifs(filename);
-		//	if (ifs.fail()){
-		//		readError(filename);
-		//	}
-		//	ifs >> esti_position2;
-		//}
-
-		while (!loca.fin_read_env){
-			std::this_thread::sleep_for(std::chrono::milliseconds(MOVIE_CREATER_SLEEP_MILLISECONDS));
-		}
-
-		//loca.setMovieCreaterThread();
-
-		loca.readParticles(ofpath_i);
-
-		int start_movie_step = START_MOVIE_STEP;
-
-
-		while (!loca.finish)
-		{
-			//signal(SIGINT, finalize);
-
-			//loca.setMeasurement();
-			loca.readMeasurement1();
-			loca.setValue();
-
-
-
-			if (loca.finish) {
-				break;
-			}
-
-
-			clock_t lap1 = clock();
-			loca.calcEPos();
-			clock_t lap2 = clock();
-			if (loca.exist_true_position){
-				loca.calcError();
-			}
-			clock_t lap3 = clock();
-
-
-			loca.setOutputValue(ofpath_i);
-			clock_t lap4 = clock();
-
-
-			clock_t lap5 = clock();
-			clock_t lap6 = clock();
-
-			std::cout << loca.movie_step << std::endl;
-			if (loca.movie_step > start_movie_step && loca.movie_step < stop_movie_step){
-				loca.createMovie();
-			}
-			else{
-				loca.movie_step++;
-			}
-			if (loca.movie_step >= stop_movie_step){
-				loca.finish = true;
-			}
-
-			clock_t lap7 = clock();
-
-			//if (MODE_TEST){
-			//	loca.debug();
-			//}
-
-			loca.clearMeasurement();
-			clock_t lap8 = clock();
-
-
-
-			if (loca.finish) {
-				break;
-			}
-
-			if (loca.init = true) loca.init = false;
-
-			if (loca.movie_step > stop_movie_step){
-				break;
-			}
-
-		}
-
-
-
-	}
-
-
-	return 0;
-}
+//#include "include\LocalizationPF.h"
+//#define START_MOVIE_STEP 0
+//#define STOP_MOVIE_STEP 20000
+//std::vector<SensorsName> SET_SENSORS = { LRF_L, OMNI, GPS };
+//// 確率分布関係
+//#define MAP_RES_TEST MAP_RES
+//class Hoge : public LocalizationPF
+//{
+//public:
+//
+//	std::vector<SensorsName> set_sensors;
+//	std::vector<Position<>> esti_pos;
+//	std::vector<std::vector<bool>> use_sim_tmp;
+//	std::vector<std::vector<std::string>> particle_data;
+//	std::vector<std::vector<std::string>> similar_table_str_;
+//	std::vector<int> step_tmp_tmp;
+//	std::vector<MyTime> time_tmp_tmp;
+//	std::vector<std::vector<Position<>>> particles_tmp_tmp;
+//	std::vector<std::vector<Position<>>> stat_particles_tmp_tmp;
+//	std::vector<std::vector<double>> fusion_likelihood_tmp_tmp;
+//	std::vector<std::vector<double>> lrf_l_likelihood_tmp_tmp;
+//	std::vector<std::vector<double>> lrf_u_likelihood_tmp_tmp;
+//	std::vector<std::vector<double>> cmr_likelihood_tmp_tmp;
+//	std::vector<std::vector<double>> gps_likelihood_tmp_tmp;
+//	std::vector<std::vector<double>>  stat_lrf_l_likelihood_tmp_tmp;
+//	std::vector<std::vector<double>>  stat_lrf_u_likelihood_tmp_tmp;
+//	std::vector<std::vector<double>>  stat_cmr_likelihood_tmp_tmp;
+//	std::vector<std::vector<double>>  stat_gps_likelihood_tmp_tmp;
+//	std::vector<std::vector<Position<>>> particle_after_resampling_tmp_tmp;
+//
+//	Hoge(){
+//		set_sensors = SET_SENSORS;
+//
+//	};
+//	~Hoge(){};
+//
+//	/*  パーティクル動画の初期化  */
+//	void initParticleVideo(std::string ofpath)
+//	{
+//		/*  ビデオ関係  */
+//		// ファイルをオープンし，ビデオライタを初期化
+//		// filename - 出力ファイル名
+//		// fourcc - コーデック
+//		// fps - 1 秒あたりのフレーム数
+//		// frameSize - ビデオフレームのサイズ
+//		// isColor - ビデオストリームがカラーか，グレースケールかを指定
+//
+//		std::string filename = ofpath + "movie2/particle.avi";
+//		//std::string filename = "./output/Movie/particle.avi";
+//		Coor<> rect(CUT_MAP_RADIUS_X*6.0, CUT_MAP_RADIUS_Y*4.0);
+//		cv::Size rect_pix = ToPixelSize(rect, map_img_clone, MAP_RES);
+//		rect_pix.width *= MOVIE_SCALE_W;
+//		rect_pix.height *= MOVIE_SCALE_H;
+//		particle_video.open(filename, CV_FOURCC('X', 'V', 'I', 'D'), PARTICLE_FPS, rect_pix);
+//		if (!particle_video.isOpened())	writeError(filename);
+//	}
+//	void initParticleLargeVideo(std::string ofpath)
+//	{
+//		/*  ビデオ関係  */
+//		// ファイルをオープンし，ビデオライタを初期化
+//		// filename - 出力ファイル名
+//		// fourcc - コーデック
+//		// fps - 1 秒あたりのフレーム数
+//		// frameSize - ビデオフレームのサイズ
+//		// isColor - ビデオストリームがカラーか，グレースケールかを指定
+//
+//		std::string filename = ofpath + "movie2/particle_large.avi";
+//		//std::string filename = "./output/Movie/particle.avi";
+//		Coor<> rect(CUT_MAP_RADIUS_X*6.0, CUT_MAP_RADIUS_Y*4.0);
+//		cv::Size rect_pix = ToPixelSize(rect, map_img_color, MAP_RES);
+//		rect_pix.width *= MOVIE_SCALE_W;
+//		rect_pix.height *= MOVIE_SCALE_H;
+//		particle_large_video.open(filename, CV_FOURCC('X', 'V', 'I', 'D'), PARTICLE_FPS, rect_pix);
+//		if (!particle_large_video.isOpened())	writeError(filename);
+//	}
+//	void initWeightedStatParVideo(std::string ofpath)
+//	{
+//		/*  ビデオ関係  */
+//		// ファイルをオープンし，ビデオライタを初期化
+//		// filename - 出力ファイル名
+//		// fourcc - コーデック
+//		// fps - 1 秒あたりのフレーム数
+//		// frameSize - ビデオフレームのサイズ
+//		// isColor - ビデオストリームがカラーか，グレースケールかを指定
+//
+//		std::string filename = ofpath + "movie2/weighted_stat_particle.avi";
+//		//std::string filename = "./output/Movie/weighted_stat_particle.avi";
+//		Coor<> rect(CUT_MAP_RADIUS_X*6.0, CUT_MAP_RADIUS_Y*4.0);
+//		cv::Size rect_pix = ToPixelSize(rect, map_img_clone, MAP_RES);
+//		rect_pix.width *= MOVIE_SCALE_W;
+//		rect_pix.height *= MOVIE_SCALE_H;
+//		weighted_stat_particle_video.open(filename, CV_FOURCC('X', 'V', 'I', 'D'), PARTICLE_FPS, rect_pix);
+//		if (!weighted_stat_particle_video.isOpened())	writeError(filename);
+//	}
+//	void initMeasurementDataVideo(std::string ofpath)
+//	{
+//		/*  ビデオ関係  */
+//		// ファイルをオープンし，ビデオライタを初期化
+//		// filename - 出力ファイル名
+//		// fourcc - コーデック
+//		// fps - 1 秒あたりのフレーム数
+//		// frameSize - ビデオフレームのサイズ
+//		// isColor - ビデオストリームがカラーか，グレースケールかを指定
+//
+//		std::string filename = ofpath + "movie2/measurement_data.avi";
+//		int fps = MEASUREMENT_DATA_VIDEO_FPS;
+//		Coor<> rect(CUT_MAP_RADIUS_X*4.0, CUT_MAP_RADIUS_Y*4.0);
+//		cv::Size rect_pix = ToPixelSize(rect, map_img_clone, MAP_RES);
+//		rect_pix.width *= MOVIE_SCALE_W;
+//		rect_pix.height *= MOVIE_SCALE_H;
+//		measurement_data_video.open(filename, MEASUREMENT_DATA_VIDEO_FOURCC, fps, rect_pix);
+//		if (!measurement_data_video.isOpened())	writeError(filename);
+//	}
+//
+//
+//	void readParticles(std::string ofpath){
+//
+//		/* 推定位置の読み込み */
+//		{
+//			std::string filename = ofpath + "Data/estimated_position.csv";
+//			std::ifstream ifs(filename);
+//			if (ifs.fail()){
+//				readError(filename);
+//			}
+//			std::string str;
+//			std::getline(ifs, str);
+//			while (std::getline(ifs, str)){
+//				std::istringstream istr(str);
+//				Position<> pos;
+//				int tmp;
+//				MyTime time_tmp;
+//				char c;
+//				istr >> tmp >> c >> time_tmp >> c >> tmp >> c >> pos;
+//				esti_pos.push_back(pos);
+//			}
+//		}
+//
+//		/* use_sim_の読み込み */
+//		switch (trial_type)
+//		{
+//		case TRIAL_SIMULTANEOUS:
+//		case TRIAL_NON_TIMESEQUENCE_SIMUL:
+//		case TRIAL_3SENSORS_SIMULATNEOUS:
+//			use_sim_tmp = std::vector<std::vector<bool>>(esti_pos.size(), std::vector<bool>(sensor_num, true));
+//			break;
+//		case TRIAL_PEARSON:
+//		case TRIAL_PEARSON_NONSTAT:
+//		case TRIAL_NON_TIMESEQUENCE:
+//		case TRIAL_SUYAMA_STAT:
+//		case TRIAL_SUYAMA_NONSTAT:
+//		case TRIAL_3SENSORS_PEARSON:
+//		case TRIAL_3SENSORS_PEARSON_NONSTAT:
+//		case TRIAL_3SENSORS_SUYAMA_NONSTAT:
+//		case TRIAL_3SENSORS_LRF_GPS:
+//		{
+//			std::string filename = ofpath + "Data/use_sensor_sim_.csv";
+//			std::ifstream ifs(filename);
+//			if (ifs.fail()){
+//				readError(filename);
+//			}
+//			std::string str;
+//			std::getline(ifs, str);
+//			while (std::getline(ifs, str)){
+//				int tmp;
+//				MyTime time_tmp;
+//				char c;
+//				std::vector<bool> vec;
+//				std::istringstream istr(str);
+//				istr >> tmp >> c >> time_tmp >> c >> tmp >> c >> vec;
+//				use_sim_tmp.push_back(vec);
+//			}
+//		}
+//		break;
+//		default:
+//			break;
+//		}
+//
+//		/* データの生成 */
+//		{
+//			std::string filename = ofpath + "Data/gitignore/particle.csv";
+//			std::ifstream ifs(filename);
+//			if (ifs.fail()){
+//				readError(filename);
+//			}
+//			std::string str;
+//			std::getline(ifs, str);
+//			ifs >> particle_data;
+//		}
+//		std::cout << particle_data.size() << std::endl;
+//
+//		//std::vector<std::vector<std::string>> particle_data_after_resampling;
+//		//{
+//		//	std::string filename = TEST_PATH + "Data/gitignore/particle_before_resampling.csv";
+//		//	std::ifstream ifs(filename);
+//		//	if (ifs.fail()){
+//		//		readError(filename);
+//		//	}
+//		//	std::string str;
+//		//	std::getline(ifs, str);
+//		//	ifs >> particle_data_after_resampling;
+//		//}
+//
+//		//{
+//		//	std::string filename = ofpath + "Data/gitignore/similar_table_.csv";
+//		//	std::ifstream ifs(filename);
+//		//	if (ifs.fail()){
+//		//		readError(filename);
+//		//	}
+//		//	std::string str;
+//		//	std::getline(ifs, str);
+//		//	ifs >> similar_table_str_;
+//		//}
+//
+//
+//
+//		//std::vector<std::vector<bool>> use_sim_tmp_;
+//		//for (int i = 0; i < similar_table_str_.size(); i += 4){
+//		//	std::vector<std::vector<bool>> similar_tables_;
+//		//	for (int j = 0; j < 4; j++){
+//		//		bool s1 = std::stod(similar_table_str_[i + j][3]);
+//		//		bool s2 = std::stod(similar_table_str_[i + j][4]);
+//		//		bool s3 = std::stod(similar_table_str_[i + j][5]);
+//		//		bool s4 = std::stod(similar_table_str_[i + j][6]);
+//		//		similar_tables_.push_back({ s1, s2, s3, s4 });
+//		//	}
+//		//	std::vector<bool> use_sim_tmp_tmp = UseIndex(similar_tables_, 2);
+//		//	use_sim_tmp_.push_back(use_sim_tmp_tmp);
+//		//}
+//		//use_sim_ = use_sim_tmp_;
+//
+//		trial_type = TRIAL_PEARSON_NONSTAT;
+//
+//
+//		int i = 0;
+//		while (i < particle_data.size()){
+//			int step_tmp = std::stoi(particle_data[i][0]);
+//			int step_next_tmp = step_tmp;
+//
+//			MyTime time_tmp(particle_data[i][1]);
+//			std::vector<Position<>> particles_tmp;
+//			std::map<SensorsName, std::vector<double>> likelihood_tmp;
+//			std::vector<double> fusion_likelihood_tmp;
+//
+//			while (true){
+//				double x = std::stod(particle_data[i][3]);
+//				double y = std::stod(particle_data[i][4]);
+//				double rad = std::stod(particle_data[i][5]);
+//				particles_tmp.push_back(Position<>(x, y, rad));
+//				fusion_likelihood_tmp.push_back(std::stod(particle_data[i][6]));
+//				int j = 0;
+//				for (const auto& sensor : set_sensors){
+//					likelihood_tmp[sensor].push_back(std::stod(particle_data[i][7 + j]));
+//					j++;
+//				}
+//
+//				i++;
+//				if (i >= particle_data.size()){
+//					break;
+//				}
+//				step_next_tmp = std::stoi(particle_data[i][0]);
+//				if (step_tmp != step_next_tmp){
+//					break;
+//				}
+//			}
+//
+//
+//
+//			assert(particles_tmp.size() == fusion_likelihood_tmp.size());
+//			//assert(particles_tmp.size() == lrf_l_likelihood_tmp.size());
+//			//assert(particles_tmp.size() == lrf_u_likelihood_tmp.size());
+//			//assert(particles_tmp.size() == cmr_likelihood_tmp.size());
+//			//assert(particles_tmp.size() == gps_likelihood_tmp.size());
+//
+//			step_tmp_tmp.push_back(step_tmp);
+//			time_tmp_tmp.push_back(time_tmp);
+//			particles_tmp_tmp.push_back(particles_tmp);
+//			fusion_likelihood_tmp_tmp.push_back(fusion_likelihood_tmp);
+//			if (std::find(set_sensors.begin(), set_sensors.end(), LRF_L) != set_sensors.end()){
+//				lrf_l_likelihood_tmp_tmp.push_back(likelihood_tmp[LRF_L]);
+//			}
+//			else{
+//				lrf_l_likelihood_tmp_tmp.push_back(std::vector<double>(time_tmp_tmp.size(), 1));
+//			}
+//			if (std::find(set_sensors.begin(), set_sensors.end(), LRF_U) != set_sensors.end()){
+//				lrf_u_likelihood_tmp_tmp.push_back(likelihood_tmp[LRF_U]);
+//			}
+//			else{
+//				lrf_u_likelihood_tmp_tmp.push_back(std::vector<double>(time_tmp_tmp.size(), 1));
+//			}
+//			if (std::find(set_sensors.begin(), set_sensors.end(), OMNI) != set_sensors.end()){
+//				cmr_likelihood_tmp_tmp.push_back(likelihood_tmp[OMNI]);
+//			}
+//			else{
+//				cmr_likelihood_tmp_tmp.push_back(std::vector<double>(time_tmp_tmp.size(), 1));
+//			}
+//			if (std::find(set_sensors.begin(), set_sensors.end(), GPS) != set_sensors.end()){
+//				gps_likelihood_tmp_tmp.push_back(likelihood_tmp[GPS]);
+//			}
+//			else{
+//				gps_likelihood_tmp_tmp.push_back(std::vector<double>(time_tmp_tmp.size(), 1));
+//			}
+//
+//			//this->lid2_l_likelihood = lrf_l_likelihood_tmp;
+//			//this->lid2_u_likelihood = lrf_u_likelihood_tmp;
+//			//this->omni_likelihood = cmr_likelihood_tmp;
+//			//this->gpgga_likelihood = gps_likelihood_tmp;
+//
+//		}
+//		assert(step_tmp_tmp.size() == time_tmp_tmp.size());
+//		assert(step_tmp_tmp.size() == particles_tmp_tmp.size());
+//		assert(step_tmp_tmp.size() == fusion_likelihood_tmp_tmp.size());
+//		assert(step_tmp_tmp.size() == lrf_l_likelihood_tmp_tmp.size());
+//		assert(step_tmp_tmp.size() == lrf_u_likelihood_tmp_tmp.size());
+//		assert(step_tmp_tmp.size() == cmr_likelihood_tmp_tmp.size());
+//		assert(step_tmp_tmp.size() == gps_likelihood_tmp_tmp.size());
+//		assert(step_tmp_tmp.size() == esti_pos.size());
+//
+//		//all_particles_after_resampling = particle_after_resampling;
+//
+//
+//
+//
+//	}
+//
+//	void setValue(){
+//		if (movie_step >= particles_tmp_tmp.size()){
+//			finish = true;
+//			return;
+//		}
+//		for (int i = 0; i < getParticles().size(); i++){
+//			*getParticles()[i]->getState() = particles_tmp_tmp[movie_step][i];
+//			getParticles()[i]->setWeight(fusion_likelihood_tmp_tmp[movie_step][i]);
+//		}
+//		lid2_l_likelihood = lrf_l_likelihood_tmp_tmp[movie_step];
+//		lid2_u_likelihood = lrf_u_likelihood_tmp_tmp[movie_step];
+//		omni_likelihood = cmr_likelihood_tmp_tmp[movie_step];
+//		gpgga_likelihood = gps_likelihood_tmp_tmp[movie_step];
+//		fusion_likelihood = fusion_likelihood_tmp_tmp[movie_step];
+//		if (stat_lrf_l_likelihood_tmp_tmp.empty()){
+//			stat_particles = std::vector<Position<>>(STAT_SAMPLE_SIZE);
+//			stat_lid2_l_likelihood = std::vector<double>(STAT_SAMPLE_SIZE, 1.0);
+//			stat_lid2_u_likelihood = std::vector<double>(STAT_SAMPLE_SIZE, 1.0);
+//			stat_omni_likelihood = std::vector<double>(STAT_SAMPLE_SIZE, 1.0);
+//			stat_gpgga_likelihood = std::vector<double>(STAT_SAMPLE_SIZE, 1.0);
+//		}
+//		else{
+//			stat_particles = stat_particles_tmp_tmp[movie_step];
+//			stat_lid2_l_likelihood = stat_lrf_l_likelihood_tmp_tmp[movie_step];
+//			stat_lid2_u_likelihood = stat_lrf_u_likelihood_tmp_tmp[movie_step];
+//			stat_omni_likelihood = stat_cmr_likelihood_tmp_tmp[movie_step];
+//			stat_gpgga_likelihood = stat_gps_likelihood_tmp_tmp[movie_step];
+//		}
+//		esti_time = time_tmp_tmp[movie_step];
+//		use_sim_.push_back(use_sim_tmp[movie_step]);
+//
+//
+//	}
+//
+//	void createMovie()
+//	{
+//		//std::thread thread_meas=std::thread(&LocalizationPF::addMeasurementVideo1,this);
+//		//std::thread thread_par = std::thread(&LocalizationPF::addFlameParticleVideo1,this);
+//		//std::thread thread_stat_par = std::thread(&LocalizationPF::addFlameWeightedStatParImg1,this);
+//		//thread_meas.join();
+//		//thread_par.join();
+//		//thread_stat_par.join();
+//
+//		std::thread thread_meas;
+//		std::thread thread_par;
+//		std::thread thread_par_large;
+//		std::thread thread_stat_par;
+//
+//		switch (trial_type)
+//		{
+//		case TRIAL_SIMULTANEOUS:
+//		case TRIAL_PEARSON_NONSTAT:
+//		case TRIAL_NON_TIMESEQUENCE:
+//		case TRIAL_NON_TIMESEQUENCE_SIMUL:
+//		case TRIAL_SUYAMA_NONSTAT:
+//		case TRIAL_3SENSORS_SIMULATNEOUS:
+//		case TRIAL_3SENSORS_PEARSON_NONSTAT:
+//		case TRIAL_3SENSORS_SUYAMA_NONSTAT:
+//		case TRIAL_3SENSORS_LRF_GPS:
+//			//thread_meas = std::thread(&LocalizationPF::addMeasurementVideo, this);
+//			//thread_meas.join();
+//			std::cout << 1 << std::endl;
+//			//thread_par = std::thread([&]{
+//			addFlameWeightedParImg(false);
+//			//});
+//			//thread_par.join();
+//			std::cout << 1 << std::endl;
+//			thread_par_large = std::thread(&LocalizationPF::addFlameParticleLargeVideo, this);
+//			thread_par_large.join();
+//			//std::cout << 1 << std::endl;
+//			break;
+//		case TRIAL_PEARSON:
+//		case TRIAL_SUYAMA_STAT:
+//		case TRIAL_3SENSORS_PEARSON:
+//			thread_meas = std::thread(&LocalizationPF::addMeasurementVideo, this);
+//			thread_par = std::thread([&]{
+//				addFlameWeightedParImg(false);
+//			});
+//			thread_par_large = std::thread(&LocalizationPF::addFlameParticleLargeVideo, this);
+//			thread_stat_par = std::thread([&]{
+//				addFlameWeightedParImg(true);
+//			});
+//			thread_meas.join();
+//			thread_par.join();
+//			thread_stat_par.join();
+//			thread_par_large.join();
+//			break;
+//
+//			std::cout << "Error 'TRIAL': " << TRIAL_TYPE << "FILE: " << __FILE__ << " LINE: " << __LINE__ << std::endl;
+//			exit(0);
+//			break;
+//		}
+//
+//
+//		//addMeasurementVideo2();
+//		//addFlameParticleVideo2();
+//		//addFlameWeightedStatParImg2();
+//
+//		movie_step++;
+//
+//		std::cout << "Complete createMovie" << std::endl;
+//	}
+//
+//
+//	void Likelihood(){};
+//
+//};
+//int _tmain(int argc, _TCHAR* argv[])
+//{
+//
+//	Hoge loca;
+//
+//	loca.setEnvironment();
+//
+//
+//	//loca.readMeasurement();
+//
+//	for (int i = FIRST_OUTPUT; i <= LAST_OUTPUT; i++) {
+//
+//
+//		int stop_movie_step = STOP_MOVIE_STEP;
+//
+//		loca.init = true;
+//		std::string ofpath_i;
+//
+//		/* cout MODE */
+//		switch (loca.trial_type)
+//		{
+//		case TRIAL_SIMULTANEOUS:
+//			std::cout << "SIMULTANEOUS! " << i << std::endl;
+//			ofpath_i = OFPATH_SIMUL + std::to_string(i) + "/";
+//			break;
+//		case TRIAL_PEARSON:
+//			std::cout << "PEARSON! " << i << std::endl;
+//			ofpath_i = OFPATH_PEAR + std::to_string(i) + "/";
+//			break;
+//		case TRIAL_PEARSON_NONSTAT:
+//			std::cout << "PEARSON WITHOUT STAT! " << i << std::endl;
+//			ofpath_i = OFPATH_PEAR_NONSTAT + std::to_string(i) + "/";
+//			break;
+//		case TRIAL_NON_TIMESEQUENCE:
+//			std::cout << "NON TIME SEQUENCE! " << i << std::endl;
+//			ofpath_i = OFPATH_NON_TIMESEQUENCE + std::to_string(i) + "/";
+//			break;
+//		case TRIAL_NON_TIMESEQUENCE_SIMUL:
+//			std::cout << "NON TIME SEQUENCE SIMULTANEOUS! " << i << std::endl;
+//			ofpath_i = OFPATH_NON_TIMESEQUENCE_SIMUL + std::to_string(i) + "/";
+//			break;
+//		case TRIAL_SUYAMA_STAT:
+//			std::cout << "SUYAMA STAT! " << i << std::endl;
+//			ofpath_i = OFPATH_SUYAMA_STAT + std::to_string(i) + "/";
+//			break;
+//		case TRIAL_SUYAMA_NONSTAT:
+//			std::cout << "SUYAMA NONSTAT! " << i << std::endl;
+//			ofpath_i = OFPATH_SUYAMA_NONSTAT + std::to_string(i) + "/";
+//			break;
+//		case TRIAL_3SENSORS_SIMULATNEOUS:
+//			std::cout << "TRIAL_3SENSORS_SIMULATNEOUS! " << i << std::endl;
+//			ofpath_i = OFPATH_3SENSORS_SIMULTANEOUS + std::to_string(i) + "/";
+//			break;
+//		case TRIAL_3SENSORS_PEARSON:
+//			std::cout << "TRIAL_3SENSORS_PEARSON! " << i << std::endl;
+//			ofpath_i = OFPATH_3SENSORS_PEARSON + std::to_string(i) + "/";
+//			break;
+//		case TRIAL_3SENSORS_PEARSON_NONSTAT:
+//			std::cout << "TRIAL_3SENSORS_PEARSON_NONSTAT! " << i << std::endl;
+//			ofpath_i = OFPATH_3SENSORS_PEARSON_NONSTAT + std::to_string(i) + "/";
+//			break;
+//		case TRIAL_3SENSORS_SUYAMA_NONSTAT:
+//			std::cout << "TRIAL_3SENSORS_SUYAMA_NONSTAT!" << std::endl;
+//			ofpath_i = OFPATH_3SENSORS_SUYAMA_NONSTAT + std::to_string(i) + "/";
+//			break;
+//		case TRIAL_3SENSORS_LRF_GPS:
+//			std::cout << "TRIAL_3SENSORS_LRF_GPS!" << std::endl;
+//			ofpath_i = OFPATH_3SENSORS_LRF_GPS + std::to_string(i) + "/";
+//			break;
+//		default:
+//			std::cout << "Error 'MODE': " << TRIAL_TYPE << "FILE: " << __FILE__ << " LINE: " << __LINE__ << std::endl;
+//			exit(0);
+//			break;
+//		}
+//
+//
+//
+//
+//
+//		loca.ofpath_i = ofpath_i;
+//
+//		int j = 0;
+//		//loca.initOutput(ofpath_i);
+//		loca.initParticleVideo(ofpath_i);
+//		loca.initParticleLargeVideo(ofpath_i);
+//		loca.initMeasurementDataVideo(ofpath_i);
+//		loca.initWeightedStatParVideo(ofpath_i);
+//
+//		loca.initPF();
+//
+//		loca.initialize();
+//
+//
+//
+//		//{
+//		//	std::string filename = "F://Data/Localization/Environment/171031/1237/one_skip/lrf_lower/pos.csv";
+//		//	std::ifstream ifs(filename);
+//		//	if (ifs.fail()){
+//		//		readError(filename);
+//		//	}
+//		//	ifs >> esti_position2;
+//		//}
+//
+//		while (!loca.fin_read_env){
+//			std::this_thread::sleep_for(std::chrono::milliseconds(MOVIE_CREATER_SLEEP_MILLISECONDS));
+//		}
+//
+//		//loca.setMovieCreaterThread();
+//
+//		loca.readParticles(ofpath_i);
+//
+//		int start_movie_step = START_MOVIE_STEP;
+//
+//
+//		while (!loca.finish)
+//		{
+//			//signal(SIGINT, finalize);
+//
+//			//loca.setMeasurement();
+//			loca.readMeasurement1();
+//			loca.setValue();
+//
+//
+//
+//			if (loca.finish) {
+//				break;
+//			}
+//
+//
+//			clock_t lap1 = clock();
+//			loca.calcEPos();
+//			clock_t lap2 = clock();
+//			if (loca.exist_true_position){
+//				loca.calcError();
+//			}
+//			clock_t lap3 = clock();
+//
+//
+//			loca.setOutputValue(ofpath_i);
+//			clock_t lap4 = clock();
+//
+//
+//			clock_t lap5 = clock();
+//			clock_t lap6 = clock();
+//
+//			std::cout << loca.movie_step << std::endl;
+//			if (loca.movie_step > start_movie_step && loca.movie_step < stop_movie_step){
+//				loca.createMovie();
+//			}
+//			else{
+//				loca.movie_step++;
+//			}
+//			if (loca.movie_step >= stop_movie_step){
+//				loca.finish = true;
+//			}
+//
+//			clock_t lap7 = clock();
+//
+//			//if (MODE_TEST){
+//			//	loca.debug();
+//			//}
+//
+//			loca.clearMeasurement();
+//			clock_t lap8 = clock();
+//
+//
+//
+//			if (loca.finish) {
+//				break;
+//			}
+//
+//			if (loca.init = true) loca.init = false;
+//
+//			if (loca.movie_step > stop_movie_step){
+//				break;
+//			}
+//
+//		}
+//
+//
+//
+//	}
+//
+//
+//	return 0;
+//}
 
 
 /* カメラ180度回転 */
