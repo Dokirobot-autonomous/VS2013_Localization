@@ -602,18 +602,18 @@
 //#endif
 //// 8号館周辺
 //#if LOCALIZATION_AREA==LOCALIZATION_AROUND_8GO&& TEST==0
-//const std::string OFPATH_SIMUL = OFPATH_ALL + "around-8-building/simultaneous";
-//const std::string OFPATH_PEAR = OFPATH_ALL + "around-8-building/pearson";
-//const std::string OFPATH_PEAR_NONSTAT = OFPATH_ALL + "around-8-building/pearson_nonstat";
-//const std::string OFPATH_NON_TIMESEQUENCE= OFPATH_ALL + "around-8-building/nontimesequence_pear";
-//const std::string OFPATH_NON_TIMESEQUENCE_SIMUL = OFPATH_ALL + "around-8-building/nontimesequence_simul";
-//const std::string OFPATH_SUYAMA_STAT = OFPATH_ALL + "around-8-building/suyama_stat";
-//const std::string OFPATH_SUYAMA_NONSTAT = OFPATH_ALL + "around-8-building/suyama_nonstat";
-//const std::string OFPATH_3SENSORS_SIMULTANEOUS = OFPATH_ALL + "around-8-building/3sensors_simul";
-//const std::string OFPATH_3SENSORS_PEARSON = OFPATH_ALL + "around-8-building/3sensors_pear";
-//const std::string OFPATH_3SENSORS_PEARSON_NONSTAT= OFPATH_ALL + "around-8-building/3sensors_pear_nonstat";
-//const std::string OFPATH_3SENSORS_SUYAMA_NONSTAT = OFPATH_ALL + "around-8-building/3sensors_suyama_nonstat";
-//const std::string OFPATH_3SENSORS_LRF_GPS = OFPATH_ALL + "around-8-building/3sensors_lrf_gps";
+//const std::string OFPATH_SIMUL = OFPATH_ALL + "8building/simultaneous";
+//const std::string OFPATH_PEAR = OFPATH_ALL + "8building/pearson";
+//const std::string OFPATH_PEAR_NONSTAT = OFPATH_ALL + "8building/pearson_nonstat";
+//const std::string OFPATH_NON_TIMESEQUENCE= OFPATH_ALL + "8building/nontimesequence_pear";
+//const std::string OFPATH_NON_TIMESEQUENCE_SIMUL = OFPATH_ALL + "8building/nontimesequence_simul";
+//const std::string OFPATH_SUYAMA_STAT = OFPATH_ALL + "8building/suyama_stat";
+//const std::string OFPATH_SUYAMA_NONSTAT = OFPATH_ALL + "8building/suyama_nonstat";
+//const std::string OFPATH_3SENSORS_SIMULTANEOUS = OFPATH_ALL + "8building/3sensors_simul";
+//const std::string OFPATH_3SENSORS_PEARSON = OFPATH_ALL + "8building/3sensors_pear";
+//const std::string OFPATH_3SENSORS_PEARSON_NONSTAT= OFPATH_ALL + "8building/3sensors_pear_nonstat";
+//const std::string OFPATH_3SENSORS_SUYAMA_NONSTAT = OFPATH_ALL + "8building/3sensors_suyama_nonstat";
+//const std::string OFPATH_3SENSORS_LRF_GPS = OFPATH_ALL + "8building/3sensors_lrf_gps";
 //#endif
 //
 //// TEST_MODE
@@ -651,15 +651,6 @@
 /**************************************************************************************/
 // 外部ファイル
 /**************************************************************************************/
-
-
-enum SensorsName{
-	LRF_L = 0,
-	LRF_U = 1,
-	OMNI = 2,
-	GPS = 3
-};
-
 #pragma once
 
 #include <string>
@@ -730,6 +721,8 @@ enum TrialType
 };
 #define TRIAL_TYPE TRIAL_PEARSON
 
+#define LOCALIZATION_ONLY_TRUE_POSITION false
+
 /* カメラ特徴量 */
 enum OMNI_FEATURE_TYPE
 {
@@ -776,7 +769,7 @@ enum OMNI_FEATURE_TYPE
 //#define TRANS_PAR_SYS_VAR_R M_PI/16.0 // rの誤差分散[rad]
 
 /*  類似性評価用パーティクルのサンプルサイズ */
-#define STAT_SAMPLE_SIZE 500
+#define STAT_SAMPLE_SIZE 1000
 //#define STAT_SAMPLE_SIZE 250
 #define STAT_SAMPLE_RADIUS_X 5000.0 // 検定用パーティクル半径[mm]
 #define STAT_SAMPLE_RADIUS_Y STAT_SAMPLE_RADIUS_X
@@ -839,6 +832,7 @@ const std::string ENVIRONMENT_TIME_OMNI = "1519";
 #endif 
 // square
 #if LOCALIZATION_AREA==LOCALIZATION_SQUARE
+/* case 1 */
 //const std::string ENVIRONMENT_DATE = "171115"; // 入力ファイルのディレクトリ
 //const std::string ENVIRONMENT_TIME = "1536";
 ////const std::string ENVIRONMENT_DATE_OMNI = "171209"; // 入力ファイルのディレクトリ
@@ -852,14 +846,29 @@ const std::string ENVIRONMENT_TIME_OMNI = "1519";
 //#define MAP_IMG_ORG_X 0.5 // 地図画像の原点（正規化）
 //#define MAP_IMG_ORG_Y 0.5 // 地図画像の原点（正規化）
 //#define MAP_RES 50 // 地図画像の分解能[mm]
+/* case 2 */
+//const std::string ENVIRONMENT_DATE = "171115"; // 入力ファイルのディレクトリ
+//const std::string ENVIRONMENT_TIME = "1536";
+//const std::string ENVIRONMENT_DATE_OMNI = "180407"; // 入力ファイルのディレクトリ
+//const std::string ENVIRONMENT_TIME_OMNI = "1404";
+//#define BOF_A 3.8452E+13
+//#define BOF_B -44.27
+////#define BOF_A 168423.8
+////#define BOF_B -6.31
+//#define MAP_ORG_LAT 35110390 // 地図の原点の緯度（地図生成時のLeica位置）
+//#define MAP_ORG_LON 137064840 // 地図の原点の経度（地図生成時のLeica位置）
+//#define MAP_ORG_ELE 170 // 地図の原点の高度（環境内ではこの値で一定と見なす）
+//#define MAP_ORG_HEAD 0 // 地図の原点の初期角度（北を0°として時計回りを正，ほぼ全ての地図で0）
+//#define MAP_IMG_ORG_X 0.5 // 地図画像の原点（正規化）
+//#define MAP_IMG_ORG_Y 0.5 // 地図画像の原点（正規化）
+//#define MAP_RES 50 // 地図画像の分解能[mm]
+/* case 3 */
 const std::string ENVIRONMENT_DATE = "171115"; // 入力ファイルのディレクトリ
 const std::string ENVIRONMENT_TIME = "1536";
-const std::string ENVIRONMENT_DATE_OMNI = "180407"; // 入力ファイルのディレクトリ
-const std::string ENVIRONMENT_TIME_OMNI = "1404";
-#define BOF_A 3.8452E+13
-#define BOF_B -44.27
-//#define BOF_A 168423.8
-//#define BOF_B -6.31
+const std::string ENVIRONMENT_DATE_OMNI = "180822"; // 入力ファイルのディレクトリ
+const std::string ENVIRONMENT_TIME_OMNI = "1249";
+#define BOF_A 88011.36
+#define BOF_B -6.06583
 #define MAP_ORG_LAT 35110390 // 地図の原点の緯度（地図生成時のLeica位置）
 #define MAP_ORG_LON 137064840 // 地図の原点の経度（地図生成時のLeica位置）
 #define MAP_ORG_ELE 170 // 地図の原点の高度（環境内ではこの値で一定と見なす）
@@ -971,13 +980,34 @@ const std::string MEASUREMENT_TIME = "0914";
 //#define LEICA_ORG_LON 137064840 // 地図の原点の経度（地図生成時のLeica位置）
 //#define LEICA_ORG_ELE 170 // 地図の原点の高度（環境内ではこの値で一定と見なす）
 //#define LEICA_HORIZONTAL_ERROR 211.688-178 // LEICAが0°を指すときの北からの角度
+///* square */
+//const std::string MEASUREMENT_DATE = "180414"; // 入力ファイルのディレクトリ
+//const std::string MEASUREMENT_TIME = "1531";
+//#define LEICA_ORG_LAT 35110390 // 地図の原点の緯度（地図生成時のLeica位置）
+//#define LEICA_ORG_LON 137064840 // 地図の原点の経度（地図生成時のLeica位置）
+//#define LEICA_ORG_ELE 170 // 地図の原点の高度（環境内ではこの値で一定と見なす）
+//#define LEICA_HORIZONTAL_ERROR 28.996-179 // LEICAが0°を指すときの北からの角度
+///* square */
+//const std::string MEASUREMENT_DATE = "180414"; // 入力ファイルのディレクトリ
+//const std::string MEASUREMENT_TIME = "1540";
+//#define LEICA_ORG_LAT 35110390 // 地図の原点の緯度（地図生成時のLeica位置）
+//#define LEICA_ORG_LON 137064840 // 地図の原点の経度（地図生成時のLeica位置）
+//#define LEICA_ORG_ELE 170 // 地図の原点の高度（環境内ではこの値で一定と見なす）
+//#define LEICA_HORIZONTAL_ERROR 28.996-179 // LEICAが0°を指すときの北からの角度
+///* square */
+//const std::string MEASUREMENT_DATE = "180822"; // 入力ファイルのディレクトリ
+//const std::string MEASUREMENT_TIME = "1315";
+//#define LEICA_ORG_LAT 35110390 // 地図の原点の緯度（地図生成時のLeica位置）
+//#define LEICA_ORG_LON 137064840 // 地図の原点の経度（地図生成時のLeica位置）
+//#define LEICA_ORG_ELE 170 // 地図の原点の高度（環境内ではこの値で一定と見なす）
+//#define LEICA_HORIZONTAL_ERROR 28.996-179 // LEICAが0°を指すときの北からの角度
 /* square */
-const std::string MEASUREMENT_DATE = "180414"; // 入力ファイルのディレクトリ
-const std::string MEASUREMENT_TIME = "1531";
+const std::string MEASUREMENT_DATE = "180822"; // 入力ファイルのディレクトリ
+const std::string MEASUREMENT_TIME = "1315";
 #define LEICA_ORG_LAT 35110390 // 地図の原点の緯度（地図生成時のLeica位置）
 #define LEICA_ORG_LON 137064840 // 地図の原点の経度（地図生成時のLeica位置）
 #define LEICA_ORG_ELE 170 // 地図の原点の高度（環境内ではこの値で一定と見なす）
-#define LEICA_HORIZONTAL_ERROR 28.996-179 // LEICAが0°を指すときの北からの角度
+#define LEICA_HORIZONTAL_ERROR 32.577-177 // LEICAが0°を指すときの北からの角度, calb-google
 #endif
 #if LOCALIZATION_AREA==LOCALIZATION_B2
 /* b2f */
@@ -1069,7 +1099,7 @@ enum PositionType
 #define IMAGE_PARTICLE_LARGE_GRAY_CIRCLE_THICHNESS 1
 
 /* ピアソン閾値 */
-#define PEARSON_CORRCOEF_TH 0.0 // ピアソン積率相関係数の類似性の閾値
+#define PEARSON_CORRCOEF_TH 0.1 // ピアソン積率相関係数の類似性の閾値
 
 
 ///*  尤度算出時分割数  */
@@ -1193,9 +1223,9 @@ const std::string IFPATH_RMAP = IFPATH + "Result/Visual Studio/ReliabilityMap/pe
 
 /*  出力ファイルパス  */
 //const std::string OFPATH = "F://Data/Localization/Result/Visual Studio/Localization.ver2/map" + ENVIRONMENT_DATE + ENVIRONMENT_TIME + "/loc" + MEASUREMENT_DATE + MEASUREMENT_TIME + "/Pearson/01/";
-//const std::string OFPATH_ALL = "\\\\Desktop-mt35ltg/f/Data/Localization/Result/Visual Studio/Localization.ver2/";
+const std::string OFPATH_ALL = "\\\\Desktop-mt35ltg/E/Data/Localization/Result/Visual Studio/Localization.ver2/";
 //const std::string OFPATH_ALL = "../output/";
-const std::string OFPATH_ALL = "E://Data/Localization/Result/Visual Studio/Localization.ver2/";
+//const std::string OFPATH_ALL = "E://Data/Localization/Result/Visual Studio/Localization.ver2/";
 //const std::string OFPATH_ALL = "//Desktop-mt35ltg/f/Data/Localization/Result/Visual Studio/Localization.ver2/";
 // PARKING
 #if LOCALIZATION_AREA==LOCALIZATION_PARKING && TEST==0
@@ -1258,18 +1288,18 @@ const std::string OFPATH_3SENSORS_LRF_GPS = OFPATH_ALL + "B2/3sensors_lrf_gps";
 #endif
 // 8号館周辺
 #if LOCALIZATION_AREA==LOCALIZATION_AROUND_8GO&& TEST==0
-const std::string OFPATH_SIMUL = OFPATH_ALL + "around-8-building/simultaneous";
-const std::string OFPATH_PEAR = OFPATH_ALL + "around-8-building/pearson";
-const std::string OFPATH_PEAR_NONSTAT = OFPATH_ALL + "around-8-building/pearson_nonstat";
-const std::string OFPATH_NON_TIMESEQUENCE = OFPATH_ALL + "around-8-building/nontimesequence_pear";
-const std::string OFPATH_NON_TIMESEQUENCE_SIMUL = OFPATH_ALL + "around-8-building/nontimesequence_simul";
-const std::string OFPATH_SUYAMA_STAT = OFPATH_ALL + "around-8-building/suyama_stat";
-const std::string OFPATH_SUYAMA_NONSTAT = OFPATH_ALL + "around-8-building/suyama_nonstat";
-const std::string OFPATH_3SENSORS_SIMULTANEOUS = OFPATH_ALL + "around-8-building/3sensors_simul";
-const std::string OFPATH_3SENSORS_PEARSON = OFPATH_ALL + "around-8-building/3sensors_pear";
-const std::string OFPATH_3SENSORS_PEARSON_NONSTAT = OFPATH_ALL + "around-8-building/3sensors_pear_nonstat";
-const std::string OFPATH_3SENSORS_SUYAMA_NONSTAT = OFPATH_ALL + "around-8-building/3sensors_suyama_nonstat";
-const std::string OFPATH_3SENSORS_LRF_GPS = OFPATH_ALL + "around-8-building/3sensors_lrf_gps";
+const std::string OFPATH_SIMUL = OFPATH_ALL + "8building/simultaneous";
+const std::string OFPATH_PEAR = OFPATH_ALL + "8building/pearson";
+const std::string OFPATH_PEAR_NONSTAT = OFPATH_ALL + "8building/pearson_nonstat";
+const std::string OFPATH_NON_TIMESEQUENCE = OFPATH_ALL + "8building/nontimesequence_pear";
+const std::string OFPATH_NON_TIMESEQUENCE_SIMUL = OFPATH_ALL + "8building/nontimesequence_simul";
+const std::string OFPATH_SUYAMA_STAT = OFPATH_ALL + "8building/suyama_stat";
+const std::string OFPATH_SUYAMA_NONSTAT = OFPATH_ALL + "8building/suyama_nonstat";
+const std::string OFPATH_3SENSORS_SIMULTANEOUS = OFPATH_ALL + "8building/3sensors_simul";
+const std::string OFPATH_3SENSORS_PEARSON = OFPATH_ALL + "8building/3sensors_pear";
+const std::string OFPATH_3SENSORS_PEARSON_NONSTAT = OFPATH_ALL + "8building/3sensors_pear_nonstat";
+const std::string OFPATH_3SENSORS_SUYAMA_NONSTAT = OFPATH_ALL + "8building/3sensors_suyama_nonstat";
+const std::string OFPATH_3SENSORS_LRF_GPS = OFPATH_ALL + "8building/3sensors_lrf_gps";
 #endif
 
 // TEST_MODE

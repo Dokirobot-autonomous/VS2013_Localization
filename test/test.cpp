@@ -321,78 +321,78 @@
 //}
 
 /* 真の位置をmap上に出力 */
-//#include "include\leica.h"
-//#define TH_DISTANCE 1000
-//int _tmain(int argc, _TCHAR* argv[])
-//{
-//	GlobalToLocal gl2lc;
-//	std::vector<leica::Data<>> dataset_leica;
-//
-//	/*  自己位置推定の初期位置  */
-//	//	GL座標系からLC座標系に変換
-//	gl2lc.setOriginal(MAP_ORG_LAT, MAP_ORG_LON, MAP_ORG_ELE, MAP_ORG_HEAD);
-//
-//
-//	/* leica 読み込み */
-//	gl2lc.setOriginal(MAP_ORG_LAT, MAP_ORG_LON, MAP_ORG_ELE, MAP_ORG_HEAD);
-//	Coor<> leica_coor = gl2lc.getCoor(LEICA_ORG_LAT, LEICA_ORG_LON, LEICA_ORG_ELE);
-//	leica::Param<> param_leica(leica_coor);
-//	param_leica.setHorizontalErrorDeg(LEICA_HORIZONTAL_ERROR);
-//	{
-//		std::string filename = IFPATH_MEAS + "true_position/true_position.csv";
-//		std::ifstream ifs(filename);
-//		if (ifs.fail())	readError(filename);
-//		leica::readDeg(ifs, param_leica, dataset_leica);
-//	}
-//
-//	/* Mapの読み込み */
-//	cv::Mat map_img;
-//	{
-//		std::string filename = IFPATH_ENV + "lrf_lower/gridmap.bmp";
-//		map_img = cv::imread(filename, CV_LOAD_IMAGE_COLOR);
-//		if (map_img.empty())	readError(filename);
-//	}
-//
-//	cv::Point leica_pix = ToPixel(leica_coor, map_img, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
-//	cv::circle(map_img, leica_pix, 3, cv::Scalar(255, 0, 0), -1);
-//
-//	/* 真の位置の算出 */
-//	std::vector<Coor<>> true_position;
-//	std::vector<MyTime> true_time;
-//	for (int i = 0; i < dataset_leica.size(); i++){
-//		Coor<> pos = dataset_leica[i].coor();
-//		MyTime time = dataset_leica[i].time;
-//		true_position.push_back(pos);
-//		true_time.push_back(time);
-//	}
-//
-//	/* 真の位置の出力 */
-//	std::ofstream ofs("true_position.csv");
-//	ofs << "time,x,y,rad" << std::endl;
-//	for (int i = 0; i < true_position.size();i++){
-//		ofs << true_time[i] << "," << true_position[i] << std::endl;
-//	}
-//	
-//	std::cout << true_position.size() << std::endl;
-//	std::cout << true_time.size() << std::endl;
-//
-//	/* 真の位置の描画 */
-//	for (int i = 0; i < true_position.size(); i++){
-//	//for (int i = 0; i < 3; i++){
-//			cv::Point pix = ToPixel(true_position[i], map_img, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
-//		cv::circle(map_img, pix, 3, cv::Scalar(0, 255, 0), -1);
-//	}
-//
-//	/* 縮小 */
-//	cv::resize(map_img, map_img, cv::Size(), 0.5, 0.5);
-//	/* imshow */
-//	cv::flip(map_img, map_img, 0);
-//	cv::imshow("map", map_img);
-//	cv::waitKey();
-//	cv::imwrite("map.bmp", map_img);
-//
-//	return 0;
-//}
+#include "include\leica.h"
+#define TH_DISTANCE 1000
+int _tmain(int argc, _TCHAR* argv[])
+{
+	GlobalToLocal gl2lc;
+	std::vector<leica::Data<>> dataset_leica;
+
+	/*  自己位置推定の初期位置  */
+	//	GL座標系からLC座標系に変換
+	gl2lc.setOriginal(MAP_ORG_LAT, MAP_ORG_LON, MAP_ORG_ELE, MAP_ORG_HEAD);
+
+
+	/* leica 読み込み */
+	gl2lc.setOriginal(MAP_ORG_LAT, MAP_ORG_LON, MAP_ORG_ELE, MAP_ORG_HEAD);
+	Coor<> leica_coor = gl2lc.getCoor(LEICA_ORG_LAT, LEICA_ORG_LON, LEICA_ORG_ELE);
+	leica::Param<> param_leica(leica_coor);
+	param_leica.setHorizontalErrorDeg(LEICA_HORIZONTAL_ERROR);
+	{
+		std::string filename = IFPATH_MEAS + "true_position/true_position.csv";
+		std::ifstream ifs(filename);
+		if (ifs.fail())	readError(filename);
+		leica::readDeg(ifs, param_leica, dataset_leica);
+	}
+
+	/* Mapの読み込み */
+	cv::Mat map_img;
+	{
+		std::string filename = IFPATH_ENV + "lrf_lower/gridmap.bmp";
+		map_img = cv::imread(filename, CV_LOAD_IMAGE_COLOR);
+		if (map_img.empty())	readError(filename);
+	}
+
+	cv::Point leica_pix = ToPixel(leica_coor, map_img, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
+	cv::circle(map_img, leica_pix, 3, cv::Scalar(255, 0, 0), -1);
+
+	/* 真の位置の算出 */
+	std::vector<Coor<>> true_position;
+	std::vector<MyTime> true_time;
+	for (int i = 0; i < dataset_leica.size(); i++){
+		Coor<> pos = dataset_leica[i].coor();
+		MyTime time = dataset_leica[i].time;
+		true_position.push_back(pos);
+		true_time.push_back(time);
+	}
+
+	/* 真の位置の出力 */
+	std::ofstream ofs("true_position.csv");
+	ofs << "time,x,y,rad" << std::endl;
+	for (int i = 0; i < true_position.size();i++){
+		ofs << true_time[i] << "," << true_position[i] << std::endl;
+	}
+	
+	std::cout << true_position.size() << std::endl;
+	std::cout << true_time.size() << std::endl;
+
+	/* 真の位置の描画 */
+	for (int i = 0; i < true_position.size(); i++){
+	//for (int i = 0; i < 3; i++){
+			cv::Point pix = ToPixel(true_position[i], map_img, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
+		cv::circle(map_img, pix, 3, cv::Scalar(0, 255, 0), -1);
+	}
+
+	/* 縮小 */
+	cv::resize(map_img, map_img, cv::Size(), 0.5, 0.5);
+	/* imshow */
+	cv::flip(map_img, map_img, 0);
+	cv::imshow("map", map_img);
+	cv::waitKey();
+	cv::imwrite("map.bmp", map_img);
+
+	return 0;
+}
 
 /* 真の位置と推定位置をmap上に出力 */
 //#include "include\leica.h"
@@ -1649,121 +1649,121 @@
 //}
 
 /* 計測画像から特徴量とkeypointを保存(SIFT) */
-#include "include\parameter.h"
-int _tmain(int argc, _TCHAR* argv[])
-{
-	int no = 1;
-
-	int thread_num =4;
-	//int thread_num = std::thread::hardware_concurrency() / 2;
-
-	std::vector<std::thread> thread;
-	for (int th = 0; th < thread_num; th++)
-	{
-		/*  threadの生成  */
-		thread.push_back(std::thread([&] {
-			int step = th + 1565;
-			bool init_ = false;
-			//int step = th * 5 + 2;
-			while (1)
-			{
-				cv::Mat img;	//	全方位カメラ画像
-
-				/*  ファイルの読み込み  */
-				//std::string filename = "\\\\Desktop-mt35ltg/f/Data/Localization/Measurement/" + MEASUREMENT_DATE + "/" + MEASUREMENT_TIME + "/img/img_no" + std::to_string(no) + "_" + std::to_string(step) + "th.bmp";
-				std::string filename = "E://Data/Localization/Measurement/" + MEASUREMENT_DATE + "/" + MEASUREMENT_TIME + "/img/img_no" + std::to_string(no) + "_" + std::to_string(step) + "th.bmp";
-				img = cv::imread(filename, CV_LOAD_IMAGE_COLOR);
-				//if (img.empty()) break;	//	終了条件
-				if (img.empty()) readError(filename);	//	終了条件
-
-				cv::Point center(img.cols / 1.9, img.rows / 2);
-
-				///*  Operatorの塗りつぶし  */
-				//cv::Size radius(img.rows / 3, img.rows / 3);
-				//double start_angle = -105;	//	扇系の中心角度
-				//double angle = 35;	//	角度
-				//cv::ellipse(img, center, radius, start_angle, 0, angle, cv::Scalar(0, 0, 0), -1, CV_AA);
-
-				///* 外枠の塗りつぶし */
-				//cv::circle(img, center, 510, cv::Scalar(0, 0, 0), 150);
-
-				//　等間隔の画像に切り出し
-				cv::Rect roi_rect(ROI_ORG_X, ROI_ORG_Y, ROI_SIZE_X, ROI_SIZE_Y); // x,y,w,h
-				img = img(roi_rect);
-
-				cv::SiftFeatureDetector detector(1000);
-				cv::SiftDescriptorExtractor extractor;
-
-				//clock_t lap1 = clock();
-
-				//画像から特徴点を検出
-				std::vector<cv::KeyPoint> keypoints;
-				detector.detect(img, keypoints);
-
-				//clock_t lap2 = clock();
-
-				// Operatorとロボット前方の棒部分の特徴点を排除
-				int x_interval = img.cols / 10.0;
-				std::vector<cv::KeyPoint> keypoints_tmp;
-				for (const auto& key : keypoints){
-					if (key.pt.x < img.cols / 2.0 - x_interval || key.pt.x > img.cols / 2.0 + x_interval || key.pt.y < img.rows / 2.0){
-						keypoints_tmp.push_back(key);
-					}
-				}
-				keypoints = keypoints_tmp;
-
-
-				//画像の特徴点における特徴量を抽出
-				cv::Mat descriptors;
-				extractor.compute(img, keypoints, descriptors);
-
-				/* keypointの描画 */
-				if (init_){
-					cv::Mat mat = img.clone();
-					cv::drawKeypoints(mat, keypoints_tmp, mat);
-					cv::resize( mat,mat, cv::Size(), 0.5, 0.5);
-					cv::imshow("hoge" + std::to_string(th), mat);
-					cv::waitKey();
-					init_ = false;
-				}
-
-
-				//clock_t lap3 = clock();
-
-				/* keypointの保存 */
-				filename = IFPATH_MEAS + "sift/keypoint/keypoint_no" + std::to_string(no) + "_" + std::to_string(step) + "th.yml";
-				cv::FileStorage fs(filename, cv::FileStorage::WRITE);
-				if (!fs.isOpened()) {
-					writeError(filename);
-				}
-				cv::write(fs, "keypoints", keypoints);
-
-				/*  descriptorの書き出し  */
-				//filename = IFPATH_MEAS + "sift/descriptor/desc_no" + std::to_string(no) + "_" + std::to_string(step) + "th.csv";
-				//std::ofstream ofs(filename);
-				//if (ofs.fail())	readError(filename);
-				//ofs << cv::format(descriptors, "csv");
-				filename = IFPATH_MEAS + "sift/descriptor/desc_no" + std::to_string(no) + "_" + std::to_string(step) + "th.bmp";
-				cv::imwrite(filename, descriptors);
-
-
-				std::cout << "Finish Step: " << step << std::endl;
-				//if (step > 2260)	break;
-
-
-				step += thread_num;
-			}
-		}));	//	threadの定義ここまで
-	}
-
-	for (auto& th : thread)
-	{
-		th.join();
-	}
-
-	return 0;
-
-}
+//#include "include\parameter.h"
+//int _tmain(int argc, _TCHAR* argv[])
+//{
+//	int no = 1;
+//
+//	int thread_num =4;
+//	//int thread_num = std::thread::hardware_concurrency() / 2;
+//
+//	std::vector<std::thread> thread;
+//	for (int th = 0; th < thread_num; th++)
+//	{
+//		/*  threadの生成  */
+//		thread.push_back(std::thread([&] {
+//			int step = th + 1;
+//			bool init_ = false;
+//			//int step = th * 5 + 2;
+//			while (1)
+//			{
+//				cv::Mat img;	//	全方位カメラ画像
+//
+//				/*  ファイルの読み込み  */
+//				std::string filename = "\\\\Desktop-mt35ltg/F/Data/Localization/Measurement/" + MEASUREMENT_DATE + "/" + MEASUREMENT_TIME + "/img/img_no" + std::to_string(no) + "_" + std::to_string(step) + "th.bmp";
+//				//std::string filename = "E://Data/Localization/Measurement/" + MEASUREMENT_DATE + "/" + MEASUREMENT_TIME + "/img/img_no" + std::to_string(no) + "_" + std::to_string(step) + "th.bmp";
+//				img = cv::imread(filename, CV_LOAD_IMAGE_COLOR);
+//				//if (img.empty()) break;	//	終了条件
+//				if (img.empty()) readError(filename);	//	終了条件
+//
+//				cv::Point center(img.cols / 1.9, img.rows / 2);
+//
+//				///*  Operatorの塗りつぶし  */
+//				//cv::Size radius(img.rows / 3, img.rows / 3);
+//				//double start_angle = -105;	//	扇系の中心角度
+//				//double angle = 35;	//	角度
+//				//cv::ellipse(img, center, radius, start_angle, 0, angle, cv::Scalar(0, 0, 0), -1, CV_AA);
+//
+//				///* 外枠の塗りつぶし */
+//				//cv::circle(img, center, 510, cv::Scalar(0, 0, 0), 150);
+//
+//				//　等間隔の画像に切り出し
+//				cv::Rect roi_rect(ROI_ORG_X, ROI_ORG_Y, ROI_SIZE_X, ROI_SIZE_Y); // x,y,w,h
+//				img = img(roi_rect);
+//
+//				cv::SiftFeatureDetector detector(1000);
+//				cv::SiftDescriptorExtractor extractor;
+//
+//				//clock_t lap1 = clock();
+//
+//				//画像から特徴点を検出
+//				std::vector<cv::KeyPoint> keypoints;
+//				detector.detect(img, keypoints);
+//
+//				//clock_t lap2 = clock();
+//
+//				// Operatorとロボット前方の棒部分の特徴点を排除
+//				int x_interval = img.cols / 10.0;
+//				std::vector<cv::KeyPoint> keypoints_tmp;
+//				for (const auto& key : keypoints){
+//					if (key.pt.x < img.cols / 2.0 - x_interval || key.pt.x > img.cols / 2.0 + x_interval || key.pt.y > img.rows / 2.0){
+//						keypoints_tmp.push_back(key);
+//					}
+//				}
+//				keypoints = keypoints_tmp;
+//
+//
+//				//画像の特徴点における特徴量を抽出
+//				cv::Mat descriptors;
+//				extractor.compute(img, keypoints, descriptors);
+//
+//				/* keypointの描画 */
+//				if (init_){
+//					cv::Mat mat = img.clone();
+//					cv::drawKeypoints(mat, keypoints_tmp, mat);
+//					cv::resize( mat,mat, cv::Size(), 0.5, 0.5);
+//					cv::imshow("hoge" + std::to_string(th), mat);
+//					cv::waitKey();
+//					init_ = false;
+//				}
+//
+//
+//				//clock_t lap3 = clock();
+//
+//				/* keypointの保存 */
+//				filename = IFPATH_MEAS + "sift/keypoint/keypoint_no" + std::to_string(no) + "_" + std::to_string(step) + "th.yml";
+//				cv::FileStorage fs(filename, cv::FileStorage::WRITE);
+//				if (!fs.isOpened()) {
+//					writeError(filename);
+//				}
+//				cv::write(fs, "keypoints", keypoints);
+//
+//				/*  descriptorの書き出し  */
+//				//filename = IFPATH_MEAS + "sift/descriptor/desc_no" + std::to_string(no) + "_" + std::to_string(step) + "th.csv";
+//				//std::ofstream ofs(filename);
+//				//if (ofs.fail())	readError(filename);
+//				//ofs << cv::format(descriptors, "csv");
+//				filename = IFPATH_MEAS + "sift/descriptor/desc_no" + std::to_string(no) + "_" + std::to_string(step) + "th.bmp";
+//				cv::imwrite(filename, descriptors);
+//
+//
+//				std::cout << "Finish Step: " << step << std::endl;
+//				//if (step > 2260)	break;
+//
+//
+//				step += thread_num;
+//			}
+//		}));	//	threadの定義ここまで
+//	}
+//
+//	for (auto& th : thread)
+//	{
+//		th.join();
+//	}
+//
+//	return 0;
+//
+//}
 
 /* keypointとdescriptorの読み込み */
 //const std::string matching_type = "BruteForce-SL2";

@@ -286,11 +286,22 @@ int _tmain(int argc, _TCHAR* argv[])
 			//loca.setMeasurement();
 			loca.readMeasurement1();
 
+			if (loca.localization_only_true_position){
+				std::cout << loca.true_time[loca.tidx] << "," << loca.esti_time << std::endl;
+				if (loca.true_time[loca.tidx] != loca.esti_time){
+					loca.clearMeasurement();
+					continue;
+				}
+				else{
+					loca.sampling(loca.true_position->at(loca.tidx));
+				}
+			}
+
 			if (finish || loca.finish) {
 				break;
 			}
 
-			if (!loca.init){
+			if (!loca.init && !loca.localization_only_true_position){
 				loca.Transition();
 			}
 
@@ -355,12 +366,25 @@ int _tmain(int argc, _TCHAR* argv[])
 				finish = true;
 			}
 
+			//// error‚ª‚Q‚‚ð‚±‚¦‚½‚Î‚ ‚¢A‚µ‚ã‚¤‚è‚å‚¤
+			//if (!loca.all_error.empty()){
+			//	double error = std::sqrt(loca.all_error.back().x*loca.all_error.back().x + loca.all_error.back().y*loca.all_error.back().y);
+			//	if (error > 2000){
+			//		break;
+			//	}
+			//}
+
+
+
 			if (finish || loca.finish) {
 				break;
 			}
 
 			if (loca.init = true) loca.init = false;
 
+			if (loca.localization_only_true_position){
+				loca.tidx++;
+			}
 
 		}
 

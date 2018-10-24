@@ -69,6 +69,8 @@ public:
 			break;
 		}
 
+		localization_only_true_position = LOCALIZATION_ONLY_TRUE_POSITION;
+
 
 		lid2_l.resize(LIKELIHOOD_THREAD);
 		lid2_u.resize(LIKELIHOOD_THREAD);
@@ -1082,7 +1084,8 @@ public:
 		//	オドメトリ
 		Polar<> odo_mean(0.0, 0.0);	//  平均は全て0
 		if (delta.theta < M_PI / 16){
-			odometry_system_noise.set(std::abs(delta.r / 2.0) + 0.0001, std::abs(delta.theta) + 0.0001);
+			odometry_system_noise.set(std::abs(delta.r) + 0.0001, std::abs(delta.theta) + 0.0001);
+			//odometry_system_noise.set(std::abs(delta.r / 2.0) + 0.0001, std::abs(delta.theta) + 0.0001);
 		}
 		else{
 			odometry_system_noise.set(std::abs(delta.r / 2.0) + 0.0001, std::abs(M_PI / 16) + 0.0001);
@@ -1664,7 +1667,33 @@ public:
 	/*  重み付きパーティクルを障害物地図上に表示  */
 	void visualizeParticleWeight(cv::Mat& map, const std::vector<Position<>>& particle, const std::vector<double> &likelihood, int step, int cols, int rows, double map_res, cv::Point upleft_pix, bool visualize_weighted_mean)
 	{
-		// パーティクル描画
+		/* パーティクル描画 */
+		//cv::cvtColor(map, map, CV_BGR2HSV); // RGB→HSVに変換
+		//std::vector<int> up_idx = sortUpIdx(likelihood);		//	パーティクルを昇順にソート
+		////cv::cvtColor(map, map, cv::COLOR_RGB2HSV);	// RGB→HSVに変換
+		//for (const auto &idx : up_idx)
+		//{
+		//	if (likelihood[idx] != 0.0) {
+		//		cv::Scalar color;
+		//		double min = *std::min_element(likelihood.begin(), likelihood.end());
+		//		double max = *std::max_element(likelihood.begin(), likelihood.end());
+		//		color = cv::Scalar(150, 255 - (int)(likelihood[idx] / max*255.0 + 0.5), 255);
+		//		int intensity;
+		//		if (max != min){
+		//			intensity = (int)((likelihood[idx] - min) / (max - min)*255.0 + 0.5);
+		//		}
+		//		else if (max == 1.0){
+		//			intensity = 255;
+		//		}
+		//		else{
+		//			intensity = 128;
+		//		}
+		//		if (intensity < 0) intensity = 0;
+		//		color = cv::Scalar(180, intensity, 255);
+		//		drawPosition(particle[idx], map, color, cols, rows, map_res, MAP_IMG_ORG_X, MAP_IMG_ORG_Y, upleft_pix, PARTICLE);
+		//	}
+		//}
+		//cv::cvtColor(map, map, CV_HSV2BGR); // HSV→RGBに変換
 		cv::cvtColor(map, map, CV_BGR2HSV); // RGB→HSVに変換
 		std::vector<int> up_idx = sortUpIdx(likelihood);		//	パーティクルを昇順にソート
 		//cv::cvtColor(map, map, cv::COLOR_RGB2HSV);	// RGB→HSVに変換
@@ -1672,25 +1701,15 @@ public:
 		{
 			if (likelihood[idx] != 0.0) {
 				cv::Scalar color;
-				double min = *std::min_element(likelihood.begin(), likelihood.end());
-				double max = *std::max_element(likelihood.begin(), likelihood.end());
-				//color = cv::Scalar(150, 255 - (int)(likelihood[idx] / max*255.0 + 0.5), 255);
-				int intensity;
-				if (max != min){
-					intensity = (int)((likelihood[idx] - min) / (max - min)*255.0 + 0.5);
-				}
-				else if (max == 1.0){
-					intensity = 255;
-				}
-				else{
-					intensity = 128;
-				}
-				if (intensity < 0) intensity = 0;
-				color = cv::Scalar(180, intensity, 255);
+				double max = 10.0/(double)likelihood.size();
+				int s = (int)(likelihood[idx] / max*255.0 + 0.5);
+				if (s > 255)s = 255;
+				color = cv::Scalar(150, s, 255);
 				drawPosition(particle[idx], map, color, cols, rows, map_res, MAP_IMG_ORG_X, MAP_IMG_ORG_Y, upleft_pix, PARTICLE);
 			}
 		}
 		cv::cvtColor(map, map, CV_HSV2BGR); // HSV→RGBに変換
+
 
 		/* 重み付き平均の出力*/
 		if (visualize_weighted_mean)
@@ -2327,7 +2346,8 @@ public:
 				position->set(noise_x(mt), noise_y(mt), noise_r(mt));	//	指定された範囲にパーティクルを散布
 				//	存在可能領域に散布された場合，break
 				cv::Point pixel = ToPixel(*position, map_img, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
-				if ((int)map_img.at<unsigned char>(pixel) != 0)	break;
+				if ((int)map_img.at<unsigned char>(pixel) == 255)	break;
+				//break;
 			}
 
 			par->setState(position);
@@ -2339,6 +2359,48 @@ public:
 		std::cout << "Complete 'Sampling' " << std::endl;
 
 	}
+
+
+/*	void sampling(Position<> center) {
+
+		getParticles().clear();
+
+		std::random_device rnd;     // 非決定的な乱数生成器を生成
+		std::mt19937_64 mt(rnd());     //  メルセンヌ・ツイスタの64ビット版、引数は初期シード値
+		std::uniform_real_distribution<double> noise_range(0, INI_SAMPLE_RADIUS_RANGE);
+		std::uniform_real_distribution<double> noise_theta(-M_PI, M_PI);
+		std::uniform_real_distribution<double> noise_r(-INI_SAMPLE_RADIUS_R, INI_SAMPLE_RADIUS_R);	//パーティクルの散布範囲
+
+		for (int si = 0; si < sample_size; si++)
+		{
+			Particle<Position<>>* par = new Particle<Position<>>;	//	パーティクルの領域確保
+			Position<>* position = new Position<>;	//	Stateの領域確保
+
+			while (1)
+			{
+				double range = noise_range(mt);
+				double theta = noise_theta(mt);
+				double r = noise_r(mt);
+
+				double x = range*std::cos(theta) + center.x;
+				double y = range*std::sin(theta) + center.y;
+				double rr = r + center.r;
+				
+				position->set(x, y, rr);	//	指定された範囲にパーティクルを散布
+				//	存在可能領域に散布された場合，break
+				cv::Point pixel = ToPixel(*position, map_img, MAP_RES, MAP_IMG_ORG_X, MAP_IMG_ORG_Y);
+				if ((int)map_img.at<unsigned char>(pixel) != 0)	break;
+			}
+
+			par->setState(position);
+			getParticles().push_back(par);	//	パーティクルを追加
+		}
+
+		getParticles().shrink_to_fit();	//	領域を最適化
+
+		std::cout << "Complete 'Sampling' " << std::endl;
+
+	}*/
 
 
 
@@ -5256,6 +5318,7 @@ public:
 	/**********************************************************/
 
 	TrialType trial_type;
+	bool localization_only_true_position;
 	int sensor_num;
 
 	/*  環境データ  */

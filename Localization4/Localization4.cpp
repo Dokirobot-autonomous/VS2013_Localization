@@ -34,38 +34,6 @@ public:
 	~Localization() {};
 
 
-	void initialize() {
-
-		//*odometry1 = Position<>(0.0, 0.0, 0.0);
-
-		//for (auto& tmp : lid2_l)
-		//{
-		//	tmp.clearMeasurement();
-		//}
-		//for (auto& tmp : lid2_u)
-		//{
-		//	tmp.clearMeasurement();
-		//}
-		//for (auto& tmp : omni)
-		//{
-		//	tmp.clearMeasurement();
-		//}
-		//for (auto& tmp : gpgga)
-		//{
-		//	tmp.clearMeasurement();
-		//}
-		stat_particles.clear();
-		stat_lid2_l_likelihood.clear();
-		stat_lid2_u_likelihood.clear();
-		stat_omni_likelihood.clear();
-		stat_gpgga_likelihood.clear();
-		lid2_l_likelihood.clear();
-		lid2_u_likelihood.clear();
-		omni_likelihood.clear();
-		gpgga_likelihood.clear();
-		fusion_likelihood.clear();
-
-	}
 
 
 	/**********************************************************/
@@ -318,11 +286,22 @@ int _tmain(int argc, _TCHAR* argv[])
 			//loca.setMeasurement();
 			loca.readMeasurement1();
 
+			if (loca.localization_only_true_position){
+				std::cout << loca.true_time[loca.tidx] << "," << loca.esti_time << std::endl;
+				if (loca.true_time[loca.tidx] != loca.esti_time){
+					loca.clearMeasurement();
+					continue;
+				}
+				else{
+					loca.sampling(loca.true_position->at(loca.tidx));
+				}
+			}
+
 			if (finish || loca.finish) {
 				break;
 			}
 
-			if (!loca.init){
+			if (!loca.init && !loca.localization_only_true_position){
 				loca.Transition();
 			}
 
@@ -387,12 +366,25 @@ int _tmain(int argc, _TCHAR* argv[])
 				finish = true;
 			}
 
+			//// error‚ª‚Q‚‚ð‚±‚¦‚½‚Î‚ ‚¢A‚µ‚ã‚¤‚è‚å‚¤
+			//if (!loca.all_error.empty()){
+			//	double error = std::sqrt(loca.all_error.back().x*loca.all_error.back().x + loca.all_error.back().y*loca.all_error.back().y);
+			//	if (error > 2000){
+			//		break;
+			//	}
+			//}
+
+
+
 			if (finish || loca.finish) {
 				break;
 			}
 
 			if (loca.init = true) loca.init = false;
 
+			if (loca.localization_only_true_position){
+				loca.tidx++;
+			}
 
 		}
 
@@ -484,7 +476,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			loca.measurement_data_video.~VideoWriter();
 			loca.particle_video.~VideoWriter();
 			loca.particle_large_video.~VideoWriter();
-
+			
 			loca.writeRoute(loca.ofpath_i);
 			loca.writeParState(loca.ofpath_i);
 
